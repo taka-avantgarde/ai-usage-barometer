@@ -26,6 +26,8 @@ Chaque fenêtre `5h` et `7d` est évaluée séparément. Niveau 1 : 0–69 % uti
 | 2 | `#B85A00` | `#0e8ba1` |
 | 3 | `#ff7045` | `#ed5d40` |
 
+L’en-tête de la barre des menus est rendu sous forme d’un petit PDF vectoriel avec les seuls outils intégrés à macOS, et non en texte ANSI 24 bits. SwiftBar conserve ainsi la couleur HEX exacte de chaque fenêtre sans nécessiter les Xcode Command Line Tools.
+
 ## Réglages
 
 Le menu permet d’afficher ou de masquer Claude et Codex séparément. Au moins un service reste visible.

@@ -26,6 +26,8 @@ Le finestre `5h` e `7d` vengono valutate separatamente. Livello 1: 0–69% usato
 | 2 | `#B85A00` | `#0e8ba1` |
 | 3 | `#ff7045` | `#ed5d40` |
 
+L’intestazione della barra dei menu viene renderizzata come un piccolo PDF vettoriale usando soltanto gli strumenti integrati di macOS, anziché come testo ANSI a 24 bit. SwiftBar mantiene così il colore HEX esatto di ogni finestra senza richiedere Xcode Command Line Tools.
+
 ## Impostazioni
 
 Dal menu puoi mostrare o nascondere Claude e Codex separatamente. Almeno un servizio rimane visibile.

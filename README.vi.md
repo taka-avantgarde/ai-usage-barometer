@@ -26,6 +26,8 @@ Các cửa sổ `5h` và `7d` được đánh giá riêng. Mức 1: đã dùng 0
 | 2 | `#B85A00` | `#0e8ba1` |
 | 3 | `#ff7045` | `#ed5d40` |
 
+Phần tiêu đề trên thanh menu được dựng thành một PDF vector nhỏ chỉ bằng các công cụ tích hợp của macOS thay vì văn bản ANSI 24-bit. Nhờ đó SwiftBar giữ đúng màu HEX của từng cửa sổ mà không cần Xcode Command Line Tools.
+
 ## Cài đặt
 
 Trong menu thả xuống, có thể hiện hoặc ẩn Claude và Codex riêng biệt. Ít nhất một dịch vụ luôn được giữ lại.

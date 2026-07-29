@@ -26,6 +26,8 @@ Die Fenster `5h` und `7d` werden getrennt bewertet. Stufe 1: 0–69 % genutzt; S
 | 2 | `#B85A00` | `#0e8ba1` |
 | 3 | `#ff7045` | `#ed5d40` |
 
+Die Menüleistenanzeige wird mit den integrierten macOS-Werkzeugen als kleines Vektor-PDF statt als 24-Bit-ANSI-Text gerendert. So behält SwiftBar die exakte HEX-Farbe jedes Fensters bei, ohne dass die Xcode Command Line Tools erforderlich sind.
+
 ## Einstellungen
 
 Claude und Codex lassen sich im Menü getrennt ein- oder ausblenden. Mindestens ein Dienst bleibt sichtbar.

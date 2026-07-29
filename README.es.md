@@ -26,6 +26,8 @@ Cada ventana `5h` y `7d` se evalúa por separado. Nivel 1: 0–69% usado; nivel 
 | 2 | `#B85A00` | `#0e8ba1` |
 | 3 | `#ff7045` | `#ed5d40` |
 
+El encabezado de la barra de menús se renderiza como un pequeño PDF vectorial usando solo herramientas integradas de macOS, no como texto ANSI de 24 bits. Así se conserva el color HEX exacto de cada ventana sin necesitar Xcode Command Line Tools.
+
 ## Ajustes
 
 En el menú desplegable puedes mostrar u ocultar Claude o Codex por separado. Al menos uno permanece visible.

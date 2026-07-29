@@ -64,8 +64,23 @@ for old in "$PLUGIN_DIR/claude-usage.60s.sh" "$PLUGIN_DIR/codex-usage.60s.sh"; d
   fi
 done
 
+# v0.1.9 renders the coloured menu-bar header as a tiny vector PDF.
+# It uses only built-in macOS tools and does not require Xcode Command Line Tools.
+# Remove old renderer/image caches, then build the first exact-colour header now.
+RENDER_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/ai-usage-barometer"
+rm -f "$RENDER_CACHE/render-menubar" "$RENDER_CACHE/render-menubar.swift" \
+      "$RENDER_CACHE/header-image.b64" "$RENDER_CACHE/header-image.key" \
+      "$RENDER_CACHE/header-image.pdf" "$RENDER_CACHE"/header-image.pdf.tmp.* 2>/dev/null || true
+FIRST_HEADER="$("$TARGET" 2>/dev/null | head -n 1 || true)"
+if [[ "$FIRST_HEADER" != *" image="* ]]; then
+  echo "⚠ Exact-colour menu-bar image could not be generated. The plugin will use its plain-text fallback." >&2
+fi
+
 defaults write com.ameba.SwiftBar PluginDirectory "$PLUGIN_DIR" >/dev/null 2>&1 || true
+killall SwiftBar >/dev/null 2>&1 || true
+sleep 1
 open -a SwiftBar >/dev/null 2>&1 || open /Applications/SwiftBar.app >/dev/null 2>&1 || true
+sleep 1
 open -g "swiftbar://refreshallplugins" >/dev/null 2>&1 || true
 
 cat <<DONE
@@ -75,6 +90,7 @@ cat <<DONE
 The menu bar shows one combined item:
 • Claude: independent 5h/7d colours (#b54f02 → #B85A00 → #ff7045)
 • Codex: independent window colours (#4F7FA8 → #0e8ba1 → #ed5d40)
+• Exact HEX colours are rendered directly in the macOS menu bar without Xcode tools
 • Service names are shown only inside the dropdown
 • Settings lets you hide either service
 

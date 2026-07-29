@@ -26,6 +26,8 @@ macOS 菜单栏只显示一个项目，不显示 Claude 或 Codex 名称。Claud
 | 2 | `#B85A00` | `#0e8ba1` |
 | 3 | `#ff7045` | `#ed5d40` |
 
+菜单栏标题会仅使用 macOS 内置工具渲染为小型矢量 PDF，而不是 24 位 ANSI 文本。因此 SwiftBar 能准确保留每个窗口的 HEX 颜色，无需安装 Xcode Command Line Tools。
+
 ## 设置
 
 可在下拉菜单中分别显示或隐藏 Claude 与 Codex，至少保留一个服务。

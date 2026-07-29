@@ -3,7 +3,7 @@
 # AI Usage Barometer — unified Claude + Codex SwiftBar plugin
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.1.7</xbar.version>
+# <xbar.version>v0.1.9</xbar.version>
 # <xbar.author>Takayuki Miyano / Atlas Associates Inc.</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-service toggles.</xbar.desc>
@@ -16,7 +16,7 @@
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 set -u
 
-VERSION="0.1.7"
+VERSION="0.1.9"
 REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 PLUGIN_DIR="${SWIFTBAR_PLUGINS_PATH:-${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}}"
 SUPPORT_DIR="${AI_USAGE_SUPPORT_DIR:-$PLUGIN_DIR/.ai-usage-barometer}"
@@ -38,7 +38,6 @@ CLAUDE_STAGE3_RGB="${CLAUDE_STAGE3_RGB:-255;112;69}"  # #ff7045
 CODEX_STAGE1_RGB="${CODEX_STAGE1_RGB:-79;127;168}"    # current #4F7FA8
 CODEX_STAGE2_RGB="${CODEX_STAGE2_RGB:-14;139;161}"    # #0e8ba1
 CODEX_STAGE3_RGB="${CODEX_STAGE3_RGB:-237;93;64}"     # #ed5d40
-SEPARATOR_RGB="${SEPARATOR_RGB:-102;102;102}"
 SELF="${SWIFTBAR_PLUGIN_PATH:-$0}"
 
 mkdir -p "$CACHE_DIR" 2>/dev/null || true
@@ -279,18 +278,146 @@ rgb_to_hex() {
   printf '#%02X%02X%02X' "$r" "$g" "$b"
 }
 
-ansi_segment() {
-  # Exact 24-bit RGB ANSI colour for SwiftBar's menu-bar header.
-  local rgb="$1" text="$2" r g b
-  IFS=';' read -r r g b <<< "$rgb"
-  printf '\033[38;2;%s;%s;%sm%s\033[0m' "$r" "$g" "$b" "$text"
+pdf_rgb_from_hex() {
+  local hex="${1#\#}" r g b
+  [[ "$hex" =~ ^[0-9A-Fa-f]{6}$ ]] || hex="808080"
+  r=$((16#${hex:0:2}))
+  g=$((16#${hex:2:2}))
+  b=$((16#${hex:4:2}))
+  awk -v r="$r" -v g="$g" -v b="$b" 'BEGIN { printf "%.4f %.4f %.4f", r/255, g/255, b/255 }'
 }
 
-colourise_header_windows() {
-  # The helper header contains windows separated by two or more spaces, e.g.
-  # "5h ███░░  7d █░░░░". Colour each window from its own percentage.
-  local service="$1" header="$2" output="$3"
-  local rest="$header" segment label used rgb result="" first=1
+pdf_write_object() {
+  local pdf="$1" offsets="$2" object_number="$3" body_file="$4" offset
+  offset="$(wc -c < "$pdf" | tr -d '[:space:]')"
+  printf '%s\n' "$offset" >> "$offsets"
+  printf '%s 0 obj\n' "$object_number" >> "$pdf"
+  cat "$body_file" >> "$pdf"
+  printf '\nendobj\n' >> "$pdf"
+}
+
+render_header_pdf() {
+  # Render a tiny vector PDF using only tools included with macOS. This avoids
+  # Swift/Xcode Command Line Tools while preserving exact per-window HEX colours.
+  local spec="$1" pdf="$2"
+  local content="$CACHE_DIR/pdf-content.$$" offsets="$CACHE_DIR/pdf-offsets.$$"
+  local body="$CACHE_DIR/pdf-body.$$"
+  local colour segment label gauge rgb x=2 width=4
+  local full empty total i cell_x row col dot_x dot_y
+  local bar_y=4 bar_h=10 cell_w=8 cell_gap=1 text_y=5
+  local content_length xref_offset offset
+
+  : > "$content"
+  while IFS=$'\t' read -r colour segment || [[ -n "${colour:-}${segment:-}" ]]; do
+    [[ -n "${segment:-}" ]] || continue
+    if [[ "$segment" =~ ^[[:space:]]+$ ]]; then
+      x=$((x + 8))
+      continue
+    fi
+    rgb="$(pdf_rgb_from_hex "$colour")"
+
+    if [[ "$segment" == *"│"* ]]; then
+      # Neutral separator between Claude and Codex.
+      printf '%s RG\n1 w\n%s 2 m\n%s 16 l\nS\n' "$rgb" "$x" "$x" >> "$content"
+      x=$((x + 13))
+      continue
+    fi
+
+    label="${segment%% *}"
+    gauge="${segment#* }"
+    while [[ "$gauge" == ' '* ]]; do gauge="${gauge# }"; done
+
+    case "$label" in
+      [0-9]*h|[0-9]*d|[0-9]*w|[0-9]*m)
+        # Labels are ASCII and use a built-in PDF font; no local font is needed.
+        printf '%s rg\nBT\n/F1 11 Tf\n%s %s Td\n(%s) Tj\nET\n' \
+          "$rgb" "$x" "$text_y" "$label" >> "$content"
+        x=$((x + 23))
+
+        full="$(printf '%s' "$gauge" | awk '{s=$0; print gsub(/█/,"",s)}')"
+        empty="$(printf '%s' "$gauge" | awk '{s=$0; print gsub(/░/,"",s)}')"
+        full="${full:-0}"
+        empty="${empty:-0}"
+        total=$((full + empty))
+        if (( total <= 0 )); then total=5; empty=5; fi
+
+        printf '%s rg\n' "$rgb" >> "$content"
+        i=0
+        while (( i < total )); do
+          cell_x=$((x + i * (cell_w + cell_gap)))
+          if (( i < full )); then
+            printf '%s %s %s %s re f\n' "$cell_x" "$bar_y" "$cell_w" "$bar_h" >> "$content"
+          else
+            # Checkerboard dots make the unused part readable without changing hue.
+            row=0
+            while (( row < 3 )); do
+              col=0
+              while (( col < 2 )); do
+                dot_x=$((cell_x + 1 + col * 4 + (row % 2) * 2))
+                dot_y=$((bar_y + 1 + row * 3))
+                printf '%s %s 2 2 re f\n' "$dot_x" "$dot_y" >> "$content"
+                col=$((col + 1))
+              done
+              row=$((row + 1))
+            done
+          fi
+          i=$((i + 1))
+        done
+        x=$((x + total * (cell_w + cell_gap) - cell_gap + 13))
+        ;;
+      *)
+        # Unexpected helper output: render a compact ASCII warning marker.
+        printf '%s rg\nBT\n/F1 11 Tf\n%s %s Td\n(!) Tj\nET\n' \
+          "$rgb" "$x" "$text_y" >> "$content"
+        x=$((x + 16))
+        ;;
+    esac
+  done < "$spec"
+
+  width=$((x > 4 ? x - 10 : 24))
+  content_length="$(wc -c < "$content" | tr -d '[:space:]')"
+
+  : > "$pdf"
+  : > "$offsets"
+  printf '%%PDF-1.4\n%%AIUsageBarometer\n' >> "$pdf"
+
+  printf '<< /Type /Catalog /Pages 2 0 R >>' > "$body"
+  pdf_write_object "$pdf" "$offsets" 1 "$body"
+
+  printf '<< /Type /Pages /Kids [3 0 R] /Count 1 >>' > "$body"
+  pdf_write_object "$pdf" "$offsets" 2 "$body"
+
+  printf '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 %s 18] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>' "$width" > "$body"
+  pdf_write_object "$pdf" "$offsets" 3 "$body"
+
+  printf '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>' > "$body"
+  pdf_write_object "$pdf" "$offsets" 4 "$body"
+
+  {
+    printf '<< /Length %s >>\nstream\n' "$content_length"
+    cat "$content"
+    printf 'endstream'
+  } > "$body"
+  pdf_write_object "$pdf" "$offsets" 5 "$body"
+
+  xref_offset="$(wc -c < "$pdf" | tr -d '[:space:]')"
+  {
+    printf 'xref\n0 6\n'
+    printf '0000000000 65535 f \n'
+    while IFS= read -r offset; do
+      printf '%010d 00000 n \n' "$offset"
+    done < "$offsets"
+    printf 'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n%s\n%%%%EOF\n' "$xref_offset"
+  } >> "$pdf"
+
+  rm -f "$content" "$offsets" "$body" 2>/dev/null || true
+  [[ -s "$pdf" ]] && [[ "$(head -c 4 "$pdf" 2>/dev/null)" == "%PDF" ]]
+}
+
+append_header_windows() {
+  # Write exact per-window colours to a TSV vector-render specification.
+  local service="$1" header="$2" output="$3" spec="$4"
+  local rest="$header" segment label used rgb colour first=1
 
   while [[ -n "$rest" ]]; do
     if [[ "$rest" == *"  "* ]]; then
@@ -316,13 +443,49 @@ colourise_header_windows() {
         rgb="$(rgb_for_stage "$service" 100)"
         ;;
     esac
+    colour="$(rgb_to_hex "$rgb")"
 
-    if [[ "$first" == "0" ]]; then result+="  "; fi
-    result+="$(ansi_segment "$rgb" "$segment")"
+    if [[ "$first" == "0" ]]; then
+      printf '%s\t  \n' "$MUTED_COLOR" >> "$spec"
+    fi
+    printf '%s\t%s\n' "$colour" "$segment" >> "$spec"
     first=0
   done
+}
 
-  printf '%s' "$result"
+render_header_image() {
+  local spec="$1" key image="" pdf="$CACHE_DIR/header-image.pdf.tmp.$$"
+  if [[ -n "${AI_USAGE_HEADER_SPEC_DUMP:-}" ]]; then
+    cp "$spec" "$AI_USAGE_HEADER_SPEC_DUMP" 2>/dev/null || true
+  fi
+  if [[ -n "${AI_USAGE_HEADER_IMAGE_B64:-}" ]]; then
+    printf '%s' "$AI_USAGE_HEADER_IMAGE_B64"
+    return 0
+  fi
+
+  key="$( { cat "$spec"; printf '%s\n' 'pdf-vector-renderer-v2'; } | shasum -a 256 2>/dev/null | awk '{print $1}')"
+  if [[ -n "$key" && -s "$CACHE_DIR/header-image.b64" && -r "$CACHE_DIR/header-image.key" && "$(cat "$CACHE_DIR/header-image.key" 2>/dev/null)" == "$key" ]]; then
+    cat "$CACHE_DIR/header-image.b64"
+    return 0
+  fi
+
+  render_header_pdf "$spec" "$pdf" || {
+    rm -f "$pdf" 2>/dev/null || true
+    return 1
+  }
+  if [[ -n "${AI_USAGE_HEADER_PDF_DUMP:-}" ]]; then
+    cp "$pdf" "$AI_USAGE_HEADER_PDF_DUMP" 2>/dev/null || true
+  fi
+  image="$(base64 < "$pdf" 2>/dev/null | tr -d '\r\n' || true)"
+  rm -f "$pdf" 2>/dev/null || true
+  case "$image" in
+    ''|*[!A-Za-z0-9+/=]*) return 1 ;;
+  esac
+  [[ ${#image} -gt 100 ]] || return 1
+  printf '%s' "$image" > "$CACHE_DIR/header-image.b64"
+  printf '%s\n' "$key" > "$CACHE_DIR/header-image.key"
+  chmod 600 "$CACHE_DIR/header-image.b64" "$CACHE_DIR/header-image.key" 2>/dev/null || true
+  printf '%s' "$image"
 }
 
 replace_line_color() {
@@ -381,18 +544,30 @@ if [[ "$CODEX_ENABLED" == "1" ]]; then
   CODEX_HEADER="$(header_from_output codex "$CODEX_OUTPUT")"
 fi
 
-MENU_TITLE=""
+HEADER_SPEC="$CACHE_DIR/header-segments.tsv.tmp.$$"
+: > "$HEADER_SPEC"
+PLAIN_TITLE=""
 if [[ "$CLAUDE_ENABLED" == "1" ]]; then
-  MENU_TITLE="$(colourise_header_windows claude "$CLAUDE_HEADER" "$CLAUDE_OUTPUT")"
+  append_header_windows claude "$CLAUDE_HEADER" "$CLAUDE_OUTPUT" "$HEADER_SPEC"
+  PLAIN_TITLE="$CLAUDE_HEADER"
 fi
 if [[ "$CODEX_ENABLED" == "1" ]]; then
-  if [[ -n "$MENU_TITLE" ]]; then
-    MENU_TITLE+="  $(ansi_segment "$SEPARATOR_RGB" "│")  "
+  if [[ -s "$HEADER_SPEC" ]]; then
+    printf '%s\t  │  \n' "$SEPARATOR_COLOR" >> "$HEADER_SPEC"
   fi
-  MENU_TITLE+="$(colourise_header_windows codex "$CODEX_HEADER" "$CODEX_OUTPUT")"
+  append_header_windows codex "$CODEX_HEADER" "$CODEX_OUTPUT" "$HEADER_SPEC"
+  if [[ -n "$PLAIN_TITLE" ]]; then PLAIN_TITLE+="  │  "; fi
+  PLAIN_TITLE+="$CODEX_HEADER"
 fi
 
-printf '%b | ansi=true symbolize=false font=Menlo size=12\n' "$MENU_TITLE"
+HEADER_IMAGE="$(render_header_image "$HEADER_SPEC" 2>/dev/null || true)"
+rm -f "$HEADER_SPEC" 2>/dev/null || true
+if [[ -n "$HEADER_IMAGE" ]]; then
+  printf ' | image=%s dropdown=false\n' "$HEADER_IMAGE"
+else
+  # Safe fallback: never emit unsupported true-colour ANSI sequences.
+  printf '%s | font=Menlo size=12\n' "$PLAIN_TITLE"
+fi
 echo "---"
 
 if [[ "$CLAUDE_ENABLED" == "1" ]]; then

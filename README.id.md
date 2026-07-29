@@ -26,6 +26,8 @@ Jendela `5h` dan `7d` dinilai secara terpisah. Tingkat 1: 0–69% digunakan; tin
 | 2 | `#B85A00` | `#0e8ba1` |
 | 3 | `#ff7045` | `#ed5d40` |
 
+Header bilah menu dirender sebagai PDF vektor kecil hanya dengan alat bawaan macOS, bukan teks ANSI 24-bit. Dengan demikian SwiftBar mempertahankan warna HEX yang tepat untuk setiap jendela tanpa memerlukan Xcode Command Line Tools.
+
 ## Pengaturan
 
 Dari menu, Claude dan Codex dapat ditampilkan atau disembunyikan secara terpisah. Setidaknya satu layanan tetap terlihat.

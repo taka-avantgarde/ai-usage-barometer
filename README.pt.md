@@ -26,6 +26,8 @@ As janelas `5h` e `7d` são avaliadas separadamente. Nível 1: 0–69% usado; n�
 | 2 | `#B85A00` | `#0e8ba1` |
 | 3 | `#ff7045` | `#ed5d40` |
 
+O cabeçalho da barra de menus é renderizado como um pequeno PDF vetorial usando apenas ferramentas integradas do macOS, em vez de texto ANSI de 24 bits. Assim, o SwiftBar preserva a cor HEX exata de cada janela sem exigir as Xcode Command Line Tools.
+
 ## Definições
 
 No menu, Claude e Codex podem ser mostrados ou ocultados separadamente. Pelo menos um serviço permanece visível.

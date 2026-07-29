@@ -26,6 +26,8 @@ De vensters `5h` en `7d` worden afzonderlijk beoordeeld. Niveau 1: 0–69% gebru
 | 2 | `#B85A00` | `#0e8ba1` |
 | 3 | `#ff7045` | `#ed5d40` |
 
+De menubalkop wordt met uitsluitend ingebouwde macOS-tools als een kleine vector-pdf gerenderd, niet als 24-bits ANSI-tekst. Daardoor behoudt SwiftBar de exacte HEX-kleur van elk venster zonder Xcode Command Line Tools.
+
 ## Instellingen
 
 In het menu kun je Claude en Codex afzonderlijk tonen of verbergen. Minstens één dienst blijft zichtbaar.

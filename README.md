@@ -27,6 +27,8 @@ Each `5h` and `7d` window is evaluated **independently**, so a healthy 5h window
 | 2 — warning | 70–89% used | `#B85A00` | `#0e8ba1` |
 | 3 — critical | 90–100% used | `#ff7045` | `#ed5d40` |
 
+The menu-bar header is rendered as a tiny vector PDF using only built-in macOS tools, rather than 24-bit ANSI text. SwiftBar therefore preserves each window’s exact HEX colour without requiring Xcode Command Line Tools.
+
 ## Settings
 
 Open the dropdown and use **Settings** to show or hide Claude or Codex independently. At least one service remains visible. The same menu also controls the 1, 3, or 5 minute refresh interval.
