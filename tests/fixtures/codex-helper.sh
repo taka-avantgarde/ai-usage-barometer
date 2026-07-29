@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+echo "Codex 7d ███░░ | color=#00FF00 font=Menlo"
+echo "---"
+echo "Codex usage | color=#00FF00"
+echo "Plan: pro | color=#808080"
+echo "---"
+echo "7d  █████████░  13% used | color=#00FF00 font=Menlo"
+echo "--13% used · 87% left"
+echo "--Resets in 2d 8h (2026-07-31 18:00)"
+echo "Credits: 0"
+echo "---"
+echo "Source: live account usage"

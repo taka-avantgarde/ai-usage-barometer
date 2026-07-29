@@ -1,0 +1,33 @@
+🇬🇧 [English](README.md) · 🇯🇵 [日本語](README.ja.md) · 🇪🇸 [Español](README.es.md) · 🇸🇦 [العربية](README.ar.md) · 🇫🇷 [Français](README.fr.md) · 🇩🇪 Deutsch · 🇨🇳 [简体中文](README.zh.md) · 🇰🇷 [한국어](README.ko.md) · 🇧🇷 [Português](README.pt.md) · 🇳🇱 [Nederlands](README.nl.md) · 🇮🇹 [Italiano](README.it.md) · 🇻🇳 [Tiếng Việt](README.vi.md) · 🇮🇩 [Bahasa Indonesia](README.id.md) · 🇹🇭 [ไทย](README.th.md)
+
+# 🎚️ AI Usage Barometer
+
+## ⚡ Installation — eine Zeile in Terminal einfügen
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+```
+
+Derselbe Befehl funktioniert mit und ohne Homebrew. Falls nötig, werden Homebrew, jq, SwiftBar und das kombinierte Plugin installiert.
+
+In der macOS-Menüleiste erscheint nur ein Eintrag ohne die Namen Claude oder Codex. Claude ist orange, Codex blau.
+
+```text
+5h ███░░  7d ████░  │  7d ███░░
+```
+
+## Einstellungen
+
+Claude und Codex lassen sich im Menü getrennt ein- oder ausblenden. Mindestens ein Dienst bleibt sichtbar.
+
+> **Codex 5h:** Codex liefert nicht immer ein 5-Stunden-Limit. Wenn es nicht vorhanden ist oder nicht in den Nutzungsdaten erscheint, wird die Codex-5h-Anzeige ausgeblendet und nur ein verfügbares Fenster wie 7d gezeigt. Das Plugin erfindet keine fehlenden Limits.
+
+The dropdown keeps the service names, percentages, remaining capacity and reset times. Existing standalone Claude/Codex plugins are moved into a hidden support folder to prevent duplicate menu-bar items.
+
+## Privacy
+
+Authentication tokens are never printed or copied into the unified plugin cache. The project partly relies on unofficial usage interfaces that providers may change.
+
+## License
+
+[MIT](LICENSE) © 2026 Takayuki Miyano · Atlas Associates Inc.

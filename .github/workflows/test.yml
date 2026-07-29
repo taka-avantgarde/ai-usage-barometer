@@ -1,0 +1,13 @@
+name: test
+on:
+  push:
+  pull_request:
+jobs:
+  shell:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax
+        run: bash -n ai-usage.60s.sh install.sh uninstall.sh tests/run.sh
+      - name: Tests
+        run: ./tests/run.sh
