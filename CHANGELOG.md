@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3 — 2026-07-29
+
+- Darken only the Claude segment for a quieter menu-bar appearance.
+- Claude now uses deep burnt amber (ANSI 130 / `#8F4F1F`).
+- Codex remains unchanged at muted steel blue (ANSI 67 / `#4F7FA8`).
+
 ## 0.1.2 — 2026-07-29
 
 - Tone down the macOS menu-bar palette for a calmer appearance.
