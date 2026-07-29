@@ -16,6 +16,16 @@ In der macOS-Menüleiste erscheint nur ein Eintrag ohne die Namen Claude oder Co
 5h ███░░  7d ████░  │  7d ███░░
 ```
 
+## 🎨 Drei unabhängige Farbstufen
+
+Die Fenster `5h` und `7d` werden getrennt bewertet. Stufe 1: 0–69 % genutzt; Stufe 2: 70–89 %; Stufe 3: 90–100 %.
+
+| Stufe | Claude | Codex |
+|---|---|---|
+| 1 | `#b54f02` | `#4F7FA8` |
+| 2 | `#B85A00` | `#0e8ba1` |
+| 3 | `#ff7045` | `#ed5d40` |
+
 ## Einstellungen
 
 Claude und Codex lassen sich im Menü getrennt ein- oder ausblenden. Mindestens ein Dienst bleibt sichtbar.

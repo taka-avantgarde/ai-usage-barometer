@@ -16,6 +16,16 @@ Bilah menu macOS hanya menampilkan satu item tanpa nama Claude atau Codex. Claud
 5h ███░░  7d ████░  │  7d ███░░
 ```
 
+## 🎨 Tiga tingkat warna independen
+
+Jendela `5h` dan `7d` dinilai secara terpisah. Tingkat 1: 0–69% digunakan; tingkat 2: 70–89%; tingkat 3: 90–100%.
+
+| Tingkat | Claude | Codex |
+|---|---|---|
+| 1 | `#b54f02` | `#4F7FA8` |
+| 2 | `#B85A00` | `#0e8ba1` |
+| 3 | `#ff7045` | `#ed5d40` |
+
 ## Pengaturan
 
 Dari menu, Claude dan Codex dapat ditampilkan atau disembunyikan secara terpisah. Setidaknya satu layanan tetap terlihat.

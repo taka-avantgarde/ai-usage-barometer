@@ -73,8 +73,8 @@ cat <<DONE
 ✅ Installed.
 
 The menu bar shows one combined item:
-• Claude segment: dark, saturated orange
-• Codex segment: muted steel blue
+• Claude: independent 5h/7d colours (#b54f02 → #B85A00 → #ff7045)
+• Codex: independent window colours (#4F7FA8 → #0e8ba1 → #ed5d40)
 • Service names are shown only inside the dropdown
 • Settings lets you hide either service
 

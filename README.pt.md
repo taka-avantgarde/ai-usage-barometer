@@ -16,6 +16,16 @@ A barra de menus do macOS mostra apenas um item, sem os nomes Claude ou Codex. C
 5h ███░░  7d ████░  │  7d ███░░
 ```
 
+## 🎨 Três níveis de cor independentes
+
+As janelas `5h` e `7d` são avaliadas separadamente. Nível 1: 0–69% usado; nível 2: 70–89%; nível 3: 90–100%.
+
+| Nível | Claude | Codex |
+|---|---|---|
+| 1 | `#b54f02` | `#4F7FA8` |
+| 2 | `#B85A00` | `#0e8ba1` |
+| 3 | `#ff7045` | `#ed5d40` |
+
 ## Definições
 
 No menu, Claude e Codex podem ser mostrados ou ocultados separadamente. Pelo menos um serviço permanece visível.

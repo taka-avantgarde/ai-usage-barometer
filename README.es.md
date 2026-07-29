@@ -16,6 +16,16 @@ La barra de macOS muestra un único elemento sin los nombres Claude o Codex. Cla
 5h ███░░  7d ████░  │  7d ███░░
 ```
 
+## 🎨 Tres niveles de color independientes
+
+Cada ventana `5h` y `7d` se evalúa por separado. Nivel 1: 0–69% usado; nivel 2: 70–89%; nivel 3: 90–100%.
+
+| Nivel | Claude | Codex |
+|---|---|---|
+| 1 | `#b54f02` | `#4F7FA8` |
+| 2 | `#B85A00` | `#0e8ba1` |
+| 3 | `#ff7045` | `#ed5d40` |
+
 ## Ajustes
 
 En el menú desplegable puedes mostrar u ocultar Claude o Codex por separado. Al menos uno permanece visible.

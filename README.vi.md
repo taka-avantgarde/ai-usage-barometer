@@ -16,6 +16,16 @@ Thanh menu macOS chỉ hiển thị một mục, không hiện tên Claude hoặ
 5h ███░░  7d ████░  │  7d ███░░
 ```
 
+## 🎨 Ba mức màu độc lập
+
+Các cửa sổ `5h` và `7d` được đánh giá riêng. Mức 1: đã dùng 0–69%; mức 2: 70–89%; mức 3: 90–100%.
+
+| Mức | Claude | Codex |
+|---|---|---|
+| 1 | `#b54f02` | `#4F7FA8` |
+| 2 | `#B85A00` | `#0e8ba1` |
+| 3 | `#ff7045` | `#ed5d40` |
+
 ## Cài đặt
 
 Trong menu thả xuống, có thể hiện hoặc ẩn Claude và Codex riêng biệt. Ít nhất một dịch vụ luôn được giữ lại.

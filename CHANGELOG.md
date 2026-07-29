@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.5 — 2026-07-29
+
+- Colour each 5h/7d window independently instead of applying one provider-wide colour.
+- Claude palette: `#b54f02`, `#B85A00`, `#ff7045`.
+- Codex palette: `#4F7FA8`, `#0e8ba1`, `#ed5d40`.
+- Thresholds remain 0–69%, 70–89%, and 90–100% used.
+- Use exact 24-bit RGB ANSI colours in the macOS menu bar and matching colours in the dropdown.
+
 ## 0.1.4 — 2026-07-29
 
 - Keep Claude unmistakably orange while reducing only its brightness.

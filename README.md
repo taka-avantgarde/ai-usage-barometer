@@ -17,6 +17,16 @@ A single SwiftBar item shows both services on one line. **No Claude or Codex nam
 └─ Claude, dark orange ┘  └ Codex, muted steel blue ┘
 ```
 
+## 🎨 Three independent colour stages
+
+Each `5h` and `7d` window is evaluated **independently**, so a healthy 5h window and a nearly exhausted 7d window can have different colours at the same time.
+
+| Stage | Usage | Claude | Codex |
+|---|---:|---|---|
+| 1 — high remaining capacity | 0–69% used | `#b54f02` | current blue `#4F7FA8` |
+| 2 — warning | 70–89% used | `#B85A00` | `#0e8ba1` |
+| 3 — critical | 90–100% used | `#ff7045` | `#ed5d40` |
+
 ## Settings
 
 Open the dropdown and use **Settings** to show or hide Claude or Codex independently. At least one service remains visible. The same menu also controls the 1, 3, or 5 minute refresh interval.

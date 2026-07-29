@@ -3,7 +3,7 @@
 # AI Usage Barometer — unified Claude + Codex SwiftBar plugin
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.1.4</xbar.version>
+# <xbar.version>v0.1.5</xbar.version>
 # <xbar.author>Takayuki Miyano / Atlas Associates Inc.</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-service toggles.</xbar.desc>
@@ -16,7 +16,7 @@
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 set -u
 
-VERSION="0.1.4"
+VERSION="0.1.5"
 REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 PLUGIN_DIR="${SWIFTBAR_PLUGINS_PATH:-${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}}"
 SUPPORT_DIR="${AI_USAGE_SUPPORT_DIR:-$PLUGIN_DIR/.ai-usage-barometer}"
@@ -25,13 +25,20 @@ CODEX_HELPER="${AI_USAGE_CODEX_HELPER:-$SUPPORT_DIR/codex-usage.sh}"
 CACHE_DIR="${AI_USAGE_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/ai-usage-barometer}"
 CONFIG_FILE="$CACHE_DIR/config"
 NOTICE_FILE="$CACHE_DIR/notice"
-CLAUDE_COLOR="${CLAUDE_COLOR:-#B85A00}"
-CODEX_COLOR="${CODEX_COLOR:-#4F7FA8}"
 MUTED_COLOR="${MUTED_COLOR:-#808080}"
-SEPARATOR_COLOR="${SEPARATOR_COLOR:-#8E8E93}"
-CLAUDE_ANSI="${CLAUDE_ANSI:-166}"
-CODEX_ANSI="${CODEX_ANSI:-67}"
-SEPARATOR_ANSI="${SEPARATOR_ANSI:-242}"
+SEPARATOR_COLOR="${SEPARATOR_COLOR:-#666666}"
+WARN="${WARN:-70}"
+DANGER="${DANGER:-90}"
+
+# Each usage window is coloured independently. Stage 1 is the healthy state
+# (high remaining capacity), stage 2 is warning, and stage 3 is critical.
+CLAUDE_STAGE1_RGB="${CLAUDE_STAGE1_RGB:-181;79;2}"    # #b54f02
+CLAUDE_STAGE2_RGB="${CLAUDE_STAGE2_RGB:-184;90;0}"    # #B85A00
+CLAUDE_STAGE3_RGB="${CLAUDE_STAGE3_RGB:-255;112;69}"  # #ff7045
+CODEX_STAGE1_RGB="${CODEX_STAGE1_RGB:-79;127;168}"    # current #4F7FA8
+CODEX_STAGE2_RGB="${CODEX_STAGE2_RGB:-14;139;161}"    # #0e8ba1
+CODEX_STAGE3_RGB="${CODEX_STAGE3_RGB:-237;93;64}"     # #ed5d40
+SEPARATOR_RGB="${SEPARATOR_RGB:-102;102;102}"
 SELF="${SWIFTBAR_PLUGIN_PATH:-$0}"
 
 mkdir -p "$CACHE_DIR" 2>/dev/null || true
@@ -184,12 +191,148 @@ normalise_detail_line() {
   printf '%s' "$line"
 }
 
+window_used_from_output() {
+  # Return the used percentage for one named window (for example 5h or 7d).
+  # Helpers may express the same value as either "% used" or "% left".
+  local output="$1" label="$2"
+  printf '%s\n' "$output" | awk -v label="$label" '
+    {
+      line=$0
+      sub(/[[:space:]]*\|.*/, "", line)
+      sub(/^[[:space:]-]+/, "", line)
+      if (line !~ ("^" label "([[:space:]]|$)")) next
+
+      if (match(line, /[0-9]+%[[:space:]]+used/)) {
+        token=substr(line, RSTART, RLENGTH)
+        pct=token+0
+        if (pct < 0) pct=0
+        if (pct > 100) pct=100
+        print int(pct+0.5)
+        found=1
+        exit
+      }
+      if (match(line, /[0-9]+%[[:space:]]+left/)) {
+        token=substr(line, RSTART, RLENGTH)
+        pct=100-(token+0)
+        if (pct < 0) pct=0
+        if (pct > 100) pct=100
+        print int(pct+0.5)
+        found=1
+        exit
+      }
+    }
+    END { if (!found) print 0 }
+  '
+}
+
+rgb_for_stage() {
+  local service="$1" used="$2"
+  case "$service" in
+    claude)
+      if (( used >= DANGER )); then printf '%s' "$CLAUDE_STAGE3_RGB"
+      elif (( used >= WARN )); then printf '%s' "$CLAUDE_STAGE2_RGB"
+      else printf '%s' "$CLAUDE_STAGE1_RGB"; fi
+      ;;
+    codex)
+      if (( used >= DANGER )); then printf '%s' "$CODEX_STAGE3_RGB"
+      elif (( used >= WARN )); then printf '%s' "$CODEX_STAGE2_RGB"
+      else printf '%s' "$CODEX_STAGE1_RGB"; fi
+      ;;
+  esac
+}
+
+rgb_to_hex() {
+  local rgb="$1" r g b
+  IFS=';' read -r r g b <<< "$rgb"
+  printf '#%02X%02X%02X' "$r" "$g" "$b"
+}
+
 ansi_segment() {
-  # SwiftBar supports ANSI styling in the macOS menu-bar header.
-  # Use the widely supported 256-colour SGR form for reliable rendering
-  # across SwiftBar 1.x and 2.x.
-  local colour_index="$1" text="$2"
-  printf '\033[38;5;%sm%s\033[0m' "$colour_index" "$text"
+  # Exact 24-bit RGB ANSI colour for SwiftBar's menu-bar header.
+  local rgb="$1" text="$2" r g b
+  IFS=';' read -r r g b <<< "$rgb"
+  printf '\033[38;2;%s;%s;%sm%s\033[0m' "$r" "$g" "$b" "$text"
+}
+
+colourise_header_windows() {
+  # The helper header contains windows separated by two or more spaces, e.g.
+  # "5h ███░░  7d █░░░░". Colour each window from its own percentage.
+  local service="$1" header="$2" output="$3"
+  local rest="$header" segment label used rgb result="" first=1
+
+  while [[ -n "$rest" ]]; do
+    if [[ "$rest" == *"  "* ]]; then
+      segment="${rest%%  *}"
+      rest="${rest#*  }"
+      while [[ "$rest" == ' '* ]]; do rest="${rest# }"; done
+    else
+      segment="$rest"
+      rest=""
+    fi
+
+    while [[ "$segment" == ' '* ]]; do segment="${segment# }"; done
+    while [[ "$segment" == *' ' ]]; do segment="${segment% }"; done
+    [[ -n "$segment" ]] || continue
+
+    label="${segment%% *}"
+    case "$label" in
+      [0-9]*h|[0-9]*d|[0-9]*w|[0-9]*m)
+        used="$(window_used_from_output "$output" "$label")"
+        rgb="$(rgb_for_stage "$service" "$used")"
+        ;;
+      *)
+        rgb="$(rgb_for_stage "$service" 100)"
+        ;;
+    esac
+
+    if [[ "$first" == "0" ]]; then result+="  "; fi
+    result+="$(ansi_segment "$rgb" "$segment")"
+    first=0
+  done
+
+  printf '%s' "$result"
+}
+
+replace_line_color() {
+  local line="$1" colour="$2" text params
+  if [[ "$line" == *"|"* ]]; then
+    text="${line%%|*}"
+    params="${line#*|}"
+    params="$(printf '%s' "$params" | sed -E 's/(^|[[:space:]])color=[^[:space:]]+//g; s/^[[:space:]]+//; s/[[:space:]]+$//; s/[[:space:]]+/ /g')"
+    if [[ -n "$params" ]]; then
+      printf '%s| %s color=%s' "$text" "$params" "$colour"
+    else
+      printf '%s| color=%s' "$text" "$colour"
+    fi
+  else
+    printf '%s | color=%s' "$line" "$colour"
+  fi
+}
+
+render_coloured_details() {
+  local service="$1" output="$2" details="$3"
+  local line normal plain trimmed label used rgb colour
+
+  while IFS= read -r line; do
+    normal="$(normalise_detail_line "$line")"
+    plain="$(strip_params "$normal")"
+    trimmed="$plain"
+    while [[ "$trimmed" == ' '* ]]; do trimmed="${trimmed# }"; done
+    label="${trimmed%% *}"
+
+    case "$label" in
+      [0-9]*h|[0-9]*d|[0-9]*w|[0-9]*m)
+        used="$(window_used_from_output "$output" "$label")"
+        rgb="$(rgb_for_stage "$service" "$used")"
+        colour="$(rgb_to_hex "$rgb")"
+        replace_line_color "$normal" "$colour"
+        ;;
+      *)
+        printf '%s' "$normal"
+        ;;
+    esac
+    printf '\n'
+  done <<< "$details"
 }
 
 CLAUDE_OUTPUT=""
@@ -208,23 +351,23 @@ fi
 
 MENU_TITLE=""
 if [[ "$CLAUDE_ENABLED" == "1" ]]; then
-  MENU_TITLE="$(ansi_segment "$CLAUDE_ANSI" "$CLAUDE_HEADER")"
+  MENU_TITLE="$(colourise_header_windows claude "$CLAUDE_HEADER" "$CLAUDE_OUTPUT")"
 fi
 if [[ "$CODEX_ENABLED" == "1" ]]; then
   if [[ -n "$MENU_TITLE" ]]; then
-    MENU_TITLE+="  $(ansi_segment "$SEPARATOR_ANSI" "│")  "
+    MENU_TITLE+="  $(ansi_segment "$SEPARATOR_RGB" "│")  "
   fi
-  MENU_TITLE+="$(ansi_segment "$CODEX_ANSI" "$CODEX_HEADER")"
+  MENU_TITLE+="$(colourise_header_windows codex "$CODEX_HEADER" "$CODEX_OUTPUT")"
 fi
 
 printf '%b | ansi=true symbolize=false font=Menlo size=12\n' "$MENU_TITLE"
 echo "---"
 
 if [[ "$CLAUDE_ENABLED" == "1" ]]; then
-  echo "Claude | color=$CLAUDE_COLOR"
+  echo "Claude | color=$(rgb_to_hex "$CLAUDE_STAGE1_RGB")"
   CLAUDE_DETAILS="$(section_between_separators "$CLAUDE_OUTPUT" 1)"
   if [[ -n "$CLAUDE_DETAILS" ]]; then
-    printf '%s\n' "$CLAUDE_DETAILS"
+    render_coloured_details claude "$CLAUDE_OUTPUT" "$CLAUDE_DETAILS"
   else
     echo "Usage data is unavailable | color=$MUTED_COLOR"
   fi
@@ -232,16 +375,13 @@ if [[ "$CLAUDE_ENABLED" == "1" ]]; then
 fi
 
 if [[ "$CODEX_ENABLED" == "1" ]]; then
-  echo "Codex | color=$CODEX_COLOR"
+  echo "Codex | color=$(rgb_to_hex "$CODEX_STAGE1_RGB")"
   CODEX_DETAILS="$(section_between_separators "$CODEX_OUTPUT" 2)"
   if [[ -z "$CODEX_DETAILS" ]]; then
     CODEX_DETAILS="$(section_between_separators "$CODEX_OUTPUT" 1)"
   fi
   if [[ -n "$CODEX_DETAILS" ]]; then
-    while IFS= read -r line; do
-      normalise_detail_line "$line"
-      printf '\n'
-    done <<< "$CODEX_DETAILS"
+    render_coloured_details codex "$CODEX_OUTPUT" "$CODEX_DETAILS"
   else
     echo "Usage data is unavailable | color=$MUTED_COLOR"
   fi

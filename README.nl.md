@@ -16,6 +16,16 @@ De macOS-menubalk toont één item zonder de namen Claude of Codex. Claude is do
 5h ███░░  7d ████░  │  7d ███░░
 ```
 
+## 🎨 Drie onafhankelijke kleurniveaus
+
+De vensters `5h` en `7d` worden afzonderlijk beoordeeld. Niveau 1: 0–69% gebruikt; niveau 2: 70–89%; niveau 3: 90–100%.
+
+| Niveau | Claude | Codex |
+|---|---|---|
+| 1 | `#b54f02` | `#4F7FA8` |
+| 2 | `#B85A00` | `#0e8ba1` |
+| 3 | `#ff7045` | `#ed5d40` |
+
 ## Instellingen
 
 In het menu kun je Claude en Codex afzonderlijk tonen of verbergen. Minstens één dienst blijft zichtbaar.
