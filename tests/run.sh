@@ -13,6 +13,9 @@ FIRST="$(printf '%s\n' "$OUT" | head -n 1)"
 [[ "$FIRST" != *"Claude"* ]]
 [[ "$FIRST" != *"Codex"* ]]
 [[ "$FIRST" == *"ansi=true"* ]]
+[[ "$FIRST" == *"symbolize=false"* ]]
+[[ "$FIRST" == *$'\033[38;5;208m'* ]]
+[[ "$FIRST" == *$'\033[38;5;39m'* ]]
 [[ "$FIRST" == *"5h"* ]]
 [[ "$FIRST" == *"7d"* ]]
 grep -q '^Claude | color=#D97706' <<< "$OUT"

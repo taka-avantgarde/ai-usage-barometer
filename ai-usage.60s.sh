@@ -3,7 +3,7 @@
 # AI Usage Barometer — unified Claude + Codex SwiftBar plugin
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.1.0</xbar.version>
+# <xbar.version>v0.1.1</xbar.version>
 # <xbar.author>Takayuki Miyano / Atlas Associates Inc.</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-service toggles.</xbar.desc>
@@ -16,7 +16,7 @@
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 set -u
 
-VERSION="0.1.0"
+VERSION="0.1.1"
 REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 PLUGIN_DIR="${SWIFTBAR_PLUGINS_PATH:-${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}}"
 SUPPORT_DIR="${AI_USAGE_SUPPORT_DIR:-$PLUGIN_DIR/.ai-usage-barometer}"
@@ -29,6 +29,9 @@ CLAUDE_COLOR="${CLAUDE_COLOR:-#D97706}"
 CODEX_COLOR="${CODEX_COLOR:-#2563EB}"
 MUTED_COLOR="${MUTED_COLOR:-#808080}"
 SEPARATOR_COLOR="${SEPARATOR_COLOR:-#8E8E93}"
+CLAUDE_ANSI="${CLAUDE_ANSI:-208}"
+CODEX_ANSI="${CODEX_ANSI:-39}"
+SEPARATOR_ANSI="${SEPARATOR_ANSI:-244}"
 SELF="${SWIFTBAR_PLUGIN_PATH:-$0}"
 
 mkdir -p "$CACHE_DIR" 2>/dev/null || true
@@ -181,14 +184,12 @@ normalise_detail_line() {
   printf '%s' "$line"
 }
 
-hex_rgb() {
-  local h="${1#\#}"
-  printf '%d;%d;%d' "$((16#${h:0:2}))" "$((16#${h:2:2}))" "$((16#${h:4:2}))"
-}
-
 ansi_segment() {
-  local colour="$1" text="$2"
-  printf '\033[38;2;%sm%s\033[0m' "$(hex_rgb "$colour")" "$text"
+  # SwiftBar supports ANSI styling in the macOS menu-bar header.
+  # Use the widely supported 256-colour SGR form for reliable rendering
+  # across SwiftBar 1.x and 2.x.
+  local colour_index="$1" text="$2"
+  printf '\033[38;5;%sm%s\033[0m' "$colour_index" "$text"
 }
 
 CLAUDE_OUTPUT=""
@@ -207,16 +208,16 @@ fi
 
 MENU_TITLE=""
 if [[ "$CLAUDE_ENABLED" == "1" ]]; then
-  MENU_TITLE="$(ansi_segment "$CLAUDE_COLOR" "$CLAUDE_HEADER")"
+  MENU_TITLE="$(ansi_segment "$CLAUDE_ANSI" "$CLAUDE_HEADER")"
 fi
 if [[ "$CODEX_ENABLED" == "1" ]]; then
   if [[ -n "$MENU_TITLE" ]]; then
-    MENU_TITLE+="  $(ansi_segment "$SEPARATOR_COLOR" "│")  "
+    MENU_TITLE+="  $(ansi_segment "$SEPARATOR_ANSI" "│")  "
   fi
-  MENU_TITLE+="$(ansi_segment "$CODEX_COLOR" "$CODEX_HEADER")"
+  MENU_TITLE+="$(ansi_segment "$CODEX_ANSI" "$CODEX_HEADER")"
 fi
 
-printf '%b | ansi=true font=Menlo size=12\n' "$MENU_TITLE"
+printf '%b | ansi=true symbolize=false font=Menlo size=12\n' "$MENU_TITLE"
 echo "---"
 
 if [[ "$CLAUDE_ENABLED" == "1" ]]; then

@@ -49,7 +49,11 @@ download_install() {
 }
 
 echo "→ Installing unified plugin…"
-download_install "$RAW_BASE/$PLUGIN" "$TARGET"
+if [[ -n "${AI_USAGE_LOCAL_SOURCE:-}" && -f "${AI_USAGE_LOCAL_SOURCE}/$PLUGIN" ]]; then
+  install -m 755 "${AI_USAGE_LOCAL_SOURCE}/$PLUGIN" "$TARGET"
+else
+  download_install "$RAW_BASE/$PLUGIN" "$TARGET"
+fi
 download_install "$CLAUDE_URL" "$SUPPORT_DIR/claude-usage.sh"
 download_install "$CODEX_URL" "$SUPPORT_DIR/codex-usage.sh"
 
