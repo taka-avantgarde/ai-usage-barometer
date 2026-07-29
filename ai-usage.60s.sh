@@ -3,7 +3,7 @@
 # AI Usage Barometer — unified Claude + Codex SwiftBar plugin
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.1.6</xbar.version>
+# <xbar.version>v0.1.7</xbar.version>
 # <xbar.author>Takayuki Miyano / Atlas Associates Inc.</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-service toggles.</xbar.desc>
@@ -16,7 +16,7 @@
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 set -u
 
-VERSION="0.1.6"
+VERSION="0.1.7"
 REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 PLUGIN_DIR="${SWIFTBAR_PLUGINS_PATH:-${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}}"
 SUPPORT_DIR="${AI_USAGE_SUPPORT_DIR:-$PLUGIN_DIR/.ai-usage-barometer}"

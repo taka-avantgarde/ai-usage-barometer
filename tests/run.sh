@@ -97,6 +97,6 @@ FIRST_REGRESSION="$(printf '%s\n' "$OUT_REGRESSION" | head -n 1)"
 [[ "$FIRST_REGRESSION" != *$'\033[38;2;255;112;69m5h █████\033[0m'* ]]
 grep -q '^5h  .*99% left.*color=#B54F02' <<< "$OUT_REGRESSION"
 grep -q '^7d  .*3% left.*color=#FF7045' <<< "$OUT_REGRESSION"
-grep -q '^Version v0.1.6' <<< "$OUT_REGRESSION"
+grep -q '^Version v0.1.7' <<< "$OUT_REGRESSION"
 
 echo "All tests passed."

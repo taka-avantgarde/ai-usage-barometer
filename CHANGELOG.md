@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.7 — 2026-07-29
+
+- Apply the requested three-stage palette directly to the macOS menu-bar header.
+- Evaluate Claude 5h and 7d independently, so 99% left and 3% left cannot share a colour.
+- Install the local SwiftBar plugin before publishing to GitHub, so the visible bar updates immediately.
+- Claude: `#b54f02`, `#B85A00`, `#ff7045`; Codex: `#4F7FA8`, `#0e8ba1`, `#ed5d40`.
+
 ## 0.1.6 — 2026-07-29
 
 - Force Claude 5h and 7d to calculate their colour independently from each window’s own percentage.
