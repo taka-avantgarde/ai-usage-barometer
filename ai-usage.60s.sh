@@ -3,7 +3,7 @@
 # AI Usage Barometer — unified Claude + Codex SwiftBar plugin
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.1.5</xbar.version>
+# <xbar.version>v0.1.6</xbar.version>
 # <xbar.author>Takayuki Miyano / Atlas Associates Inc.</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-service toggles.</xbar.desc>
@@ -16,7 +16,7 @@
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 set -u
 
-VERSION="0.1.5"
+VERSION="0.1.6"
 REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 PLUGIN_DIR="${SWIFTBAR_PLUGINS_PATH:-${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}}"
 SUPPORT_DIR="${AI_USAGE_SUPPORT_DIR:-$PLUGIN_DIR/.ai-usage-barometer}"
@@ -192,10 +192,12 @@ normalise_detail_line() {
 }
 
 window_used_from_output() {
-  # Return the used percentage for one named window (for example 5h or 7d).
-  # Helpers may express the same value as either "% used" or "% left".
-  local output="$1" label="$2"
-  printf '%s\n' "$output" | awk -v label="$label" '
+  # Resolve one window independently. Prefer the exact numeric value from that
+  # window's detail row. If a helper omits the percentage, derive it from that
+  # window's own gauge in the header instead of borrowing another window's state.
+  local output="$1" label="$2" used=""
+
+  used="$(printf '%s\n' "$output" | awk -v label="$label" '
     {
       line=$0
       sub(/[[:space:]]*\|.*/, "", line)
@@ -208,7 +210,6 @@ window_used_from_output() {
         if (pct < 0) pct=0
         if (pct > 100) pct=100
         print int(pct+0.5)
-        found=1
         exit
       }
       if (match(line, /[0-9]+%[[:space:]]+left/)) {
@@ -217,14 +218,45 @@ window_used_from_output() {
         if (pct < 0) pct=0
         if (pct > 100) pct=100
         print int(pct+0.5)
-        found=1
         exit
       }
     }
-    END { if (!found) print 0 }
+  ')"
+
+  if [[ "$used" =~ ^[0-9]+$ ]]; then
+    printf '%s' "$used"
+    return 0
+  fi
+
+  # Gauge fallback. Helpers render the filled part as remaining capacity.
+  printf '%s\n' "$output" | awk -v label="$label" '
+    NR == 1 {
+      line=$0
+      sub(/[[:space:]]*\|.*/, "", line)
+      n=split(line, parts, /[[:space:]][[:space:]]+/)
+      for (i=1; i<=n; i++) {
+        part=parts[i]
+        sub(/^[[:space:]]+/, "", part)
+        sub(/[[:space:]]+$/, "", part)
+        if (part !~ ("^" label "([[:space:]]|$)")) continue
+        gauge=part
+        sub("^" label "[[:space:]]+", "", gauge)
+        full=gsub(/█/, "", gauge)
+        empty=gsub(/░/, "", gauge)
+        total=full+empty
+        if (total > 0) {
+          remaining=(100*full)/total
+          used=100-remaining
+          if (used < 0) used=0
+          if (used > 100) used=100
+          print int(used+0.5)
+          exit
+        }
+      }
+    }
+    END { if (NR == 0) print 0 }
   '
 }
-
 rgb_for_stage() {
   local service="$1" used="$2"
   case "$service" in

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.6 — 2026-07-29
+
+- Force Claude 5h and 7d to calculate their colour independently from each window’s own percentage.
+- Add a per-window gauge fallback when a helper does not include a numeric percentage.
+- Keep the requested palettes exactly: Claude `#b54f02`, `#B85A00`, `#ff7045`; Codex `#4F7FA8`, `#0e8ba1`, `#ed5d40`.
+- Restart SwiftBar during the update so an older cached plugin cannot remain visible.
+
 ## 0.1.5 — 2026-07-29
 
 - Colour each 5h/7d window independently instead of applying one provider-wide colour.

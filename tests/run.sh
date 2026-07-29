@@ -78,4 +78,25 @@ FIRST2="$(printf '%s\n' "$OUT2" | head -n 1)"
 [[ "$FIRST2" != *"│"* ]]
 ! grep -q '^Codex |' <<< "$OUT2"
 
+# Regression: screenshot scenario must never give Claude 5h and 7d the same colour.
+cat > "$TMP/support/claude-usage.sh" <<'HELPER'
+#!/usr/bin/env bash
+echo "Claude 5h █████  7d ░░░░░"
+echo "---"
+echo "5h  ██████████  99% left"
+echo "resets in soon"
+echo "7d  ░░░░░░░░░░  3% left"
+echo "resets in 7h 43m"
+echo "---"
+HELPER
+chmod +x "$TMP/support/claude-usage.sh"
+OUT_REGRESSION="$(run_plugin "$TMP/cache-regression")"
+FIRST_REGRESSION="$(printf '%s\n' "$OUT_REGRESSION" | head -n 1)"
+[[ "$FIRST_REGRESSION" == *$'\033[38;2;181;79;2m5h █████\033[0m'* ]]
+[[ "$FIRST_REGRESSION" == *$'\033[38;2;255;112;69m7d ░░░░░\033[0m'* ]]
+[[ "$FIRST_REGRESSION" != *$'\033[38;2;255;112;69m5h █████\033[0m'* ]]
+grep -q '^5h  .*99% left.*color=#B54F02' <<< "$OUT_REGRESSION"
+grep -q '^7d  .*3% left.*color=#FF7045' <<< "$OUT_REGRESSION"
+grep -q '^Version v0.1.6' <<< "$OUT_REGRESSION"
+
 echo "All tests passed."
