@@ -10,7 +10,7 @@
 
 Dezelfde opdracht werkt met en zonder Homebrew. Zo nodig worden Homebrew, jq, SwiftBar en de gecombineerde plugin geïnstalleerd.
 
-De macOS-menubalk toont één item zonder de namen Claude of Codex. Claude is oranje en Codex blauw.
+De macOS-menubalk toont één item zonder de namen Claude of Codex. Claude is donkeroranje en Codex blauw.
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░

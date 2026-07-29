@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4 — 2026-07-29
+
+- Keep Claude unmistakably orange while reducing only its brightness.
+- Claude now uses dark saturated orange (ANSI 166 / `#B85A00`) instead of brown-leaning amber.
+- Codex remains unchanged at muted steel blue (ANSI 67 / `#4F7FA8`).
+
 ## 0.1.3 — 2026-07-29
 
 - Darken only the Claude segment for a quieter menu-bar appearance.

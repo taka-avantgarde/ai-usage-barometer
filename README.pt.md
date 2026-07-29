@@ -10,7 +10,7 @@
 
 O mesmo comando funciona com ou sem Homebrew. Quando necessário, instala Homebrew, jq, SwiftBar e o plugin unificado.
 
-A barra de menus do macOS mostra apenas um item, sem os nomes Claude ou Codex. Claude aparece em laranja e Codex em azul.
+A barra de menus do macOS mostra apenas um item, sem os nomes Claude ou Codex. Claude aparece em laranja escuro e Codex em azul.
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░

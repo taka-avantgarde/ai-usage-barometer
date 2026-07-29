@@ -10,7 +10,7 @@
 
 Cùng một lệnh hoạt động dù đã có Homebrew hay chưa. Khi cần, lệnh sẽ cài Homebrew, jq, SwiftBar và plugin hợp nhất.
 
-Thanh menu macOS chỉ hiển thị một mục, không hiện tên Claude hoặc Codex. Claude có màu cam, Codex màu xanh dương.
+Thanh menu macOS chỉ hiển thị một mục, không hiện tên Claude hoặc Codex. Claude có màu cam đậm, Codex màu xanh dương.
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░

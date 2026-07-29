@@ -10,7 +10,7 @@
 
 无论是否已安装 Homebrew，都使用同一条命令。需要时会自动安装 Homebrew、jq、SwiftBar 和统一插件。
 
-macOS 菜单栏只显示一个项目，不显示 Claude 或 Codex 名称。Claude 为橙色，Codex 为蓝色。
+macOS 菜单栏只显示一个项目，不显示 Claude 或 Codex 名称。Claude 为深橙色，Codex 为蓝色。
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░

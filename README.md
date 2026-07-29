@@ -10,11 +10,11 @@
 
 The same command works whether Homebrew is already installed or not. It installs Homebrew when necessary, then installs `jq`, SwiftBar, the unified plugin, and its Claude/Codex helpers.
 
-A single SwiftBar item shows both services on one line. **No Claude or Codex name appears in the macOS menu bar.** Claude uses a deeper muted amber and Codex a muted steel blue.
+A single SwiftBar item shows both services on one line. **No Claude or Codex name appears in the macOS menu bar.** Claude uses a dark, saturated orange and Codex a muted steel blue.
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░
-└─ Claude, deep muted amber ┘  └ Codex, muted steel blue ┘
+└─ Claude, dark orange ┘  └ Codex, muted steel blue ┘
 ```
 
 ## Settings

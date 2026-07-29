@@ -10,7 +10,7 @@
 
 Homebrew 설치 여부와 관계없이 같은 명령을 사용합니다. 필요하면 Homebrew, jq, SwiftBar와 통합 플러그인을 자동 설치합니다.
 
-macOS 메뉴 막대에는 Claude나 Codex 이름 없이 하나의 항목만 표시됩니다. Claude는 주황색, Codex는 파란색입니다.
+macOS 메뉴 막대에는 Claude나 Codex 이름 없이 하나의 항목만 표시됩니다. Claude는 짙은 주황색, Codex는 파란색입니다.
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░

@@ -10,7 +10,7 @@
 
 Perintah yang sama berfungsi dengan atau tanpa Homebrew. Bila diperlukan, perintah memasang Homebrew, jq, SwiftBar, dan plugin terpadu.
 
-Bilah menu macOS hanya menampilkan satu item tanpa nama Claude atau Codex. Claude berwarna oranye dan Codex biru.
+Bilah menu macOS hanya menampilkan satu item tanpa nama Claude atau Codex. Claude berwarna oranye gelap dan Codex biru.
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░

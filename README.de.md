@@ -10,7 +10,7 @@
 
 Derselbe Befehl funktioniert mit und ohne Homebrew. Falls nötig, werden Homebrew, jq, SwiftBar und das kombinierte Plugin installiert.
 
-In der macOS-Menüleiste erscheint nur ein Eintrag ohne die Namen Claude oder Codex. Claude ist orange, Codex blau.
+In der macOS-Menüleiste erscheint nur ein Eintrag ohne die Namen Claude oder Codex. Claude ist dunkelorange, Codex blau.
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░

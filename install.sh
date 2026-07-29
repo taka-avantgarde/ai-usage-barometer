@@ -73,7 +73,7 @@ cat <<DONE
 ✅ Installed.
 
 The menu bar shows one combined item:
-• Claude segment: deep muted amber
+• Claude segment: dark, saturated orange
 • Codex segment: muted steel blue
 • Service names are shown only inside the dropdown
 • Settings lets you hide either service
