@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2 — 2026-07-29
+
+- Tone down the macOS menu-bar palette for a calmer appearance.
+- Claude now uses muted amber (ANSI 172 / `#B86F27`).
+- Codex now uses muted steel blue (ANSI 67 / `#4F7FA8`).
+- The separator is slightly dimmer (ANSI 242).
+
 ## 0.1.1 — 2026-07-29
 
 - Force colour rendering in the macOS menu bar with SwiftBar ANSI mode.

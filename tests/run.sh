@@ -14,12 +14,12 @@ FIRST="$(printf '%s\n' "$OUT" | head -n 1)"
 [[ "$FIRST" != *"Codex"* ]]
 [[ "$FIRST" == *"ansi=true"* ]]
 [[ "$FIRST" == *"symbolize=false"* ]]
-[[ "$FIRST" == *$'\033[38;5;208m'* ]]
-[[ "$FIRST" == *$'\033[38;5;39m'* ]]
+[[ "$FIRST" == *$'\033[38;5;172m'* ]]
+[[ "$FIRST" == *$'\033[38;5;67m'* ]]
 [[ "$FIRST" == *"5h"* ]]
 [[ "$FIRST" == *"7d"* ]]
-grep -q '^Claude | color=#D97706' <<< "$OUT"
-grep -q '^Codex | color=#2563EB' <<< "$OUT"
+grep -q '^Claude | color=#B86F27' <<< "$OUT"
+grep -q '^Codex | color=#4F7FA8' <<< "$OUT"
 grep -q '^    13% used · 87% left$' <<< "$OUT"
 grep -q '^    Resets in 2d 8h' <<< "$OUT"
 grep -q '^Settings$\|^設定$' <<< "$OUT" || true

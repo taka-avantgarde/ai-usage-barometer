@@ -3,7 +3,7 @@
 # AI Usage Barometer — unified Claude + Codex SwiftBar plugin
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.1.1</xbar.version>
+# <xbar.version>v0.1.2</xbar.version>
 # <xbar.author>Takayuki Miyano / Atlas Associates Inc.</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-service toggles.</xbar.desc>
@@ -16,7 +16,7 @@
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 set -u
 
-VERSION="0.1.1"
+VERSION="0.1.2"
 REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 PLUGIN_DIR="${SWIFTBAR_PLUGINS_PATH:-${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}}"
 SUPPORT_DIR="${AI_USAGE_SUPPORT_DIR:-$PLUGIN_DIR/.ai-usage-barometer}"
@@ -25,13 +25,13 @@ CODEX_HELPER="${AI_USAGE_CODEX_HELPER:-$SUPPORT_DIR/codex-usage.sh}"
 CACHE_DIR="${AI_USAGE_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/ai-usage-barometer}"
 CONFIG_FILE="$CACHE_DIR/config"
 NOTICE_FILE="$CACHE_DIR/notice"
-CLAUDE_COLOR="${CLAUDE_COLOR:-#D97706}"
-CODEX_COLOR="${CODEX_COLOR:-#2563EB}"
+CLAUDE_COLOR="${CLAUDE_COLOR:-#B86F27}"
+CODEX_COLOR="${CODEX_COLOR:-#4F7FA8}"
 MUTED_COLOR="${MUTED_COLOR:-#808080}"
 SEPARATOR_COLOR="${SEPARATOR_COLOR:-#8E8E93}"
-CLAUDE_ANSI="${CLAUDE_ANSI:-208}"
-CODEX_ANSI="${CODEX_ANSI:-39}"
-SEPARATOR_ANSI="${SEPARATOR_ANSI:-244}"
+CLAUDE_ANSI="${CLAUDE_ANSI:-172}"
+CODEX_ANSI="${CODEX_ANSI:-67}"
+SEPARATOR_ANSI="${SEPARATOR_ANSI:-242}"
 SELF="${SWIFTBAR_PLUGIN_PATH:-$0}"
 
 mkdir -p "$CACHE_DIR" 2>/dev/null || true
