@@ -2,44 +2,61 @@
 
 # 🎚️ AI Usage Barometer
 
-## ⚡ Installation — collez une seule ligne dans Terminal
+## ⚡ Installation — collez cette seule ligne dans Terminal
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-La même commande fonctionne avec ou sans Homebrew. Elle installe Homebrew si nécessaire, puis jq, SwiftBar et le plugin unifié.
+La même commande fonctionne avec ou sans Homebrew. Elle installe au besoin Homebrew, `jq`, SwiftBar, le plugin unifié et les assistants Claude/Codex.
 
-La barre de menus macOS affiche un seul élément, sans les noms Claude ou Codex. Claude est orange foncé et Codex bleu.
+Un seul élément SwiftBar affiche les deux services. **La barre de menus macOS n’affiche pas les noms Claude ou Codex.** Claude utilise des tons orange et Codex des tons bleus.
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░
 ```
 
+## ✅ v0.2.0 : les deux problèmes de récupération sont corrigés
+
+- **Claude après une réinitialisation :** si Claude renvoie `Warming up`, des valeurs nulles, des fenêtres absentes ou un ancien instantané dont l’heure de réinitialisation est passée, le plugin ne reste plus bloqué sur une erreur. Les jauges 5h et 7d reviennent à un état réinitialisé/en attente avec 100 % disponibles, puis sont remplacées par les valeurs en direct au prochain rafraîchissement réussi. Aucune réinstallation n’est nécessaire.
+- **Retour ultérieur de la fenêtre Codex 5h :** les fenêtres Codex sont détectées dynamiquement. Si Codex renvoie de nouveau une fenêtre de 300 minutes, la jauge `5h` apparaît automatiquement au prochain rafraîchissement. Sinon, seule la fenêtre disponible, comme `7d`, est affichée.
+
+Utilisez **Refresh now** pour demander une mise à jour immédiate.
+
 ## 🎨 Trois niveaux de couleur indépendants
 
-Chaque fenêtre `5h` et `7d` est évaluée séparément. Niveau 1 : 0–69 % utilisés ; niveau 2 : 70–89 % ; niveau 3 : 90–100 %.
+Chaque fenêtre 5h ou 7d est évaluée séparément.
 
-| Niveau | Claude | Codex |
-|---|---|---|
-| 1 | `#b54f02` | `#4F7FA8` |
-| 2 | `#B85A00` | `#0e8ba1` |
-| 3 | `#ff7045` | `#ed5d40` |
+| Niveau | Utilisation | Claude | Codex |
+|---|---:|---|---|
+| 1 — normal | 0–69 % | `#b54f02` | `#4F7FA8` |
+| 2 — alerte | 70–89 % | `#B85A00` | `#0e8ba1` |
+| 3 — critique | 90–100 % | `#ff7045` | `#ed5d40` |
 
-L’en-tête de la barre des menus est rendu sous forme d’un petit PDF vectoriel avec les seuls outils intégrés à macOS, et non en texte ANSI 24 bits. SwiftBar conserve ainsi la couleur HEX exacte de chaque fenêtre sans nécessiter les Xcode Command Line Tools.
+L’en-tête est généré sous forme de petit PDF vectoriel avec les outils intégrés à macOS, sans Xcode Command Line Tools.
 
-## Réglages
+## Réglages et détails
 
-Le menu permet d’afficher ou de masquer Claude et Codex séparément. Au moins un service reste visible.
+Le menu affiche les noms des services, l’utilisation, la capacité restante et l’heure de réinitialisation. Dans **Settings**, Claude et Codex peuvent être affichés ou masqués séparément ; au moins un service reste visible. L’intervalle peut être réglé sur 1, 3 ou 5 minutes.
 
-> **Codex 5h:** Codex ne renvoie pas toujours une limite de 5 heures. Si elle n’existe pas ou n’est pas fournie, la jauge 5h de Codex est masquée et seules les fenêtres disponibles, comme 7d, sont affichées. Le plugin n’invente jamais une limite absente.
+> **Codex 5h :** le plugin n’invente jamais une limite absente. Il masque 5h jusqu’à ce qu’une vraie fenêtre de 300 minutes soit renvoyée, puis l’ajoute automatiquement.
 
-The dropdown keeps the service names, percentages, remaining capacity and reset times. Existing standalone Claude/Codex plugins are moved into a hidden support folder to prevent duplicate menu-bar items.
+Les anciens plugins autonomes sont déplacés dans un dossier d’assistance masqué afin d’éviter les doublons sans supprimer les fichiers.
 
-## Privacy
+## Prérequis et confidentialité
 
-Authentication tokens are never printed or copied into the unified plugin cache. The project partly relies on unofficial usage interfaces that providers may change.
+- macOS ; l’installateur gère Homebrew, `jq` et SwiftBar.
+- Claude Code connecté.
+- Codex CLI ou l’application Codex déjà utilisée sur le Mac.
+- Les jetons d’authentification ne sont jamais affichés ni copiés dans le cache.
+- Certaines interfaces d’utilisation ne sont pas officielles et peuvent nécessiter de futures mises à jour.
 
-## License
+## Désinstallation
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/uninstall.sh | bash
+```
+
+## Licence
 
 [MIT](LICENSE) © 2026 Takayuki Miyano · Atlas Associates Inc.

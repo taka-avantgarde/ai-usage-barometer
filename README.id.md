@@ -2,44 +2,61 @@
 
 # 🎚️ AI Usage Barometer
 
-## ⚡ Instalasi — tempel satu baris di Terminal
+## ⚡ Instalasi — tempel satu baris ini di Terminal
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-Perintah yang sama berfungsi dengan atau tanpa Homebrew. Bila diperlukan, perintah memasang Homebrew, jq, SwiftBar, dan plugin terpadu.
+Perintah yang sama bekerja pada Mac dengan atau tanpa Homebrew. Jika diperlukan, perintah akan memasang Homebrew, `jq`, SwiftBar, plugin gabungan, dan helper Claude/Codex.
 
-Bilah menu macOS hanya menampilkan satu item tanpa nama Claude atau Codex. Claude berwarna oranye gelap dan Codex biru.
+Satu item SwiftBar menampilkan kedua layanan. **Bilah menu macOS tidak menampilkan nama Claude atau Codex.** Claude memakai nuansa oranye dan Codex nuansa biru.
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░
 ```
 
+## ✅ v0.2.0: kedua masalah pemulihan telah diperbaiki
+
+- **Claude setelah reset:** jika Claude mengembalikan `Warming up`, nilai nol, jendela null, atau snapshot lama yang waktu resetnya sudah lewat, plugin tidak lagi tersangkut pada kesalahan. Bilah 5h dan 7d dipulihkan sebagai sudah direset/menunggu dengan 100% tersisa, lalu otomatis diganti dengan nilai live pada penyegaran sukses berikutnya. Tidak perlu memasang ulang.
+- **Codex 5h kembali kemudian:** jendela Codex dideteksi secara dinamis. Jika Codex kembali mengirim jendela 300 menit, bilah `5h` otomatis ditambahkan pada penyegaran berikutnya. Jika tidak ada, hanya jendela yang tersedia seperti `7d` yang ditampilkan.
+
+Pilih **Refresh now** untuk meminta pembaruan segera.
+
 ## 🎨 Tiga tingkat warna independen
 
-Jendela `5h` dan `7d` dinilai secara terpisah. Tingkat 1: 0–69% digunakan; tingkat 2: 70–89%; tingkat 3: 90–100%.
+Setiap jendela 5h atau 7d dinilai secara terpisah.
 
-| Tingkat | Claude | Codex |
-|---|---|---|
-| 1 | `#b54f02` | `#4F7FA8` |
-| 2 | `#B85A00` | `#0e8ba1` |
-| 3 | `#ff7045` | `#ed5d40` |
+| Tingkat | Penggunaan | Claude | Codex |
+|---|---:|---|---|
+| 1 — normal | 0–69% | `#b54f02` | `#4F7FA8` |
+| 2 — peringatan | 70–89% | `#B85A00` | `#0e8ba1` |
+| 3 — kritis | 90–100% | `#ff7045` | `#ed5d40` |
 
-Header bilah menu dirender sebagai PDF vektor kecil hanya dengan alat bawaan macOS, bukan teks ANSI 24-bit. Dengan demikian SwiftBar mempertahankan warna HEX yang tepat untuk setiap jendela tanpa memerlukan Xcode Command Line Tools.
+Header dibuat sebagai PDF vektor kecil memakai alat bawaan macOS, tanpa Xcode Command Line Tools.
 
-## Pengaturan
+## Pengaturan dan detail
 
-Dari menu, Claude dan Codex dapat ditampilkan atau disembunyikan secara terpisah. Setidaknya satu layanan tetap terlihat.
+Menu menampilkan nama layanan, penggunaan, kapasitas tersisa, dan waktu reset. Di **Settings**, Claude dan Codex dapat ditampilkan atau disembunyikan secara terpisah; setidaknya satu layanan tetap terlihat. Interval penyegaran dapat dipilih 1, 3, atau 5 menit.
 
-> **Codex 5h:** Codex tidak selalu mengembalikan batas 5 jam. Jika batas itu tidak ada atau tidak dikirim dalam data, bilah 5h Codex disembunyikan dan hanya jendela yang tersedia seperti 7d yang ditampilkan. Plugin tidak menebak batas yang hilang.
+> **Codex 5h:** plugin tidak menebak batas yang hilang. Bilah 5h disembunyikan sampai Codex mengirim jendela 300 menit yang nyata, lalu ditambahkan otomatis.
 
-The dropdown keeps the service names, percentages, remaining capacity and reset times. Existing standalone Claude/Codex plugins are moved into a hidden support folder to prevent duplicate menu-bar items.
+Plugin mandiri yang sudah ada dipindahkan ke folder dukungan tersembunyi agar tidak muncul ganda tanpa menghapus file.
 
-## Privacy
+## Persyaratan dan privasi
 
-Authentication tokens are never printed or copied into the unified plugin cache. The project partly relies on unofficial usage interfaces that providers may change.
+- macOS; installer menangani Homebrew, `jq`, dan SwiftBar.
+- Claude Code sudah masuk.
+- Codex CLI atau aplikasi Codex sudah digunakan di Mac.
+- Token autentikasi tidak pernah dicetak atau disalin ke cache.
+- Sebagian antarmuka data penggunaan tidak resmi dan mungkin memerlukan pembaruan kompatibilitas di masa mendatang.
 
-## License
+## Hapus instalasi
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/uninstall.sh | bash
+```
+
+## Lisensi
 
 [MIT](LICENSE) © 2026 Takayuki Miyano · Atlas Associates Inc.

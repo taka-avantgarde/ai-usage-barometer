@@ -2,44 +2,61 @@
 
 # 🎚️ AI Usage Barometer
 
-## ⚡ Installatie — plak één regel in Terminal
+## ⚡ Installatie — plak deze ene regel in Terminal
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-Dezelfde opdracht werkt met en zonder Homebrew. Zo nodig worden Homebrew, jq, SwiftBar en de gecombineerde plugin geïnstalleerd.
+Dezelfde opdracht werkt op Macs met of zonder Homebrew. Zo nodig worden Homebrew, `jq`, SwiftBar, de gecombineerde plugin en de Claude/Codex-helpers geïnstalleerd.
 
-De macOS-menubalk toont één item zonder de namen Claude of Codex. Claude is donkeroranje en Codex blauw.
+Eén SwiftBar-item toont beide diensten. **In de macOS-menubalk staan de namen Claude en Codex niet.** Claude gebruikt oranjetinten en Codex blauwtinten.
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░
 ```
 
+## ✅ v0.2.0: beide herstelproblemen opgelost
+
+- **Claude na een reset:** wanneer Claude `Warming up`, nulwaarden, lege vensters of een verouderde snapshot met een verstreken resetmoment teruggeeft, blijft de plugin niet langer op een fout hangen. De 5h- en 7d-balken keren terug als gereset/inactief met 100% over en worden bij de volgende succesvolle vernieuwing vervangen door live waarden. Opnieuw installeren is niet nodig.
+- **Codex 5h komt later terug:** Codex-vensters worden dynamisch herkend. Zodra Codex opnieuw een venster van 300 minuten teruggeeft, verschijnt de `5h`-balk automatisch bij de volgende vernieuwing. Zonder dat venster wordt alleen het beschikbare venster, zoals `7d`, getoond.
+
+Kies **Refresh now** voor een onmiddellijke vernieuwing.
+
 ## 🎨 Drie onafhankelijke kleurniveaus
 
-De vensters `5h` en `7d` worden afzonderlijk beoordeeld. Niveau 1: 0–69% gebruikt; niveau 2: 70–89%; niveau 3: 90–100%.
+Elk 5h- en 7d-venster wordt afzonderlijk beoordeeld.
 
-| Niveau | Claude | Codex |
-|---|---|---|
-| 1 | `#b54f02` | `#4F7FA8` |
-| 2 | `#B85A00` | `#0e8ba1` |
-| 3 | `#ff7045` | `#ed5d40` |
+| Niveau | Gebruik | Claude | Codex |
+|---|---:|---|---|
+| 1 — normaal | 0–69% | `#b54f02` | `#4F7FA8` |
+| 2 — waarschuwing | 70–89% | `#B85A00` | `#0e8ba1` |
+| 3 — kritiek | 90–100% | `#ff7045` | `#ed5d40` |
 
-De menubalkop wordt met uitsluitend ingebouwde macOS-tools als een kleine vector-pdf gerenderd, niet als 24-bits ANSI-tekst. Daardoor behoudt SwiftBar de exacte HEX-kleur van elk venster zonder Xcode Command Line Tools.
+De header wordt met ingebouwde macOS-tools als een kleine vector-PDF gemaakt; Xcode Command Line Tools zijn niet nodig.
 
-## Instellingen
+## Instellingen en details
 
-In het menu kun je Claude en Codex afzonderlijk tonen of verbergen. Minstens één dienst blijft zichtbaar.
+Het menu toont dienstnamen, gebruik, resterende capaciteit en resetmoment. In **Settings** kunnen Claude en Codex afzonderlijk worden getoond of verborgen; minimaal één dienst blijft zichtbaar. Het interval is 1, 3 of 5 minuten.
 
-> **Codex 5h:** Codex geeft niet altijd een limiet van 5 uur terug. Als die niet bestaat of niet in de gebruiksgegevens staat, wordt de Codex-5h-balk verborgen en worden alleen beschikbare vensters zoals 7d getoond. De plugin verzint geen ontbrekende limiet.
+> **Codex 5h:** de plugin verzint geen ontbrekende limiet. 5h blijft verborgen tot Codex een echt venster van 300 minuten teruggeeft en wordt daarna automatisch toegevoegd.
 
-The dropdown keeps the service names, percentages, remaining capacity and reset times. Existing standalone Claude/Codex plugins are moved into a hidden support folder to prevent duplicate menu-bar items.
+Bestaande losse plugins worden naar een verborgen ondersteuningsmap verplaatst om dubbele menubalkitems te voorkomen zonder bestanden te verwijderen.
 
-## Privacy
+## Vereisten en privacy
 
-Authentication tokens are never printed or copied into the unified plugin cache. The project partly relies on unofficial usage interfaces that providers may change.
+- macOS; de installer regelt Homebrew, `jq` en SwiftBar.
+- Claude Code is aangemeld.
+- Codex CLI of de Codex-app is op de Mac gebruikt.
+- Authenticatietokens worden nooit afgedrukt of naar de cache gekopieerd.
+- Sommige gebruiksinterfaces zijn onofficieel en kunnen toekomstige updates vereisen.
 
-## License
+## Verwijderen
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/uninstall.sh | bash
+```
+
+## Licentie
 
 [MIT](LICENSE) © 2026 Takayuki Miyano · Atlas Associates Inc.

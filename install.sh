@@ -93,6 +93,8 @@ The menu bar shows one combined item:
 • Exact HEX colours are rendered directly in the macOS menu bar without Xcode tools
 • Service names are shown only inside the dropdown
 • Settings lets you hide either service
+• Claude reset/warming states recover automatically
+• Codex adds the 5h gauge automatically whenever a 300-minute window is returned
 
 If SwiftBar asks for its plugin folder, choose: $PLUGIN_DIR
 DONE

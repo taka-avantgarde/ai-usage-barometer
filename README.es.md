@@ -2,44 +2,61 @@
 
 # 🎚️ AI Usage Barometer
 
-## ⚡ Instalación — pega una sola línea en Terminal
+## ⚡ Instalación — pega esta única línea en Terminal
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-El mismo comando funciona con o sin Homebrew. Instala Homebrew cuando hace falta, además de jq, SwiftBar y el complemento unificado.
+El mismo comando funciona en Mac con o sin Homebrew. Cuando hace falta, instala Homebrew, `jq`, SwiftBar, el complemento unificado y los auxiliares de Claude/Codex.
 
-La barra de macOS muestra un único elemento sin los nombres Claude o Codex. Claude aparece en naranja oscuro y Codex en azul.
+Un solo elemento de SwiftBar muestra ambos servicios. **La barra de menús de macOS no muestra los nombres Claude ni Codex.** Claude usa tonos naranjas y Codex tonos azules.
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░
 ```
 
+## ✅ v0.2.0: corregidos los dos problemas de recuperación
+
+- **Claude después de un reinicio:** si Claude devuelve `Warming up`, valores cero, ventanas nulas o una instantánea antigua cuyo momento de reinicio ya pasó, el complemento ya no queda bloqueado en un error. Restaura 5h y 7d como reiniciados/en espera con 100% disponible y los sustituye por datos en vivo en la siguiente actualización correcta. No hace falta reinstalar.
+- **El límite 5h de Codex vuelve más tarde:** las ventanas de Codex se detectan dinámicamente. Si Codex vuelve a devolver una ventana de 300 minutos, la barra `5h` aparece automáticamente en la siguiente actualización. Si no existe, solo se muestra la ventana disponible, como `7d`.
+
+Usa **Refresh now** en el menú para solicitar una actualización inmediata.
+
 ## 🎨 Tres niveles de color independientes
 
-Cada ventana `5h` y `7d` se evalúa por separado. Nivel 1: 0–69% usado; nivel 2: 70–89%; nivel 3: 90–100%.
+Cada ventana de 5h o 7d se evalúa por separado.
 
-| Nivel | Claude | Codex |
-|---|---|---|
-| 1 | `#b54f02` | `#4F7FA8` |
-| 2 | `#B85A00` | `#0e8ba1` |
-| 3 | `#ff7045` | `#ed5d40` |
+| Nivel | Uso | Claude | Codex |
+|---|---:|---|---|
+| 1 — normal | 0–69% usado | `#b54f02` | `#4F7FA8` |
+| 2 — aviso | 70–89% usado | `#B85A00` | `#0e8ba1` |
+| 3 — crítico | 90–100% usado | `#ff7045` | `#ed5d40` |
 
-El encabezado de la barra de menús se renderiza como un pequeño PDF vectorial usando solo herramientas integradas de macOS, no como texto ANSI de 24 bits. Así se conserva el color HEX exacto de cada ventana sin necesitar Xcode Command Line Tools.
+El encabezado se genera como un pequeño PDF vectorial con herramientas integradas de macOS, sin Xcode Command Line Tools.
 
-## Ajustes
+## Ajustes y detalles
 
-En el menú desplegable puedes mostrar u ocultar Claude o Codex por separado. Al menos uno permanece visible.
+El menú muestra nombres de servicio, uso, capacidad restante y hora de reinicio. En **Settings** puedes mostrar u ocultar Claude y Codex por separado; siempre queda al menos uno visible. El intervalo puede ser de 1, 3 o 5 minutos.
 
-> **Codex 5h:** Codex no siempre devuelve un límite de 5 horas. Si no existe o no aparece en los datos, la barra 5h de Codex se oculta y solo se muestran ventanas disponibles como 7d. El complemento no inventa límites ausentes.
+> **Codex 5h:** el complemento no inventa un límite ausente. Oculta 5h hasta que Codex devuelve una ventana real de 300 minutos y entonces la añade automáticamente.
 
-The dropdown keeps the service names, percentages, remaining capacity and reset times. Existing standalone Claude/Codex plugins are moved into a hidden support folder to prevent duplicate menu-bar items.
+Los complementos independientes existentes se mueven a una carpeta auxiliar oculta para evitar elementos duplicados sin borrar los archivos.
 
-## Privacy
+## Requisitos y privacidad
 
-Authentication tokens are never printed or copied into the unified plugin cache. The project partly relies on unofficial usage interfaces that providers may change.
+- macOS; el instalador gestiona Homebrew, `jq` y SwiftBar.
+- Claude Code con sesión iniciada.
+- Codex CLI o la aplicación Codex usados en el Mac.
+- Los tokens de autenticación nunca se imprimen ni se copian en la caché.
+- Algunas interfaces de uso no son oficiales y pueden requerir futuras actualizaciones.
 
-## License
+## Desinstalar
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/uninstall.sh | bash
+```
+
+## Licencia
 
 [MIT](LICENSE) © 2026 Takayuki Miyano · Atlas Associates Inc.
