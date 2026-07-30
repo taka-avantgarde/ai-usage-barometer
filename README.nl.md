@@ -8,55 +8,41 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-Dezelfde opdracht werkt op Macs met of zonder Homebrew. Zo nodig worden Homebrew, `jq`, SwiftBar, de gecombineerde plugin en de Claude/Codex-helpers geïnstalleerd.
+Dezelfde opdracht werkt met of zonder Homebrew en installeert automatisch de benodigde onderdelen.
 
-Eén SwiftBar-item toont beide diensten. **In de macOS-menubalk staan de namen Claude en Codex niet.** Claude gebruikt oranjetinten en Codex blauwtinten.
+## ✅ v0.2.7: stabiel herstel van de menubalk
 
-```text
-5h ███░░  7d ████░  │  7d ███░░
-```
+v0.2.7 bundelt een geteste Codex-helper in deze repository, verwijdert de `;;&`-syntaxis die niet werkt met de standaard Bash 3.2 van macOS en bouwt de vectorheader met exacte kleuren na elke update opnieuw op.
 
-## ✅ v0.2.0: beide herstelproblemen opgelost
+Claude en Codex worden onafhankelijk beoordeeld: ontbrekende gegevens van de ene dienst verbergen de andere niet meer. Elk 5h-/7d-venster behoudt zijn eigen kleurniveau en bestaande **Settings**-keuzes blijven behouden.
 
-- **Claude na een reset:** wanneer Claude `Warming up`, nulwaarden, lege vensters of een verouderde snapshot met een verstreken resetmoment teruggeeft, blijft de plugin niet langer op een fout hangen. De 5h- en 7d-balken keren terug als gereset/inactief met 100% over en worden bij de volgende succesvolle vernieuwing vervangen door live waarden. Opnieuw installeren is niet nodig.
-- **Codex 5h komt later terug:** Codex-vensters worden dynamisch herkend. Zodra Codex opnieuw een venster van 300 minuten teruggeeft, verschijnt de `5h`-balk automatisch bij de volgende vernieuwing. Zonder dat venster wordt alleen het beschikbare venster, zoals `7d`, getoond.
+## Claude-gegevensbron
 
-Kies **Refresh now** voor een onmiddellijke vernieuwing.
 
-## 🎨 Drie onafhankelijke kleurniveaus
+Claude-gebruik wordt vastgelegd uit de gedocumenteerde `statusLine`-JSON via `rate_limits.five_hour` en `rate_limits.seven_day`. Een bestaande statusregel blijft behouden.
 
-Elk 5h- en 7d-venster wordt afzonderlijk beoordeeld.
+Open na installatie Claude Code en voltooi één antwoord. `rate_limits` verschijnt pas na de eerste API-respons; 5h en 7d kunnen afzonderlijk ontbreken. Alleen echte vensters worden getoond. `Warming up` of ontbrekende data wordt nooit een verzonnen 100%.
+
+OAuth-tokens, macOS Keychain en `~/.claude/.credentials.json` worden niet gelezen.
+
+## Eén menubalkitem
+
+Claude is oranje, Codex blauw en de namen staan niet in de macOS-menubalk. Elk venster krijgt onafhankelijk een kleur.
 
 | Niveau | Gebruik | Claude | Codex |
 |---|---:|---|---|
-| 1 — normaal | 0–69% | `#b54f02` | `#4F7FA8` |
-| 2 — waarschuwing | 70–89% | `#B85A00` | `#0e8ba1` |
-| 3 — kritiek | 90–100% | `#ff7045` | `#ed5d40` |
+| 1 | 0–69% | `#b54f02` | `#4F7FA8` |
+| 2 | 70–89% | `#B85A00` | `#0e8ba1` |
+| 3 | 90–100% | `#ff7045` | `#ed5d40` |
 
-De header wordt met ingebouwde macOS-tools als een kleine vector-PDF gemaakt; Xcode Command Line Tools zijn niet nodig.
+Codex voegt `5h` automatisch toe bij een echt venster van 300 minuten; anders verschijnt alleen `7d`. Via **Settings** verberg je diensten en kies je 1, 3 of 5 minuten.
 
-## Instellingen en details
-
-Het menu toont dienstnamen, gebruik, resterende capaciteit en resetmoment. In **Settings** kunnen Claude en Codex afzonderlijk worden getoond of verborgen; minimaal één dienst blijft zichtbaar. Het interval is 1, 3 of 5 minuten.
-
-> **Codex 5h:** de plugin verzint geen ontbrekende limiet. 5h blijft verborgen tot Codex een echt venster van 300 minuten teruggeeft en wordt daarna automatisch toegevoegd.
-
-Bestaande losse plugins worden naar een verborgen ondersteuningsmap verplaatst om dubbele menubalkitems te voorkomen zonder bestanden te verwijderen.
-
-## Vereisten en privacy
-
-- macOS; de installer regelt Homebrew, `jq` en SwiftBar.
-- Claude Code is aangemeld.
-- Codex CLI of de Codex-app is op de Mac gebruikt.
-- Authenticatietokens worden nooit afgedrukt of naar de cache gekopieerd.
-- Sommige gebruiksinterfaces zijn onofficieel en kunnen toekomstige updates vereisen.
+Verschijnt Claude niet, open Claude Code en voltooi een antwoord. `statusLine` vereist workspace trust en werkt niet met `disableAllHooks: true`.
 
 ## Verwijderen
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/uninstall.sh | bash
 ```
-
-## Licentie
 
 [MIT](LICENSE) © 2026 Takayuki Miyano · Atlas Associates Inc.

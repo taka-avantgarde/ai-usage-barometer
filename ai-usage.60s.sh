@@ -3,7 +3,7 @@
 # AI Usage Barometer — unified Claude + Codex SwiftBar plugin
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.2.0</xbar.version>
+# <xbar.version>v0.2.7</xbar.version>
 # <xbar.author>Takayuki Miyano / Atlas Associates Inc.</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-service toggles.</xbar.desc>
@@ -16,15 +16,13 @@
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 set -u
 
-VERSION="0.2.0"
+VERSION="0.2.7"
 REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 PLUGIN_DIR="${SWIFTBAR_PLUGINS_PATH:-${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}}"
 SUPPORT_DIR="${AI_USAGE_SUPPORT_DIR:-$PLUGIN_DIR/.ai-usage-barometer}"
 CLAUDE_HELPER="${AI_USAGE_CLAUDE_HELPER:-$SUPPORT_DIR/claude-usage.sh}"
 CODEX_HELPER="${AI_USAGE_CODEX_HELPER:-$SUPPORT_DIR/codex-usage.sh}"
-CLAUDE_USAGE_URL="${AI_USAGE_CLAUDE_USAGE_URL:-https://api.anthropic.com/api/oauth/usage}"
 CACHE_DIR="${AI_USAGE_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/ai-usage-barometer}"
-CLAUDE_RECOVERY_CACHE="$CACHE_DIR/claude-recovery.json"
 CONFIG_FILE="$CACHE_DIR/config"
 NOTICE_FILE="$CACHE_DIR/notice"
 MUTED_COLOR="${MUTED_COLOR:-#808080}"
@@ -129,7 +127,7 @@ case "${1:-}" in
   --refresh)
     rm -f "$HOME/.cache/codex-usage-barometer/usage.json" 2>/dev/null || true
     rm -f "$HOME/.cache/claude-usage-barometer.tsv" 2>/dev/null || true
-    rm -f "$CLAUDE_RECOVERY_CACHE" "$CACHE_DIR/header-image.b64" "$CACHE_DIR/header-image.key" 2>/dev/null || true
+    rm -f "$CACHE_DIR/header-image.b64" "$CACHE_DIR/header-image.key" 2>/dev/null || true
     exit 0
     ;;
 esac
@@ -165,236 +163,10 @@ run_helper() {
   "$helper" 2>/dev/null || true
 }
 
-now_epoch() {
-  date +%s
-}
-
-file_mtime() {
-  local path="$1"
-  stat -f %m "$path" 2>/dev/null || stat -c %Y "$path" 2>/dev/null || echo 0
-}
-
-claude_output_has_windows() {
+output_has_windows() {
   local output="$1" first
   first="$(printf '%s\n' "$output" | head -n 1 | sed -E 's/[[:space:]]*\|.*$//')"
   [[ "$first" =~ (^|[[:space:]])[0-9]+(h|d|w|m)[[:space:]]+[█░]+ ]]
-}
-
-claude_output_needs_recovery() {
-  local output="$1"
-  if claude_output_has_windows "$output"; then
-    return 1
-  fi
-  printf '%s\n' "$output" | grep -Eiq 'warming up|usage data is unavailable|not available yet|temporarily unavailable|^[[:space:]]*[!⚠]'
-}
-
-claude_access_token() {
-  local credentials token=""
-  if command -v security >/dev/null 2>&1; then
-    credentials="$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null || true)"
-    if [[ -n "$credentials" ]]; then
-      token="$(printf '%s' "$credentials" | jq -r '.claudeAiOauth.accessToken // .accessToken // .access_token // empty' 2>/dev/null || true)"
-    fi
-  fi
-  if [[ -z "$token" && -r "$HOME/.claude/.credentials.json" ]]; then
-    token="$(jq -r '.claudeAiOauth.accessToken // .accessToken // .access_token // empty' "$HOME/.claude/.credentials.json" 2>/dev/null || true)"
-  fi
-  printf '%s' "$token"
-}
-
-fetch_claude_live_json() {
-  local token tmp status
-  if [[ -n "${AI_USAGE_CLAUDE_USAGE_FIXTURE:-}" ]]; then
-    [[ -r "$AI_USAGE_CLAUDE_USAGE_FIXTURE" ]] || return 1
-    cat "$AI_USAGE_CLAUDE_USAGE_FIXTURE"
-    return 0
-  fi
-
-  token="$(claude_access_token)"
-  [[ -n "$token" ]] || return 2
-
-  tmp="$(mktemp "$CACHE_DIR/claude-live.XXXXXX")" || return 1
-  chmod 600 "$tmp" 2>/dev/null || true
-
-  # Feed the OAuth header through curl's standard-input config. The token is
-  # never placed in the process command line or written to a persistent file.
-  status="$(
-    {
-      printf 'url = "%s"\n' "$CLAUDE_USAGE_URL"
-      printf 'header = "Accept: application/json"\n'
-      printf 'header = "Content-Type: application/json"\n'
-      printf 'header = "Authorization: Bearer %s"\n' "$token"
-      printf 'header = "anthropic-beta: oauth-2025-04-20"\n'
-      printf 'header = "User-Agent: claude-code/2"\n'
-    } | curl -sS --config - -o "$tmp" -w '%{http_code}' \
-      --connect-timeout 5 --max-time 12 2>/dev/null || printf '000'
-  )"
-  if [[ "$status" == "200" ]] && jq -e 'type == "object"' "$tmp" >/dev/null 2>&1; then
-    cat "$tmp"
-    rm -f "$tmp"
-    return 0
-  fi
-  rm -f "$tmp"
-  return 1
-}
-normalise_claude_json() {
-  local source="$1" fetched_at
-  fetched_at="$(now_epoch)"
-  jq -c --arg source "$source" --argjson fetched_at "$fetched_at" '
-    def number_or_null:
-      if . == null then null
-      elif type == "number" then .
-      elif type == "string" then (tonumber? // null)
-      else null end;
-    def window($name):
-      if has($name) then
-        if .[$name] == null then null else {
-          used_percent: ((.[$name].utilization // .[$name].used_percent // 0) | number_or_null),
-          resets_at: (.[$name].resets_at // .[$name].reset_at // null)
-        } end
-      else null end;
-    select(type == "object" and (has("five_hour") or has("seven_day"))) |
-    {
-      schema_version: 1,
-      source: $source,
-      fetched_at: $fetched_at,
-      five_hour_present: has("five_hour"),
-      seven_day_present: has("seven_day"),
-      five_hour: window("five_hour"),
-      seven_day: window("seven_day")
-    }
-  ' 2>/dev/null
-}
-
-save_claude_recovery_cache() {
-  local json="$1" tmp
-  tmp="$(mktemp "$CACHE_DIR/claude-recovery.XXXXXX")" || return 1
-  printf '%s\n' "$json" > "$tmp"
-  chmod 600 "$tmp" 2>/dev/null || true
-  mv "$tmp" "$CLAUDE_RECOVERY_CACHE"
-}
-
-iso_to_epoch() {
-  local value="${1:-}" clean
-  [[ -n "$value" && "$value" != "null" ]] || { printf '0'; return; }
-  clean="$(printf '%s' "$value" | sed -E 's/\.[0-9]+//; s/Z$/+0000/; s/([+-][0-9][0-9]):([0-9][0-9])$/\1\2/')"
-  date -j -f '%Y-%m-%dT%H:%M:%S%z' "$clean" '+%s' 2>/dev/null || \
-    date -d "$value" '+%s' 2>/dev/null || printf '0'
-}
-
-clamp_usage_percent() {
-  awk -v n="${1:-0}" 'BEGIN { if (n < 0) n=0; if (n > 100) n=100; printf "%d", n+0.5 }'
-}
-
-repeat_gauge_char() {
-  local char="$1" count="$2" out="" i=0
-  while (( i < count )); do out+="$char"; i=$((i + 1)); done
-  printf '%s' "$out"
-}
-
-remaining_gauge() {
-  local used width remaining spent
-  used="$(clamp_usage_percent "$1")"
-  width="$2"
-  remaining=$(( ((100 - used) * width + 50) / 100 ))
-  spent=$((width - remaining))
-  printf '%s%s' "$(repeat_gauge_char '█' "$remaining")" "$(repeat_gauge_char '░' "$spent")"
-}
-
-format_recovery_reset() {
-  local reset_epoch="${1:-0}" used="${2:-0}" now delta d h m
-  now="$(now_epoch)"
-  if [[ ! "$reset_epoch" =~ ^[0-9]+$ ]] || (( reset_epoch <= 0 )); then
-    if (( used == 0 )); then
-      printf 'reset complete · starts on next use'
-    else
-      printf 'reset time unavailable'
-    fi
-    return
-  fi
-  if (( reset_epoch <= now )); then
-    printf 'reset complete · starts on next use'
-    return
-  fi
-  delta=$((reset_epoch - now))
-  d=$((delta / 86400))
-  h=$(((delta % 86400) / 3600))
-  m=$(((delta % 3600) / 60))
-  if (( d > 0 )); then printf 'resets in %dd %dh' "$d" "$h"
-  elif (( h > 0 )); then printf 'resets in %dh %dm' "$h" "$m"
-  else printf 'resets in %dm' "$m"; fi
-}
-
-render_claude_recovery_output() {
-  local json="$1" stale="${2:-0}" now
-  local five_present seven_present five_used seven_used five_reset_iso seven_reset_iso
-  local five_reset seven_reset five_label seven_label title="" details="" source_line
-  now="$(now_epoch)"
-  five_present="$(jq -r '.five_hour_present // false' <<< "$json")"
-  seven_present="$(jq -r '.seven_day_present // false' <<< "$json")"
-  five_used="$(jq -r 'if .five_hour == null then 0 else (.five_hour.used_percent // 0) end' <<< "$json")"
-  seven_used="$(jq -r 'if .seven_day == null then 0 else (.seven_day.used_percent // 0) end' <<< "$json")"
-  five_reset_iso="$(jq -r 'if .five_hour == null then empty else (.five_hour.resets_at // empty) end' <<< "$json")"
-  seven_reset_iso="$(jq -r 'if .seven_day == null then empty else (.seven_day.resets_at // empty) end' <<< "$json")"
-  five_reset="$(iso_to_epoch "$five_reset_iso")"
-  seven_reset="$(iso_to_epoch "$seven_reset_iso")"
-
-  five_used="$(clamp_usage_percent "$five_used")"
-  seven_used="$(clamp_usage_percent "$seven_used")"
-  if [[ "$five_reset" =~ ^[0-9]+$ ]] && (( five_reset > 0 && five_reset <= now )); then five_used=0; fi
-  if [[ "$seven_reset" =~ ^[0-9]+$ ]] && (( seven_reset > 0 && seven_reset <= now )); then seven_used=0; fi
-
-  if [[ "$five_present" == "true" ]]; then
-    title="5h $(remaining_gauge "$five_used" 5)"
-    details="5h  $(remaining_gauge "$five_used" 10)  $((100-five_used))% left\n    $(format_recovery_reset "$five_reset" "$five_used")"
-  fi
-  if [[ "$seven_present" == "true" ]]; then
-    seven_label="7d $(remaining_gauge "$seven_used" 5)"
-    [[ -n "$title" ]] && title+="  "
-    title+="$seven_label"
-    [[ -n "$details" ]] && details+="\n"
-    details+="7d  $(remaining_gauge "$seven_used" 10)  $((100-seven_used))% left\n    $(format_recovery_reset "$seven_reset" "$seven_used")"
-  fi
-  [[ -n "$title" ]] || return 1
-
-  if [[ "$stale" == "1" ]]; then
-    source_line="    cached reading · live refresh temporarily unavailable"
-  else
-    source_line="    live account usage"
-  fi
-  printf 'Claude %s\n---\n%b\n%s\n---\n' "$title" "$details" "$source_line"
-}
-
-recover_claude_output() {
-  local original="${1:-}" raw normalised="" cached="" idle=""
-  raw="$(fetch_claude_live_json 2>/dev/null || true)"
-  if [[ -n "$raw" ]]; then
-    normalised="$(printf '%s' "$raw" | normalise_claude_json live)"
-    if [[ -n "$normalised" ]]; then
-      save_claude_recovery_cache "$normalised" 2>/dev/null || true
-      render_claude_recovery_output "$normalised" 0
-      return 0
-    fi
-  fi
-  if [[ -s "$CLAUDE_RECOVERY_CACHE" ]]; then
-    cached="$(cat "$CLAUDE_RECOVERY_CACHE" 2>/dev/null || true)"
-    if [[ -n "$cached" ]]; then
-      render_claude_recovery_output "$cached" 1
-      return 0
-    fi
-  fi
-
-  # The standalone Claude helper uses "Warming up" when both windows are
-  # inactive immediately after a reset. Treat that as an idle/reset state
-  # rather than leaving a permanent warning in the menu bar.
-  if printf '%s
-' "$original" | grep -Eiq 'warming up'; then
-    idle="$(jq -cn --argjson now "$(now_epoch)" '{schema_version:1,source:"helper-idle",fetched_at:$now,five_hour_present:true,seven_day_present:true,five_hour:null,seven_day:null}')"
-    save_claude_recovery_cache "$idle" 2>/dev/null || true
-    render_claude_recovery_output "$idle" 0
-    return 0
-  fi
-  return 1
 }
 
 header_from_output() {
@@ -698,7 +470,7 @@ render_header_image() {
     return 0
   fi
 
-  key="$( { cat "$spec"; printf '%s\n' 'pdf-vector-renderer-v2'; } | shasum -a 256 2>/dev/null | awk '{print $1}')"
+  key="$( { cat "$spec"; printf '%s\n' 'pdf-vector-renderer-v3-ui-recovery'; } | shasum -a 256 2>/dev/null | awk '{print $1}')"
   if [[ -n "$key" && -s "$CACHE_DIR/header-image.b64" && -r "$CACHE_DIR/header-image.key" && "$(cat "$CACHE_DIR/header-image.key" 2>/dev/null)" == "$key" ]]; then
     cat "$CACHE_DIR/header-image.b64"
     return 0
@@ -772,27 +544,25 @@ CODEX_HEADER=""
 
 if [[ "$CLAUDE_ENABLED" == "1" ]]; then
   CLAUDE_OUTPUT="$(run_helper "$CLAUDE_HELPER")"
-  if ! claude_output_has_windows "$CLAUDE_OUTPUT"; then
-    CLAUDE_RECOVERED="$(recover_claude_output "$CLAUDE_OUTPUT" 2>/dev/null || true)"
-    if [[ -n "$CLAUDE_RECOVERED" ]]; then
-      CLAUDE_OUTPUT="$CLAUDE_RECOVERED"
-    fi
+  if output_has_windows "$CLAUDE_OUTPUT"; then
+    CLAUDE_HEADER="$(header_from_output claude "$CLAUDE_OUTPUT")"
   fi
-  CLAUDE_HEADER="$(header_from_output claude "$CLAUDE_OUTPUT")"
 fi
 if [[ "$CODEX_ENABLED" == "1" ]]; then
   CODEX_OUTPUT="$(run_helper "$CODEX_HELPER")"
-  CODEX_HEADER="$(header_from_output codex "$CODEX_OUTPUT")"
+  if output_has_windows "$CODEX_OUTPUT"; then
+    CODEX_HEADER="$(header_from_output codex "$CODEX_OUTPUT")"
+  fi
 fi
 
 HEADER_SPEC="$CACHE_DIR/header-segments.tsv.tmp.$$"
 : > "$HEADER_SPEC"
 PLAIN_TITLE=""
-if [[ "$CLAUDE_ENABLED" == "1" ]]; then
+if [[ "$CLAUDE_ENABLED" == "1" && -n "$CLAUDE_HEADER" ]]; then
   append_header_windows claude "$CLAUDE_HEADER" "$CLAUDE_OUTPUT" "$HEADER_SPEC"
   PLAIN_TITLE="$CLAUDE_HEADER"
 fi
-if [[ "$CODEX_ENABLED" == "1" ]]; then
+if [[ "$CODEX_ENABLED" == "1" && -n "$CODEX_HEADER" ]]; then
   if [[ -s "$HEADER_SPEC" ]]; then
     printf '%s\t  │  \n' "$SEPARATOR_COLOR" >> "$HEADER_SPEC"
   fi
@@ -801,12 +571,16 @@ if [[ "$CODEX_ENABLED" == "1" ]]; then
   PLAIN_TITLE+="$CODEX_HEADER"
 fi
 
-HEADER_IMAGE="$(render_header_image "$HEADER_SPEC" 2>/dev/null || true)"
+HEADER_IMAGE=""
+if [[ -s "$HEADER_SPEC" ]]; then
+  HEADER_IMAGE="$(render_header_image "$HEADER_SPEC" 2>/dev/null || true)"
+fi
 rm -f "$HEADER_SPEC" 2>/dev/null || true
 if [[ -n "$HEADER_IMAGE" ]]; then
   printf ' | image=%s dropdown=false\n' "$HEADER_IMAGE"
 else
   # Safe fallback: never emit unsupported true-colour ANSI sequences.
+  [[ -n "$PLAIN_TITLE" ]] || PLAIN_TITLE="…"
   printf '%s | font=Menlo size=12\n' "$PLAIN_TITLE"
 fi
 echo "---"

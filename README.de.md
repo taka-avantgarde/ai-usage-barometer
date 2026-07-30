@@ -2,61 +2,47 @@
 
 # 🎚️ AI Usage Barometer
 
-## ⚡ Installation — diese eine Zeile in Terminal einfügen
+## ⚡ Installation — diese eine Zeile ins Terminal einfügen
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-Derselbe Befehl funktioniert mit und ohne Homebrew. Bei Bedarf installiert er Homebrew, `jq`, SwiftBar, das kombinierte Plugin und die Claude/Codex-Helfer.
+Derselbe Befehl funktioniert mit und ohne Homebrew und installiert die Abhängigkeiten automatisch.
 
-Ein SwiftBar-Eintrag zeigt beide Dienste. **In der macOS-Menüleiste erscheinen die Namen Claude und Codex nicht.** Claude verwendet Orangetöne, Codex Blautöne.
+## ✅ v0.2.7: stabile Wiederherstellung der Menüleiste
 
-```text
-5h ███░░  7d ████░  │  7d ███░░
-```
+v0.2.7 enthält eine getestete Codex-Hilfsdatei direkt in diesem Repository, entfernt die mit macOS-Bash 3.2 inkompatible Syntax `;;&` und baut den Vektor-Header mit exakten Farben nach jedem Update neu auf.
 
-## ✅ v0.2.0: Beide Wiederherstellungsprobleme sind behoben
+Claude und Codex werden unabhängig ausgewertet: Fehlende Daten eines Anbieters blenden den anderen nicht mehr aus. Jedes 5h-/7d-Fenster behält seine eigene Farbstufe, und vorhandene **Settings**-Auswahlen bleiben erhalten.
 
-- **Claude nach einem Reset:** Gibt Claude `Warming up`, Nullwerte, fehlende Zeitfenster oder einen veralteten Snapshot mit bereits vergangener Reset-Zeit zurück, bleibt das Plugin nicht mehr in einer Fehlermeldung hängen. 5h und 7d werden als zurückgesetzt/inaktiv mit 100 % Restkapazität wiederhergestellt und beim nächsten erfolgreichen Abruf durch Live-Werte ersetzt. Eine Neuinstallation ist nicht nötig.
-- **Codex-5h kehrt später zurück:** Codex-Zeitfenster werden dynamisch erkannt. Sobald Codex wieder ein 300-Minuten-Fenster liefert, erscheint die `5h`-Anzeige beim nächsten Aktualisieren automatisch. Fehlt es, wird nur das verfügbare Fenster wie `7d` angezeigt.
+## Claude-Datenquelle
 
-Mit **Refresh now** kann jederzeit sofort aktualisiert werden.
 
-## 🎨 Drei unabhängige Farbstufen
+Claude-Nutzung wird aus dem dokumentierten `statusLine`-JSON über `rate_limits.five_hour` und `rate_limits.seven_day` erfasst. Eine vorhandene Statuszeile bleibt erhalten.
 
-Jedes 5h- und 7d-Fenster wird getrennt bewertet.
+Nach der Installation Claude Code öffnen und eine Antwort abschließen. `rate_limits` erscheint erst nach der ersten API-Antwort; 5h und 7d können unabhängig fehlen. Es werden nur echte Fenster angezeigt. `Warming up` oder fehlende Daten werden niemals als erfundene 100 % dargestellt.
+
+OAuth-Token, macOS-Schlüsselbund und `~/.claude/.credentials.json` werden nicht gelesen.
+
+## Ein Menüleisteneintrag
+
+Claude ist orange, Codex blau; die Namen erscheinen nicht in der macOS-Menüleiste. Jedes Fenster wird separat eingefärbt.
 
 | Stufe | Nutzung | Claude | Codex |
 |---|---:|---|---|
-| 1 — normal | 0–69 % | `#b54f02` | `#4F7FA8` |
-| 2 — Warnung | 70–89 % | `#B85A00` | `#0e8ba1` |
-| 3 — kritisch | 90–100 % | `#ff7045` | `#ed5d40` |
+| 1 | 0–69 % | `#b54f02` | `#4F7FA8` |
+| 2 | 70–89 % | `#B85A00` | `#0e8ba1` |
+| 3 | 90–100 % | `#ff7045` | `#ed5d40` |
 
-Der Header wird mit integrierten macOS-Werkzeugen als kleines Vektor-PDF erzeugt; Xcode Command Line Tools sind nicht erforderlich.
+Codex fügt `5h` automatisch hinzu, sobald ein echtes 300-Minuten-Fenster zurückgegeben wird; andernfalls erscheint nur `7d`. Unter **Settings** lassen sich Dienste ausblenden und 1, 3 oder 5 Minuten wählen.
 
-## Einstellungen und Details
-
-Das Menü zeigt Dienstnamen, Nutzung, Restkapazität und Reset-Zeit. Unter **Settings** lassen sich Claude und Codex getrennt ein- oder ausblenden; mindestens ein Dienst bleibt sichtbar. Das Aktualisierungsintervall ist 1, 3 oder 5 Minuten.
-
-> **Codex 5h:** Das Plugin erfindet kein fehlendes Limit. Die 5h-Anzeige bleibt ausgeblendet, bis Codex ein echtes 300-Minuten-Fenster liefert, und wird dann automatisch hinzugefügt.
-
-Vorhandene Einzel-Plugins werden in einen versteckten Support-Ordner verschoben, damit keine doppelten Einträge entstehen und die Dateien erhalten bleiben.
-
-## Voraussetzungen und Datenschutz
-
-- macOS; Homebrew, `jq` und SwiftBar werden vom Installer verwaltet.
-- Claude Code ist angemeldet.
-- Codex CLI oder die Codex-App wurde auf dem Mac verwendet.
-- Authentifizierungstoken werden nie ausgegeben oder in den Cache kopiert.
-- Einige Nutzungsschnittstellen sind inoffiziell und können spätere Anpassungen erfordern.
+Falls Claude fehlt, Claude Code öffnen und eine Antwort abschließen. `statusLine` benötigt Workspace-Vertrauen und läuft nicht mit `disableAllHooks: true`.
 
 ## Deinstallation
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/uninstall.sh | bash
 ```
-
-## Lizenz
 
 [MIT](LICENSE) © 2026 Takayuki Miyano · Atlas Associates Inc.

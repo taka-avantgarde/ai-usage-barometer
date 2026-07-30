@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.2.7 — 2026-07-30
+
+- Restore the stable unified menu-bar UI after the Claude status-line experiments.
+- Bundle a tested Codex helper in this repository instead of downloading a moving external copy.
+- Remove the Bash 4-only `;;&` branch syntax so the helper works with macOS system Bash 3.2.
+- Rebuild the exact-colour vector header after every upgrade to prevent stale or corrupted colours.
+- Keep Claude and Codex independent: unavailable data from one provider no longer hides the other provider.
+- Preserve independent colour stages for every 5h/7d window.
+- Update all 14 READMEs, installer tests, and release notes.
+
+## 0.2.1 — 2026-07-29
+
+- Replace the undocumented Claude OAuth usage request and the v0.2.0 `Warming up` guess with Claude Code’s documented `statusLine.rate_limits` payload.
+- Capture `five_hour` and `seven_day` independently after Claude Code’s first API response in a session.
+- Preserve and chain any existing Claude Code status line, and restore it during uninstall.
+- Stop reading Claude OAuth tokens, macOS Keychain entries, and `~/.claude/.credentials.json`.
+- Keep the last valid official snapshot when a pre-response status-line event has no `rate_limits` field.
+- Roll a captured window to 0% used locally after its documented reset time passes.
+- Keep Codex’s 300-minute window detection dynamic so the 5h bar appears automatically when returned.
+- Update all 14 READMEs and add migration, privacy, installer, and restoration tests.
+
 ## 0.2.0 — 2026-07-29
 
 - Recover automatically when the Claude helper reports `Warming up` after a quota reset.
@@ -8,8 +29,6 @@
 - Roll stale pre-reset Claude snapshots to 0% used once their reset timestamp has passed.
 - Keep Codex windows fully dynamic: a returned 300-minute window automatically adds the 5h gauge on the next refresh.
 - Add regression tests for Claude reset/zero/null states and Codex weekly-only → 5h+7d transitions.
-- Update all 14 README translations with the reset-recovery behaviour, dynamic Codex 5h detection, one-line installation, colour stages, settings, and privacy notes.
-- Add documentation regression checks so every supported README retains both v0.2.0 fixes and the one-line installer.
 
 ## 0.1.9 — 2026-07-29
 

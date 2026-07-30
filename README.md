@@ -8,25 +8,33 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-The same command works on Macs with or without Homebrew. When needed, it installs Homebrew, `jq`, SwiftBar, the unified plugin, and the Claude/Codex helper scripts.
+The same command works on Macs with or without Homebrew. It installs Homebrew when needed, plus `jq`, SwiftBar, the unified plugin, and its local helpers.
 
-One SwiftBar item shows both services on a single line. **The macOS menu bar does not show the names Claude or Codex.** Claude uses orange tones and Codex uses blue tones.
+## ✅ v0.2.7: stable menu-bar recovery
+
+v0.2.7 bundles the tested Codex helper in this repository, removes the Bash 4-only `;;&` syntax that fails on macOS system Bash 3.2, and rebuilds the exact-colour vector header after every upgrade.
+
+Claude and Codex are evaluated independently: missing data from one provider no longer hides the other. Every 5h/7d window keeps its own colour stage, and existing **Settings** choices are preserved.
+
+## Claude data source
+
+
+Claude usage is captured from Claude Code's documented `statusLine` JSON, specifically `rate_limits.five_hour` and `rate_limits.seven_day`. The installer adds a small local wrapper and preserves any status line you already use.
+
+After installing, open Claude Code and send one message. Claude Code provides `rate_limits` only after the first API response in a session, and either window may be independently absent. The menu bar therefore shows only real windows returned by Claude Code; it never converts `Warming up` or missing data into a made-up 100% value.
+
+The Claude integration does **not** read an OAuth token, macOS Keychain item, or `~/.claude/.credentials.json`.
+
+## One menu-bar item
+
+The macOS menu bar does not show the service names. Claude uses orange tones and Codex uses blue tones.
 
 ```text
 5h ███░░  7d ████░  │  7d ███░░
 └──── Claude ────┘     └─ Codex ─┘
 ```
 
-## ✅ v0.2.0: the two recovery issues are fixed
-
-- **Claude after a reset:** when Claude returns `Warming up`, zero values, null windows, or a stale pre-reset snapshot whose reset time has passed, the plugin no longer remains stuck on an error. It restores the Claude 5h and 7d gauges as reset/idle at 100% left, then replaces them with live values on the next successful refresh. No reinstall is required.
-- **Codex 5h returning later:** Codex windows are detected dynamically. If Codex starts returning a 300-minute window again, the `5h` gauge is added automatically on the next refresh. If the 300-minute window is absent, only the available window such as `7d` is shown.
-
-Use **Refresh now** in the dropdown whenever you want to request an immediate update.
-
-## 🎨 Three independent colour stages
-
-Every 5h or 7d window is evaluated independently. A healthy Claude 5h window and a nearly exhausted Claude 7d window can therefore use different colours at the same time.
+Every window is coloured independently:
 
 | Stage | Usage | Claude | Codex |
 |---|---:|---|---|
@@ -34,23 +42,17 @@ Every 5h or 7d window is evaluated independently. A healthy Claude 5h window and
 | 2 — warning | 70–89% used | `#B85A00` | `#0e8ba1` |
 | 3 — critical | 90–100% used | `#ff7045` | `#ed5d40` |
 
-The header is rendered as a tiny vector PDF using built-in macOS tools, so SwiftBar can preserve the exact HEX colour for each window without Xcode Command Line Tools.
+## Dynamic windows and settings
 
-## Settings and details
+Codex windows remain dynamic. If Codex returns a real 300-minute window, the `5h` bar appears automatically; when it returns only the weekly window, only `7d` is shown.
 
-The dropdown keeps the service names, usage, remaining capacity, and reset times. Under **Settings**, Claude and Codex can be shown or hidden independently; at least one service always remains visible. The refresh interval can be set to 1, 3, or 5 minutes.
+The dropdown shows service names, used percentage, remaining capacity, reset time, and the source timestamp. Under **Settings**, Claude and Codex can be hidden independently, and the refresh interval can be set to 1, 3, or 5 minutes.
 
-> **Codex 5h:** Codex does not always provide a 5-hour window. The plugin never invents a missing limit. It hides the Codex 5h gauge until a real 300-minute window is returned, then adds it automatically.
+## Claude troubleshooting
 
-Existing standalone `claude-usage.60s.sh` and `codex-usage.60s.sh` plugins are moved to a hidden support folder to prevent duplicate menu-bar items while preserving the files.
+If the Claude bars have not appeared, open Claude Code and complete one response. Custom status lines require workspace trust, and Claude Code does not run them while `disableAllHooks` is `true`. Existing status-line output is chained through the wrapper and restored by the uninstaller.
 
-## Requirements and privacy
-
-- macOS; the installer handles Homebrew, `jq`, and SwiftBar.
-- Claude Code signed in for Claude usage.
-- Codex CLI or the Codex app used on the Mac for Codex usage data.
-- Authentication tokens are never printed or copied into the unified plugin cache.
-- Some usage interfaces are unofficial and may require future compatibility updates.
+Official field reference: [Claude Code status line documentation](https://code.claude.com/docs/en/statusline#rate-limit-usage).
 
 ## Uninstall
 

@@ -8,55 +8,41 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-Perintah yang sama bekerja pada Mac dengan atau tanpa Homebrew. Jika diperlukan, perintah akan memasang Homebrew, `jq`, SwiftBar, plugin gabungan, dan helper Claude/Codex.
+Perintah yang sama bekerja dengan atau tanpa Homebrew dan memasang komponen yang diperlukan secara otomatis.
 
-Satu item SwiftBar menampilkan kedua layanan. **Bilah menu macOS tidak menampilkan nama Claude atau Codex.** Claude memakai nuansa oranye dan Codex nuansa biru.
+## ✅ v0.2.7: pemulihan menu bar yang stabil
 
-```text
-5h ███░░  7d ████░  │  7d ███░░
-```
+v0.2.7 menyertakan helper Codex yang telah diuji langsung di repositori ini, menghapus sintaks `;;&` yang tidak kompatibel dengan Bash 3.2 bawaan macOS, dan membuat ulang header vektor berwarna tepat setelah setiap pembaruan.
 
-## ✅ v0.2.0: kedua masalah pemulihan telah diperbaiki
+Claude dan Codex dinilai secara terpisah: data yang tidak tersedia dari satu layanan tidak lagi menyembunyikan layanan lainnya. Setiap jendela 5h/7d memiliki tahap warna sendiri dan pilihan **Settings** yang sudah ada tetap dipertahankan.
 
-- **Claude setelah reset:** jika Claude mengembalikan `Warming up`, nilai nol, jendela null, atau snapshot lama yang waktu resetnya sudah lewat, plugin tidak lagi tersangkut pada kesalahan. Bilah 5h dan 7d dipulihkan sebagai sudah direset/menunggu dengan 100% tersisa, lalu otomatis diganti dengan nilai live pada penyegaran sukses berikutnya. Tidak perlu memasang ulang.
-- **Codex 5h kembali kemudian:** jendela Codex dideteksi secara dinamis. Jika Codex kembali mengirim jendela 300 menit, bilah `5h` otomatis ditambahkan pada penyegaran berikutnya. Jika tidak ada, hanya jendela yang tersedia seperti `7d` yang ditampilkan.
+## Sumber data Claude
 
-Pilih **Refresh now** untuk meminta pembaruan segera.
 
-## 🎨 Tiga tingkat warna independen
+Penggunaan Claude ditangkap dari JSON `statusLine` yang terdokumentasi melalui `rate_limits.five_hour` dan `rate_limits.seven_day`. Status line yang sudah ada tetap dipertahankan.
 
-Setiap jendela 5h atau 7d dinilai secara terpisah.
+Setelah memasang, buka Claude Code dan selesaikan satu respons. `rate_limits` baru muncul setelah respons API pertama dan setiap jendela dapat tidak tersedia secara terpisah. Hanya jendela nyata yang ditampilkan; `Warming up` atau data yang hilang tidak pernah diubah menjadi 100% palsu.
 
-| Tingkat | Penggunaan | Claude | Codex |
+Token OAuth, macOS Keychain, dan `~/.claude/.credentials.json` tidak dibaca.
+
+## Satu item menu bar
+
+Claude berwarna oranye, Codex biru, tanpa nama layanan di menu bar macOS. Setiap jendela diberi warna secara independen.
+
+| Tahap | Penggunaan | Claude | Codex |
 |---|---:|---|---|
-| 1 — normal | 0–69% | `#b54f02` | `#4F7FA8` |
-| 2 — peringatan | 70–89% | `#B85A00` | `#0e8ba1` |
-| 3 — kritis | 90–100% | `#ff7045` | `#ed5d40` |
+| 1 | 0–69% | `#b54f02` | `#4F7FA8` |
+| 2 | 70–89% | `#B85A00` | `#0e8ba1` |
+| 3 | 90–100% | `#ff7045` | `#ed5d40` |
 
-Header dibuat sebagai PDF vektor kecil memakai alat bawaan macOS, tanpa Xcode Command Line Tools.
+Codex otomatis menambahkan `5h` saat mengembalikan jendela nyata 300 menit; bila hanya jendela mingguan, hanya `7d` yang tampil. **Settings** memungkinkan menyembunyikan layanan dan memilih 1, 3, atau 5 menit.
 
-## Pengaturan dan detail
-
-Menu menampilkan nama layanan, penggunaan, kapasitas tersisa, dan waktu reset. Di **Settings**, Claude dan Codex dapat ditampilkan atau disembunyikan secara terpisah; setidaknya satu layanan tetap terlihat. Interval penyegaran dapat dipilih 1, 3, atau 5 menit.
-
-> **Codex 5h:** plugin tidak menebak batas yang hilang. Bilah 5h disembunyikan sampai Codex mengirim jendela 300 menit yang nyata, lalu ditambahkan otomatis.
-
-Plugin mandiri yang sudah ada dipindahkan ke folder dukungan tersembunyi agar tidak muncul ganda tanpa menghapus file.
-
-## Persyaratan dan privasi
-
-- macOS; installer menangani Homebrew, `jq`, dan SwiftBar.
-- Claude Code sudah masuk.
-- Codex CLI atau aplikasi Codex sudah digunakan di Mac.
-- Token autentikasi tidak pernah dicetak atau disalin ke cache.
-- Sebagian antarmuka data penggunaan tidak resmi dan mungkin memerlukan pembaruan kompatibilitas di masa mendatang.
+Jika Claude belum muncul, buka Claude Code dan selesaikan satu respons. `statusLine` memerlukan workspace trust dan tidak berjalan saat `disableAllHooks: true`.
 
 ## Hapus instalasi
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/uninstall.sh | bash
 ```
-
-## Lisensi
 
 [MIT](LICENSE) © 2026 Takayuki Miyano · Atlas Associates Inc.

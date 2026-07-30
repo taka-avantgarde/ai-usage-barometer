@@ -3,6 +3,7 @@
 # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 set -euo pipefail
 
+VERSION="0.2.7"
 REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 BRANCH="${AI_USAGE_BRANCH:-main}"
 PLUGIN_DIR="${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}"
@@ -10,35 +11,42 @@ SUPPORT_DIR="$PLUGIN_DIR/.ai-usage-barometer"
 PLUGIN="ai-usage.60s.sh"
 TARGET="$PLUGIN_DIR/$PLUGIN"
 RAW_BASE="https://raw.githubusercontent.com/$REPO/$BRANCH"
-CLAUDE_URL="https://raw.githubusercontent.com/taka-avantgarde/claude-usage-barometer/main/claude-usage.60s.sh"
-CODEX_URL="https://raw.githubusercontent.com/taka-avantgarde/codex-usage-barometer/main/codex-usage.60s.sh"
+CLAUDE_DIR="${AI_USAGE_CLAUDE_DIR:-$HOME/.claude}"
+CLAUDE_CAPTURE_TARGET="$CLAUDE_DIR/ai-usage-barometer-statusline.sh"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/ai-usage-barometer"
+CONFIG_FILE="$CACHE_DIR/config"
+TEST_MODE="${AI_USAGE_TEST_MODE:-0}"
 
-if [[ "$(uname -s)" != "Darwin" ]]; then
+if [[ "$TEST_MODE" != "1" && "$(uname -s)" != "Darwin" ]]; then
   echo "This installer supports macOS with SwiftBar." >&2
   exit 1
 fi
 
-echo "▶ AI Usage Barometer installer"
+echo "▶ AI Usage Barometer installer v$VERSION"
 
-if ! command -v brew >/dev/null 2>&1; then
-  echo "→ Homebrew is not installed; installing it now…"
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  if [[ -x /opt/homebrew/bin/brew ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [[ -x /usr/local/bin/brew ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
+if [[ "$TEST_MODE" != "1" ]]; then
+  if ! command -v brew >/dev/null 2>&1; then
+    echo "→ Homebrew is not installed; installing it now…"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    if [[ -x /opt/homebrew/bin/brew ]]; then
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [[ -x /usr/local/bin/brew ]]; then
+      eval "$(/usr/local/bin/brew shellenv)"
+    fi
   fi
+
+  command -v brew >/dev/null 2>&1 || { echo "Homebrew installation could not be detected." >&2; exit 1; }
+  command -v jq >/dev/null 2>&1 || { echo "→ Installing jq…"; brew install jq; }
+  if [[ ! -d /Applications/SwiftBar.app && ! -d "$HOME/Applications/SwiftBar.app" ]]; then
+    echo "→ Installing SwiftBar…"
+    brew install --cask swiftbar
+  fi
+else
+  command -v jq >/dev/null 2>&1 || { echo "jq is required for tests." >&2; exit 1; }
 fi
 
-command -v brew >/dev/null 2>&1 || { echo "Homebrew installation could not be detected." >&2; exit 1; }
-command -v jq >/dev/null 2>&1 || { echo "→ Installing jq…"; brew install jq; }
-if [[ ! -d /Applications/SwiftBar.app && ! -d "$HOME/Applications/SwiftBar.app" ]]; then
-  echo "→ Installing SwiftBar…"
-  brew install --cask swiftbar
-fi
-
-mkdir -p "$PLUGIN_DIR" "$SUPPORT_DIR"
-chmod 700 "$SUPPORT_DIR" 2>/dev/null || true
+mkdir -p "$PLUGIN_DIR" "$SUPPORT_DIR" "$CLAUDE_DIR" "$CACHE_DIR"
+chmod 700 "$SUPPORT_DIR" "$CLAUDE_DIR" "$CACHE_DIR" 2>/dev/null || true
 
 download_install() {
   local url="$1" target="$2" tmp
@@ -48,53 +56,89 @@ download_install() {
   rm -f "$tmp"
 }
 
-echo "→ Installing unified plugin…"
-if [[ -n "${AI_USAGE_LOCAL_SOURCE:-}" && -f "${AI_USAGE_LOCAL_SOURCE}/$PLUGIN" ]]; then
-  install -m 755 "${AI_USAGE_LOCAL_SOURCE}/$PLUGIN" "$TARGET"
-else
-  download_install "$RAW_BASE/$PLUGIN" "$TARGET"
-fi
-download_install "$CLAUDE_URL" "$SUPPORT_DIR/claude-usage.sh"
-download_install "$CODEX_URL" "$SUPPORT_DIR/codex-usage.sh"
+install_repo_file() {
+  local name="$1" target="$2"
+  if [[ -n "${AI_USAGE_LOCAL_SOURCE:-}" && -f "${AI_USAGE_LOCAL_SOURCE}/$name" ]]; then
+    install -m 755 "${AI_USAGE_LOCAL_SOURCE}/$name" "$target"
+  else
+    download_install "$RAW_BASE/$name" "$target"
+  fi
+}
 
-# Prevent duplicate menu-bar items while preserving previous files.
+echo "→ Installing unified plugin and local helpers…"
+install_repo_file "$PLUGIN" "$TARGET"
+install_repo_file "claude-usage.sh" "$SUPPORT_DIR/claude-usage.sh"
+install_repo_file "claude-statusline-capture.sh" "$CLAUDE_CAPTURE_TARGET"
+install_repo_file "configure-claude-statusline.sh" "$SUPPORT_DIR/configure-claude-statusline.sh"
+
+if [[ -n "${AI_USAGE_CODEX_SOURCE:-}" && -f "$AI_USAGE_CODEX_SOURCE" ]]; then
+  install -m 755 "$AI_USAGE_CODEX_SOURCE" "$SUPPORT_DIR/codex-usage.sh"
+else
+  install_repo_file "codex-usage.sh" "$SUPPORT_DIR/codex-usage.sh"
+fi
+
+AI_USAGE_CLAUDE_DIR="$CLAUDE_DIR" \
+AI_USAGE_CLAUDE_STATUSLINE_PATH="$CLAUDE_CAPTURE_TARGET" \
+  "$SUPPORT_DIR/configure-claude-statusline.sh" install
+
+# Fresh installs start with both services visible. Existing preferences are kept.
+if [[ ! -s "$CONFIG_FILE" ]]; then
+  cat > "$CONFIG_FILE" <<'CONFIG'
+CLAUDE_ENABLED=1
+CODEX_ENABLED=1
+INTERVAL_MIN=3
+CONFIG
+  chmod 600 "$CONFIG_FILE" 2>/dev/null || true
+fi
+
+# Prevent duplicate menu-bar items while preserving previous standalone files.
+STAMP="$(date '+%Y%m%d-%H%M%S')"
+LEGACY_DIR="$SUPPORT_DIR/legacy-$STAMP"
 for old in "$PLUGIN_DIR/claude-usage.60s.sh" "$PLUGIN_DIR/codex-usage.60s.sh"; do
   if [[ -f "$old" ]]; then
-    mv "$old" "$SUPPORT_DIR/legacy-$(basename "$old")" 2>/dev/null || rm -f "$old"
+    mkdir -p "$LEGACY_DIR"
+    mv "$old" "$LEGACY_DIR/$(basename "$old")" 2>/dev/null || rm -f "$old"
   fi
 done
 
-# v0.1.9 renders the coloured menu-bar header as a tiny vector PDF.
-# It uses only built-in macOS tools and does not require Xcode Command Line Tools.
-# Remove old renderer/image caches, then build the first exact-colour header now.
-RENDER_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/ai-usage-barometer"
-rm -f "$RENDER_CACHE/render-menubar" "$RENDER_CACHE/render-menubar.swift" \
-      "$RENDER_CACHE/header-image.b64" "$RENDER_CACHE/header-image.key" \
-      "$RENDER_CACHE/header-image.pdf" "$RENDER_CACHE"/header-image.pdf.tmp.* 2>/dev/null || true
-FIRST_HEADER="$("$TARGET" 2>/dev/null | head -n 1 || true)"
+# Force a clean rebuild of the exact-colour header after every upgrade.
+rm -f "$CACHE_DIR/header-image.b64" "$CACHE_DIR/header-image.key" \
+      "$CACHE_DIR/header-image.pdf" "$CACHE_DIR/header-spec.tsv" \
+      "$CACHE_DIR"/header-image.pdf.tmp.* "$CACHE_DIR"/header-segments.tsv.tmp.* 2>/dev/null || true
+
+# Remove caches from the former undocumented Claude OAuth implementation.
+rm -f "$CACHE_DIR/claude-recovery.json" \
+      "$HOME/.cache/claude-usage-barometer.tsv" 2>/dev/null || true
+
+FIRST_HEADER="$(AI_USAGE_CACHE_DIR="$CACHE_DIR" "$TARGET" 2>/dev/null | head -n 1 || true)"
 if [[ "$FIRST_HEADER" != *" image="* ]]; then
-  echo "⚠ Exact-colour menu-bar image could not be generated. The plugin will use its plain-text fallback." >&2
+  echo "⚠ Exact-colour header is not available yet; SwiftBar will use a text fallback until usage data is available." >&2
 fi
 
-defaults write com.ameba.SwiftBar PluginDirectory "$PLUGIN_DIR" >/dev/null 2>&1 || true
-killall SwiftBar >/dev/null 2>&1 || true
-sleep 1
-open -a SwiftBar >/dev/null 2>&1 || open /Applications/SwiftBar.app >/dev/null 2>&1 || true
-sleep 1
-open -g "swiftbar://refreshallplugins" >/dev/null 2>&1 || true
+if [[ -r "$CLAUDE_DIR/settings.json" ]] && jq -e '.disableAllHooks == true' "$CLAUDE_DIR/settings.json" >/dev/null 2>&1; then
+  echo "⚠ Claude Code disableAllHooks is true, so its status line cannot run." >&2
+fi
+
+if [[ "$TEST_MODE" != "1" && "${AI_USAGE_SKIP_APP_LAUNCH:-0}" != "1" ]]; then
+  defaults write com.ameba.SwiftBar PluginDirectory "$PLUGIN_DIR" >/dev/null 2>&1 || true
+  killall SwiftBar >/dev/null 2>&1 || true
+  sleep 1
+  open -a SwiftBar >/dev/null 2>&1 || open /Applications/SwiftBar.app >/dev/null 2>&1 || true
+  sleep 1
+  open -g "swiftbar://refreshallplugins" >/dev/null 2>&1 || true
+fi
 
 cat <<DONE
 
-✅ Installed.
+✅ Installed v$VERSION.
 
-The menu bar shows one combined item:
-• Claude: independent 5h/7d colours (#b54f02 → #B85A00 → #ff7045)
-• Codex: independent window colours (#4F7FA8 → #0e8ba1 → #ed5d40)
-• Exact HEX colours are rendered directly in the macOS menu bar without Xcode tools
-• Service names are shown only inside the dropdown
-• Settings lets you hide either service
-• Claude reset/warming states recover automatically
-• Codex adds the 5h gauge automatically whenever a 300-minute window is returned
+Menu-bar behaviour:
+• Claude and Codex share one menu-bar item; service names appear only in the dropdown
+• Every 5h/7d window is coloured independently
+• Claude: #b54f02 → #B85A00 → #ff7045
+• Codex:  #4F7FA8 → #0e8ba1 → #ed5d40
+• If Codex returns a real 300-minute window, its 5h bar appears automatically
+• If one provider has no usable window, the other provider remains visible
 
 If SwiftBar asks for its plugin folder, choose: $PLUGIN_DIR
 DONE
