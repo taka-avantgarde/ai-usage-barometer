@@ -8,51 +8,62 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-The same command works on Macs with or without Homebrew. It installs Homebrew when needed, plus `jq`, SwiftBar, the unified plugin, and its local helpers.
-
-## ✅ v0.2.7: stable menu-bar recovery
-
-v0.2.7 bundles the tested Codex helper in this repository, removes the Bash 4-only `;;&` syntax that fails on macOS system Bash 3.2, and rebuilds the exact-colour vector header after every upgrade.
-
-Claude and Codex are evaluated independently: missing data from one provider no longer hides the other. Every 5h/7d window keeps its own colour stage, and existing **Settings** choices are preserved.
-
-## Claude data source
-
-
-Claude usage is captured from Claude Code's documented `statusLine` JSON, specifically `rate_limits.five_hour` and `rate_limits.seven_day`. The installer adds a small local wrapper and preserves any status line you already use.
-
-After installing, open Claude Code and send one message. Claude Code provides `rate_limits` only after the first API response in a session, and either window may be independently absent. The menu bar therefore shows only real windows returned by Claude Code; it never converts `Warming up` or missing data into a made-up 100% value.
-
-The Claude integration does **not** read an OAuth token, macOS Keychain item, or `~/.claude/.credentials.json`.
+The same command works on Macs with or without Homebrew. It installs Homebrew when needed, plus `jq`, SwiftBar, the unified plugin, and its local helpers. Re-running is safe, so use the same line to update.
 
 ## One menu-bar item
 
-The macOS menu bar does not show the service names. Claude uses orange tones and Codex uses blue tones.
+Claude and Codex share a single item, separated by a thin rule. The bars are battery-style: **the filled part is capacity left**, and the dotted tail is what has been spent. Percentages are remaining capacity too.
 
 ```text
-5h ███░░  7d ████░  │  7d ███░░
+5h ███░·  7d ██░░·  │  7d ████·
 └──── Claude ────┘     └─ Codex ─┘
 ```
 
-Every window is coloured independently:
+The menu bar is drawn as a vector image so each service keeps its own colour in the same item. A plain-text fallback is used automatically if that is unavailable — see **Settings → menu-bar two-colour drawing**.
+
+Colour is driven by usage, so a nearly empty bar reads as a deep tone:
 
 | Stage | Usage | Claude | Codex |
 |---|---:|---|---|
-| 1 — healthy | 0–69% used | `#b54f02` | `#4F7FA8` |
-| 2 — warning | 70–89% used | `#B85A00` | `#0e8ba1` |
-| 3 — critical | 90–100% used | `#ff7045` | `#ed5d40` |
+| healthy | 0–69% used | `#B87966` | `#4F7FA8` |
+| warning | 70–89% used | `#A86048` | `#0E8BA1` |
+| critical | 90–100% used | `#9C4931` | `#ED5D40` |
 
-## Dynamic windows and settings
+## Settings
 
-Codex windows remain dynamic. If Codex returns a real 300-minute window, the `5h` bar appears automatically; when it returns only the weekly window, only `7d` is shown.
+Open the dropdown and use **⚙ 表示設定**. Every entry toggles on click and takes effect immediately in both the menu bar and the dropdown.
 
-The dropdown shows service names, used percentage, remaining capacity, reset time, and the source timestamp. Under **Settings**, Claude and Codex can be hidden independently, and the refresh interval can be set to 1, 3, or 5 minutes.
+| Setting | Effect |
+|---|---|
+| Claude を表示 | Show or hide Claude entirely |
+| Claude 5h を表示 | Show or hide the 5-hour window |
+| Claude 5h の％ | Show or hide the 5-hour percentage |
+| Claude 7d を表示 | Show or hide the 7-day window |
+| Claude 7d の％ | Show or hide the 7-day percentage |
+| Codex を表示 | Show or hide Codex entirely |
+| Codex の％ | Show or hide Codex percentages |
+| メニューバー2色描画 | Vector drawing (two colours) or plain text (one colour) |
+| ⏱ 更新間隔 | 1, 3, or 5 minutes |
 
-## Claude troubleshooting
+Hiding everything would leave an unclickable empty item, so the plugin always keeps at least Claude's 5-hour bar. Menu-bar colour is decided only by the gauges actually shown.
 
-If the Claude bars have not appeared, open Claude Code and complete one response. Custom status lines require workspace trust, and Claude Code does not run them while `disableAllHooks` is `true`. Existing status-line output is chained through the wrapper and restored by the uninstaller.
+Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
 
-Official field reference: [Claude Code status line documentation](https://code.claude.com/docs/en/statusline#rate-limit-usage).
+## Data sources
+
+**Claude** is read from the OAuth usage endpoint `api.anthropic.com/api/oauth/usage`, using the access token that Claude Code already stores in the macOS Keychain item `Claude Code-credentials` (falling back to `~/.claude/.credentials.json`). Nothing is written to either location, and the token never leaves your Mac except in the request to Anthropic. macOS may ask you to allow Keychain access on first run — choose **Always Allow**.
+
+Results are cached for the configured refresh interval, so the endpoint is polled at most once per interval. If a refresh fails, the last good reading stays on screen instead of blanking the bar.
+
+**Codex** is read from the local helper `codex-usage.sh` that the installer places in `~/SwiftBar/.ai-usage-barometer/`. The helper's windows are dynamic: if Codex returns a 5-hour window it appears automatically, and when only the weekly window exists just `7d` is shown.
+
+## Troubleshooting
+
+**The bar shows `Claude ⚠`.** The Keychain item was not found. Sign in with Claude Code on this Mac, then click **今すぐ再読み込み**.
+
+**Codex shows a warning.** The helper is missing or Codex has not produced data yet. Re-run the installer, then use Codex CLI once.
+
+**Colours look wrong in the menu bar but right in the dropdown.** macOS can treat a translucent menu bar as light while menus render dark. The plugin uses one colour per state for exactly this reason; if it still looks off, turn off **メニューバー2色描画** to compare.
 
 ## Uninstall
 

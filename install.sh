@@ -8,7 +8,7 @@ REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 BRANCH="${AI_USAGE_BRANCH:-main}"
 PLUGIN_DIR="${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}"
 SUPPORT_DIR="$PLUGIN_DIR/.ai-usage-barometer"
-PLUGIN="ai-usage.60s.sh"
+PLUGIN="claude-codex.60s.sh"
 TARGET="$PLUGIN_DIR/$PLUGIN"
 RAW_BASE="https://raw.githubusercontent.com/$REPO/$BRANCH"
 CLAUDE_DIR="${AI_USAGE_CLAUDE_DIR:-$HOME/.claude}"
@@ -94,7 +94,8 @@ fi
 # Prevent duplicate menu-bar items while preserving previous standalone files.
 STAMP="$(date '+%Y%m%d-%H%M%S')"
 LEGACY_DIR="$SUPPORT_DIR/legacy-$STAMP"
-for old in "$PLUGIN_DIR/claude-usage.60s.sh" "$PLUGIN_DIR/codex-usage.60s.sh"; do
+for old in "$PLUGIN_DIR/ai-usage.60s.sh" "$PLUGIN_DIR/claude-usage.60s.sh" \
+           "$PLUGIN_DIR/claude-usage.60s.sh.nobg" "$PLUGIN_DIR/codex-usage.60s.sh"; do
   if [[ -f "$old" ]]; then
     mkdir -p "$LEGACY_DIR"
     mv "$old" "$LEGACY_DIR/$(basename "$old")" 2>/dev/null || rm -f "$old"
