@@ -8,41 +8,68 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-Derselbe Befehl funktioniert mit und ohne Homebrew und installiert die Abhängigkeiten automatisch.
+Derselbe Befehl funktioniert mit und ohne Homebrew. Es wird nur installiert, was fehlt: Homebrew, `jq`, SwiftBar, das Plugin und seine lokalen Helfer. Erneutes Ausführen ist unbedenklich und dient auch als Update.
 
-## ✅ v0.2.7: stabile Wiederherstellung der Menüleiste
+## Ein Element in der Menüleiste
 
-v0.2.7 enthält eine getestete Codex-Hilfsdatei direkt in diesem Repository, entfernt die mit macOS-Bash 3.2 inkompatible Syntax `;;&` und baut den Vektor-Header mit exakten Farben nach jedem Update neu auf.
+Claude und Codex teilen sich ein Element, getrennt durch eine feine Linie. Die Balken sind batterieartig: **der gefüllte Teil ist die verbleibende Kapazität**, der gepunktete Rest ist verbraucht. Auch die Prozentwerte zeigen den Rest.
 
-Claude und Codex werden unabhängig ausgewertet: Fehlende Daten eines Anbieters blenden den anderen nicht mehr aus. Jedes 5h-/7d-Fenster behält seine eigene Farbstufe, und vorhandene **Settings**-Auswahlen bleiben erhalten.
+```text
+5h ███░·  7d ██░░·  │  7d ████·
+└──── Claude ────┘     └─ Codex ─┘
+```
 
-## Claude-Datenquelle
+Die Menüleiste wird als Vektorbild gezeichnet, damit jeder Dienst innerhalb eines Elements seine eigene Farbe behält. Andernfalls wird automatisch Text verwendet.
 
-
-Claude-Nutzung wird aus dem dokumentierten `statusLine`-JSON über `rate_limits.five_hour` und `rate_limits.seven_day` erfasst. Eine vorhandene Statuszeile bleibt erhalten.
-
-Nach der Installation Claude Code öffnen und eine Antwort abschließen. `rate_limits` erscheint erst nach der ersten API-Antwort; 5h und 7d können unabhängig fehlen. Es werden nur echte Fenster angezeigt. `Warming up` oder fehlende Daten werden niemals als erfundene 100 % dargestellt.
-
-OAuth-Token, macOS-Schlüsselbund und `~/.claude/.credentials.json` werden nicht gelesen.
-
-## Ein Menüleisteneintrag
-
-Claude ist orange, Codex blau; die Namen erscheinen nicht in der macOS-Menüleiste. Jedes Fenster wird separat eingefärbt.
+Die Farbe richtet sich nach der Nutzung, ein fast leerer Balken wirkt daher kräftiger.
 
 | Stufe | Nutzung | Claude | Codex |
 |---|---:|---|---|
-| 1 | 0–69 % | `#b54f02` | `#4F7FA8` |
-| 2 | 70–89 % | `#B85A00` | `#0e8ba1` |
-| 3 | 90–100 % | `#ff7045` | `#ed5d40` |
+| normal | 0–69% genutzt | `#B86B54` | `#4F7FA8` |
+| Warnung | 70–89% genutzt | `#A85337` | `#0E8BA1` |
+| kritisch | 90–100% genutzt | `#9C3D21` | `#ED5D40` |
 
-Codex fügt `5h` automatisch hinzu, sobald ein echtes 300-Minuten-Fenster zurückgegeben wird; andernfalls erscheint nur `7d`. Unter **Settings** lassen sich Dienste ausblenden und 1, 3 oder 5 Minuten wählen.
+## Einstellungen
 
-Falls Claude fehlt, Claude Code öffnen und eine Antwort abschließen. `statusLine` benötigt Workspace-Vertrauen und läuft nicht mit `disableAllHooks: true`.
+Öffne das Menü und nutze **⚙ Anzeigeeinstellungen**. Jeder Eintrag schaltet per Klick um und wirkt sofort.
+
+| Einstellung | Wirkung |
+|---|---|
+| Claude anzeigen | Claude ein-/ausblenden |
+| Claude 5h anzeigen | 5-Stunden-Fenster ein-/ausblenden |
+| Prozent von Claude 5h | Dessen Prozentwert ein-/ausblenden |
+| Claude 7d anzeigen | 7-Tage-Fenster ein-/ausblenden |
+| Prozent von Claude 7d | Dessen Prozentwert ein-/ausblenden |
+| Codex anzeigen | Codex ein-/ausblenden |
+| Prozent von Codex | Codex-Prozentwerte ein-/ausblenden |
+| Zweifarbige Menüleiste | Vektor (zwei Farben) oder Text (eine Farbe) |
+| Aktualisierungsintervall | 1, 3 oder 5 Minuten |
+| Sprache | 14 Sprachen; folgt standardmäßig macOS |
+
+Alles auszublenden ergäbe ein leeres, nicht anklickbares Element – der 5-Stunden-Balken von Claude bleibt daher immer erhalten. Die Farbe richtet sich nur nach sichtbaren Balken. Einstellungen liegen in `~/.cache/claude-codex-bar/` und überstehen Updates.
+
+## Datenquellen
+
+**Claude** wird vom OAuth-Endpunkt `api.anthropic.com/api/oauth/usage` gelesen, mit dem Token, das Claude Code bereits im macOS-Schlüsselbund (`Claude Code-credentials`, sonst `~/.claude/.credentials.json`) ablegt. Dorthin wird nichts geschrieben, und das Token verlässt den Mac nur in der Anfrage an Anthropic. Wähle beim ersten Start **Immer erlauben**.
+
+Ergebnisse werden für das Intervall zwischengespeichert, der Endpunkt wird also höchstens einmal pro Intervall abgefragt. Schlägt eine Aktualisierung fehl, bleibt der letzte gültige Wert stehen.
+
+**Codex** wird aus dem lokalen Helfer `codex-usage.sh` gelesen, den der Installer nach `~/SwiftBar/.ai-usage-barometer/` legt. Seine Fenster sind dynamisch.
+
+## Fehlerbehebung
+
+**Eine Claude-Warnung erscheint.** Der Schlüsselbund-Eintrag fehlt. Melde dich in Claude Code an und klicke **Jetzt aktualisieren**.
+
+**Eine Codex-Warnung erscheint.** Der Helfer fehlt oder Codex hat noch keine Daten geliefert. Installer erneut ausführen und Codex CLI einmal nutzen.
+
+**Farben unterscheiden sich zwischen Menüleiste und Menü.** macOS kann eine transluzente Menüleiste als hell behandeln, während Menüs dunkel sind. Genau deshalb gibt es nur eine Farbe pro Stufe; andernfalls die Zweifarbdarstellung abschalten.
 
 ## Deinstallation
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/uninstall.sh | bash
 ```
+
+## Lizenz
 
 [MIT](LICENSE) © 2026 Takayuki Miyano · Atlas Associates Inc.

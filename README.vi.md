@@ -8,41 +8,68 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-Cùng một lệnh hoạt động dù đã có Homebrew hay chưa và tự động cài các thành phần cần thiết.
+Cùng một lệnh hoạt động dù có hay không có Homebrew. Chỉ cài những gì còn thiếu: Homebrew, `jq`, SwiftBar, plugin và các trợ lý cục bộ. Chạy lại an toàn, dùng chính dòng này để cập nhật.
 
-## ✅ v0.2.7: khôi phục thanh menu ổn định
+## Chỉ một mục trên thanh menu
 
-v0.2.7 đóng gói helper Codex đã được kiểm thử ngay trong kho mã này, loại bỏ cú pháp `;;&` không tương thích với Bash 3.2 mặc định của macOS và tạo lại phần đầu vector có màu chính xác sau mỗi lần cập nhật.
+Claude và Codex dùng chung một mục, ngăn bởi một vạch mảnh. Thanh theo kiểu pin: **phần đầy là dung lượng còn lại**, phần chấm là đã dùng. Phần trăm cũng là lượng còn lại.
 
-Claude và Codex được đánh giá độc lập: thiếu dữ liệu của một dịch vụ sẽ không còn làm dịch vụ kia biến mất. Mỗi cửa sổ 5h/7d giữ cấp màu riêng và các lựa chọn **Settings** hiện có được bảo toàn.
+```text
+5h ███░·  7d ██░░·  │  7d ████·
+└──── Claude ────┘     └─ Codex ─┘
+```
 
-## Nguồn dữ liệu Claude
+Thanh menu được vẽ dạng ảnh vector nên mỗi dịch vụ giữ được màu riêng trong cùng một mục. Nếu không thể, hệ thống tự chuyển sang văn bản thuần.
 
+Màu phụ thuộc mức sử dụng, nên thanh gần cạn sẽ đậm hơn:
 
-Mức sử dụng Claude được lấy từ JSON `statusLine` đã được tài liệu hóa, qua `rate_limits.five_hour` và `rate_limits.seven_day`. Dòng trạng thái hiện có vẫn được giữ nguyên.
-
-Sau khi cài, hãy mở Claude Code và hoàn tất một phản hồi. `rate_limits` chỉ xuất hiện sau phản hồi API đầu tiên và từng cửa sổ có thể vắng mặt độc lập. Chỉ giới hạn thực được hiển thị; `Warming up` hoặc dữ liệu thiếu không bao giờ bị biến thành 100% giả.
-
-Không đọc token OAuth, macOS Keychain hay `~/.claude/.credentials.json`.
-
-## Một mục trên thanh menu
-
-Claude dùng màu cam, Codex dùng màu xanh và không hiện tên trên thanh menu macOS. Mỗi cửa sổ được tô màu độc lập.
-
-| Mức | Sử dụng | Claude | Codex |
+| Mức | Đã dùng | Claude | Codex |
 |---|---:|---|---|
-| 1 | 0–69% | `#b54f02` | `#4F7FA8` |
-| 2 | 70–89% | `#B85A00` | `#0e8ba1` |
-| 3 | 90–100% | `#ff7045` | `#ed5d40` |
+| bình thường | 0–69% đã dùng | `#B86B54` | `#4F7FA8` |
+| cảnh báo | 70–89% đã dùng | `#A85337` | `#0E8BA1` |
+| nguy cấp | 90–100% đã dùng | `#9C3D21` | `#ED5D40` |
 
-Codex tự thêm `5h` khi trả về cửa sổ 300 phút thật; nếu chỉ có cửa sổ tuần thì chỉ hiện `7d`. **Settings** cho phép ẩn dịch vụ và chọn 1, 3 hoặc 5 phút.
+## Cài đặt
 
-Nếu chưa thấy Claude, hãy mở Claude Code và hoàn tất một phản hồi. `statusLine` cần workspace trust và không chạy khi `disableAllHooks: true`.
+Nhấp vào thanh và dùng **⚙ Cài đặt hiển thị**. Mỗi mục đảo trạng thái khi nhấp và có hiệu lực ngay.
+
+| Tùy chọn | Tác dụng |
+|---|---|
+| Hiện Claude | Hiện hoặc ẩn Claude |
+| Hiện Claude 5h | Hiện hoặc ẩn khung 5 giờ |
+| Phần trăm Claude 5h | Hiện hoặc ẩn phần trăm tương ứng |
+| Hiện Claude 7d | Hiện hoặc ẩn khung 7 ngày |
+| Phần trăm Claude 7d | Hiện hoặc ẩn phần trăm tương ứng |
+| Hiện Codex | Hiện hoặc ẩn Codex |
+| Phần trăm Codex | Hiện hoặc ẩn phần trăm của Codex |
+| Thanh menu hai màu | Vector (hai màu) hoặc văn bản (một màu) |
+| Khoảng làm mới | 1, 3 hoặc 5 phút |
+| Ngôn ngữ | 14 ngôn ngữ; mặc định theo macOS |
+
+Ẩn hết sẽ để lại một mục trống không nhấp được, nên thanh 5 giờ của Claude luôn được giữ. Màu chỉ do các thanh đang hiển thị quyết định. Cài đặt nằm ở `~/.cache/claude-codex-bar/` và được giữ qua các bản cập nhật.
+
+## Nguồn dữ liệu
+
+**Claude** được đọc từ endpoint OAuth `api.anthropic.com/api/oauth/usage`, dùng token mà Claude Code đã lưu trong Keychain của macOS (`Claude Code-credentials`, hoặc `~/.claude/.credentials.json`). Không ghi vào hai nơi đó, và token chỉ rời máy trong yêu cầu gửi tới Anthropic. Lần đầu chạy hãy chọn **Luôn cho phép**.
+
+Kết quả được lưu đệm trong khoảng làm mới, nên mỗi khoảng chỉ gọi endpoint tối đa một lần. Nếu thất bại, giá trị hợp lệ gần nhất vẫn hiển thị.
+
+**Codex** được đọc từ trợ lý cục bộ `codex-usage.sh` mà trình cài đặt đặt tại `~/SwiftBar/.ai-usage-barometer/`. Các khung của nó là động.
+
+## Khắc phục sự cố
+
+**Hiện cảnh báo Claude.** Không tìm thấy mục Keychain. Hãy đăng nhập Claude Code trên máy này rồi nhấn **Làm mới ngay**.
+
+**Hiện cảnh báo Codex.** Thiếu trợ lý hoặc Codex chưa tạo dữ liệu. Chạy lại trình cài đặt rồi dùng Codex CLI một lần.
+
+**Màu khác nhau giữa thanh menu và menu thả xuống.** macOS có thể coi thanh menu trong suốt là sáng dù menu tối. Vì vậy mỗi mức chỉ dùng một màu; nếu vẫn lệch, hãy tắt vẽ hai màu.
 
 ## Gỡ cài đặt
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/uninstall.sh | bash
 ```
+
+## Giấy phép
 
 [MIT](LICENSE) © 2026 Takayuki Miyano · Atlas Associates Inc.

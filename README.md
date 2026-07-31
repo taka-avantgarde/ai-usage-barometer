@@ -8,18 +8,18 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-The same command works on Macs with or without Homebrew. It installs Homebrew when needed, plus `jq`, SwiftBar, the unified plugin, and its local helpers. Re-running is safe, so use the same line to update.
+The same command works on Macs with or without Homebrew. It installs Homebrew when needed, plus `jq`, SwiftBar, the plugin, and its local helpers. Re-running is safe, so use the same line to update.
 
 ## One menu-bar item
 
-Claude and Codex share a single item, separated by a thin rule. The bars are battery-style: **the filled part is capacity left**, and the dotted tail is what has been spent. Percentages are remaining capacity too.
+Claude and Codex share a single item, separated by a thin rule. Bars are battery-style: **the filled part is capacity left**, and the dotted tail is what has been spent. Percentages are remaining capacity too.
 
 ```text
 5h ███░·  7d ██░░·  │  7d ████·
 └──── Claude ────┘     └─ Codex ─┘
 ```
 
-The menu bar is drawn as a vector image so each service keeps its own colour in the same item. A plain-text fallback is used automatically if that is unavailable — see **Settings → menu-bar two-colour drawing**.
+The menu bar is drawn as a vector image so each service keeps its own colour inside one item. A plain-text fallback is used automatically when that is unavailable.
 
 Colour is driven by usage, so a nearly empty bar reads as a deep tone:
 
@@ -31,39 +31,38 @@ Colour is driven by usage, so a nearly empty bar reads as a deep tone:
 
 ## Settings
 
-Open the dropdown and use **⚙ 表示設定**. Every entry toggles on click and takes effect immediately in both the menu bar and the dropdown.
+Open the dropdown and use **⚙ Display settings**. Every entry toggles on click and takes effect immediately in both the menu bar and the dropdown.
 
 | Setting | Effect |
 |---|---|
-| Claude を表示 | Show or hide Claude entirely |
-| Claude 5h を表示 | Show or hide the 5-hour window |
-| Claude 5h の％ | Show or hide the 5-hour percentage |
-| Claude 7d を表示 | Show or hide the 7-day window |
-| Claude 7d の％ | Show or hide the 7-day percentage |
-| Codex を表示 | Show or hide Codex entirely |
-| Codex の％ | Show or hide Codex percentages |
-| メニューバー2色描画 | Vector drawing (two colours) or plain text (one colour) |
-| ⏱ 更新間隔 | 1, 3, or 5 minutes |
+| Show Claude | Show or hide Claude entirely |
+| Show Claude 5h | Show or hide the 5-hour window |
+| Claude 5h percentage | Show or hide the 5-hour percentage |
+| Show Claude 7d | Show or hide the 7-day window |
+| Claude 7d percentage | Show or hide the 7-day percentage |
+| Show Codex | Show or hide Codex entirely |
+| Codex percentage | Show or hide Codex percentages |
+| Two-colour menu bar | Vector drawing (two colours) or plain text (one colour) |
+| Refresh interval | 1, 3, or 5 minutes |
+| Language | 14 languages; follows macOS by default |
 
-Hiding everything would leave an unclickable empty item, so the plugin always keeps at least Claude's 5-hour bar. Menu-bar colour is decided only by the gauges actually shown.
-
-Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
+Hiding everything would leave an unclickable empty item, so the plugin always keeps Claude's 5-hour bar. Menu-bar colour is decided only by the gauges actually shown. Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
 
 ## Data sources
 
-**Claude** is read from the OAuth usage endpoint `api.anthropic.com/api/oauth/usage`, using the access token that Claude Code already stores in the macOS Keychain item `Claude Code-credentials` (falling back to `~/.claude/.credentials.json`). Nothing is written to either location, and the token never leaves your Mac except in the request to Anthropic. macOS may ask you to allow Keychain access on first run — choose **Always Allow**.
+**Claude** is read from the OAuth usage endpoint `api.anthropic.com/api/oauth/usage`, using the access token Claude Code already stores in the macOS Keychain item `Claude Code-credentials` (falling back to `~/.claude/.credentials.json`). Nothing is written to either location, and the token never leaves your Mac except in the request to Anthropic. macOS may ask you to allow Keychain access on first run — choose **Always Allow**.
 
-Results are cached for the configured refresh interval, so the endpoint is polled at most once per interval. If a refresh fails, the last good reading stays on screen instead of blanking the bar.
+Results are cached for the refresh interval, so the endpoint is polled at most once per interval. If a refresh fails, the last good reading stays on screen instead of blanking the bar.
 
-**Codex** is read from the local helper `codex-usage.sh` that the installer places in `~/SwiftBar/.ai-usage-barometer/`. The helper's windows are dynamic: if Codex returns a 5-hour window it appears automatically, and when only the weekly window exists just `7d` is shown.
+**Codex** is read from the local helper `codex-usage.sh` that the installer places in `~/SwiftBar/.ai-usage-barometer/`. Its windows are dynamic: a 5-hour bar appears only when Codex returns one.
 
 ## Troubleshooting
 
-**The bar shows `Claude ⚠`.** The Keychain item was not found. Sign in with Claude Code on this Mac, then click **今すぐ再読み込み**.
+**The bar shows a Claude warning.** The Keychain item was not found. Sign in with Claude Code on this Mac, then click **Refresh now**.
 
 **Codex shows a warning.** The helper is missing or Codex has not produced data yet. Re-run the installer, then use Codex CLI once.
 
-**Colours look wrong in the menu bar but right in the dropdown.** macOS can treat a translucent menu bar as light while menus render dark. The plugin uses one colour per state for exactly this reason; if it still looks off, turn off **メニューバー2色描画** to compare.
+**Colours differ between the menu bar and the dropdown.** macOS can treat a translucent menu bar as light while menus render dark. The plugin uses one colour per stage for exactly this reason; if it still looks off, turn off two-colour drawing to compare.
 
 ## Uninstall
 

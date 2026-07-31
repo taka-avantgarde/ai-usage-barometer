@@ -8,41 +8,68 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-Perintah yang sama bekerja dengan atau tanpa Homebrew dan memasang komponen yang diperlukan secara otomatis.
+Perintah yang sama bekerja dengan atau tanpa Homebrew. Hanya yang belum ada yang dipasang: Homebrew, `jq`, SwiftBar, plugin, dan pembantu lokalnya. Aman dijalankan ulang, gunakan baris yang sama untuk memperbarui.
 
-## ✅ v0.2.7: pemulihan menu bar yang stabil
+## Satu item di bilah menu
 
-v0.2.7 menyertakan helper Codex yang telah diuji langsung di repositori ini, menghapus sintaks `;;&` yang tidak kompatibel dengan Bash 3.2 bawaan macOS, dan membuat ulang header vektor berwarna tepat setelah setiap pembaruan.
+Claude dan Codex berbagi satu item, dipisahkan garis tipis. Bilah bergaya baterai: **bagian terisi adalah kapasitas tersisa**, ekor bertitik adalah yang sudah terpakai. Persentase juga menunjukkan sisa.
 
-Claude dan Codex dinilai secara terpisah: data yang tidak tersedia dari satu layanan tidak lagi menyembunyikan layanan lainnya. Setiap jendela 5h/7d memiliki tahap warna sendiri dan pilihan **Settings** yang sudah ada tetap dipertahankan.
+```text
+5h ███░·  7d ██░░·  │  7d ████·
+└──── Claude ────┘     └─ Codex ─┘
+```
 
-## Sumber data Claude
+Bilah menu digambar sebagai gambar vektor sehingga tiap layanan mempertahankan warnanya dalam satu item. Jika tidak memungkinkan, otomatis beralih ke teks biasa.
 
+Warna mengikuti pemakaian, jadi bilah yang hampir habis tampak lebih pekat:
 
-Penggunaan Claude ditangkap dari JSON `statusLine` yang terdokumentasi melalui `rate_limits.five_hour` dan `rate_limits.seven_day`. Status line yang sudah ada tetap dipertahankan.
-
-Setelah memasang, buka Claude Code dan selesaikan satu respons. `rate_limits` baru muncul setelah respons API pertama dan setiap jendela dapat tidak tersedia secara terpisah. Hanya jendela nyata yang ditampilkan; `Warming up` atau data yang hilang tidak pernah diubah menjadi 100% palsu.
-
-Token OAuth, macOS Keychain, dan `~/.claude/.credentials.json` tidak dibaca.
-
-## Satu item menu bar
-
-Claude berwarna oranye, Codex biru, tanpa nama layanan di menu bar macOS. Setiap jendela diberi warna secara independen.
-
-| Tahap | Penggunaan | Claude | Codex |
+| Tahap | Pemakaian | Claude | Codex |
 |---|---:|---|---|
-| 1 | 0–69% | `#b54f02` | `#4F7FA8` |
-| 2 | 70–89% | `#B85A00` | `#0e8ba1` |
-| 3 | 90–100% | `#ff7045` | `#ed5d40` |
+| normal | 0–69% terpakai | `#B86B54` | `#4F7FA8` |
+| peringatan | 70–89% terpakai | `#A85337` | `#0E8BA1` |
+| kritis | 90–100% terpakai | `#9C3D21` | `#ED5D40` |
 
-Codex otomatis menambahkan `5h` saat mengembalikan jendela nyata 300 menit; bila hanya jendela mingguan, hanya `7d` yang tampil. **Settings** memungkinkan menyembunyikan layanan dan memilih 1, 3, atau 5 menit.
+## Pengaturan
 
-Jika Claude belum muncul, buka Claude Code dan selesaikan satu respons. `statusLine` memerlukan workspace trust dan tidak berjalan saat `disableAllHooks: true`.
+Klik bilah dan gunakan **⚙ Pengaturan tampilan**. Setiap entri beralih saat diklik dan langsung berlaku.
 
-## Hapus instalasi
+| Pengaturan | Efek |
+|---|---|
+| Tampilkan Claude | Tampilkan atau sembunyikan Claude |
+| Tampilkan Claude 5h | Tampilkan atau sembunyikan jendela 5 jam |
+| Persentase Claude 5h | Tampilkan atau sembunyikan persentasenya |
+| Tampilkan Claude 7d | Tampilkan atau sembunyikan jendela 7 hari |
+| Persentase Claude 7d | Tampilkan atau sembunyikan persentasenya |
+| Tampilkan Codex | Tampilkan atau sembunyikan Codex |
+| Persentase Codex | Tampilkan atau sembunyikan persentase Codex |
+| Bilah menu dua warna | Vektor (dua warna) atau teks (satu warna) |
+| Interval penyegaran | 1, 3, atau 5 menit |
+| Bahasa | 14 bahasa; mengikuti macOS secara bawaan |
+
+Menyembunyikan semuanya akan menyisakan item kosong yang tak bisa diklik, sehingga bilah 5 jam Claude selalu dipertahankan. Warna hanya ditentukan oleh bilah yang tampil. Pengaturan tersimpan di `~/.cache/claude-codex-bar/` dan bertahan setelah pembaruan.
+
+## Sumber data
+
+**Claude** dibaca dari endpoint OAuth `api.anthropic.com/api/oauth/usage`, memakai token yang sudah disimpan Claude Code di Keychain macOS (`Claude Code-credentials`, atau `~/.claude/.credentials.json`). Tidak ada penulisan ke keduanya, dan token hanya meninggalkan Mac dalam permintaan ke Anthropic. Saat pertama kali, pilih **Selalu Izinkan**.
+
+Hasil disimpan sementara selama interval, jadi endpoint dipanggil paling banyak sekali per interval. Jika gagal, nilai valid terakhir tetap ditampilkan.
+
+**Codex** dibaca dari pembantu lokal `codex-usage.sh` yang ditempatkan pemasang di `~/SwiftBar/.ai-usage-barometer/`. Jendelanya dinamis.
+
+## Pemecahan masalah
+
+**Muncul peringatan Claude.** Item Keychain tidak ditemukan. Masuk ke Claude Code di Mac ini lalu klik **Segarkan sekarang**.
+
+**Muncul peringatan Codex.** Pembantu tidak ada atau Codex belum menghasilkan data. Jalankan ulang pemasang lalu gunakan Codex CLI sekali.
+
+**Warna berbeda antara bilah menu dan menu.** macOS bisa memperlakukan bilah menu transparan sebagai terang meski menu gelap. Karena itu tiap tahap hanya memakai satu warna; jika masih janggal, matikan penggambaran dua warna.
+
+## Copot pemasangan
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/uninstall.sh | bash
 ```
+
+## Lisensi
 
 [MIT](LICENSE) © 2026 Takayuki Miyano · Atlas Associates Inc.

@@ -2,47 +2,74 @@
 
 # 🎚️ AI Usage Barometer
 
-## ⚡ Instalación — pega esta única línea en Terminal
+## ⚡ Instalación — pega esta línea en Terminal
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 ```
 
-El mismo comando funciona con o sin Homebrew e instala lo necesario automáticamente.
+El mismo comando funciona con o sin Homebrew. Instala solo lo que falta: Homebrew, `jq`, SwiftBar, el plugin y sus asistentes locales. Volver a ejecutarlo es seguro, úsalo también para actualizar.
 
-## ✅ v0.2.7: recuperación estable de la barra de menús
+## Un solo elemento en la barra de menús
 
-v0.2.7 incluye en este repositorio una copia probada del helper de Codex, elimina la sintaxis `;;&` incompatible con Bash 3.2 de macOS y regenera el encabezado vectorial con colores exactos después de cada actualización.
+Claude y Codex comparten un elemento, separados por una línea fina. Las barras son tipo batería: **la parte llena es la capacidad restante** y la cola punteada es lo consumido. Los porcentajes también son capacidad restante.
 
-Claude y Codex se evalúan por separado: si un proveedor no tiene datos, el otro sigue visible. Cada ventana de 5h/7d conserva su propio nivel de color y se mantienen los ajustes existentes de **Settings**.
+```text
+5h ███░·  7d ██░░·  │  7d ████·
+└──── Claude ────┘     └─ Codex ─┘
+```
 
-## Fuente de datos de Claude
+La barra de menús se dibuja como imagen vectorial para que cada servicio conserve su color dentro de un mismo elemento. Si no es posible, se usa texto plano automáticamente.
 
+El color depende del uso, así que una barra casi vacía se ve más intensa:
 
-El uso de Claude se captura desde el JSON documentado de `statusLine`, mediante `rate_limits.five_hour` y `rate_limits.seven_day`. El instalador conserva cualquier línea de estado existente.
-
-Después de instalar, abre Claude Code y completa una respuesta. `rate_limits` aparece después de la primera respuesta de API y cada ventana puede faltar por separado. Solo se muestran ventanas reales; `Warming up` o datos ausentes nunca se convierten en un 100% inventado.
-
-No se leen tokens OAuth, el Llavero de macOS ni `~/.claude/.credentials.json`.
-
-## Un único elemento en la barra
-
-Claude usa naranja y Codex azul, sin mostrar sus nombres en la barra de macOS. Cada ventana se colorea de forma independiente.
-
-| Nivel | Uso | Claude | Codex |
+| Etapa | Uso | Claude | Codex |
 |---|---:|---|---|
-| 1 | 0–69% | `#b54f02` | `#4F7FA8` |
-| 2 | 70–89% | `#B85A00` | `#0e8ba1` |
-| 3 | 90–100% | `#ff7045` | `#ed5d40` |
+| normal | 0–69% usado | `#B86B54` | `#4F7FA8` |
+| aviso | 70–89% usado | `#A85337` | `#0E8BA1` |
+| crítico | 90–100% usado | `#9C3D21` | `#ED5D40` |
 
-Codex añade automáticamente `5h` cuando devuelve una ventana real de 300 minutos; si solo existe la semanal, muestra únicamente `7d`. En **Settings** puedes ocultar cada servicio y elegir 1, 3 o 5 minutos.
+## Ajustes
 
-Si Claude no aparece, abre Claude Code y completa una respuesta. La línea de estado necesita confianza del espacio de trabajo y no funciona con `disableAllHooks: true`.
+Abre el menú y usa **⚙ Ajustes de pantalla**. Cada entrada se alterna con un clic y se aplica al instante.
+
+| Ajuste | Efecto |
+|---|---|
+| Mostrar Claude | Mostrar u ocultar Claude |
+| Mostrar Claude 5h | Mostrar u ocultar la ventana de 5 horas |
+| Porcentaje de Claude 5h | Mostrar u ocultar su porcentaje |
+| Mostrar Claude 7d | Mostrar u ocultar la ventana de 7 días |
+| Porcentaje de Claude 7d | Mostrar u ocultar su porcentaje |
+| Mostrar Codex | Mostrar u ocultar Codex |
+| Porcentaje de Codex | Mostrar u ocultar los porcentajes de Codex |
+| Barra de menús a dos colores | Vectorial (dos colores) o texto (un color) |
+| Intervalo de actualización | 1, 3 o 5 minutos |
+| Idioma | 14 idiomas; sigue a macOS por defecto |
+
+Ocultarlo todo dejaría un elemento vacío e imposible de pulsar, por eso siempre se conserva la barra de 5 horas de Claude. El color depende solo de las barras visibles. Los ajustes están en `~/.cache/claude-codex-bar/` y se conservan al actualizar.
+
+## Fuentes de datos
+
+**Claude** se lee del endpoint OAuth `api.anthropic.com/api/oauth/usage`, con el token que Claude Code ya guarda en el llavero de macOS (`Claude Code-credentials`, o `~/.claude/.credentials.json`). No se escribe en ninguno de los dos y el token solo sale del Mac en la petición a Anthropic. La primera vez, elige **Permitir siempre**.
+
+Los resultados se guardan en caché durante el intervalo, así que solo se consulta una vez por intervalo. Si falla, se mantiene la última lectura válida.
+
+**Codex** se lee del asistente local `codex-usage.sh` que el instalador coloca en `~/SwiftBar/.ai-usage-barometer/`. Sus ventanas son dinámicas.
+
+## Solución de problemas
+
+**Aparece un aviso de Claude.** No se encontró el elemento del llavero. Inicia sesión con Claude Code y pulsa **Actualizar ahora**.
+
+**Aparece un aviso de Codex.** Falta el asistente o Codex aún no ha generado datos. Reinstala y usa Codex CLI una vez.
+
+**Los colores difieren entre la barra y el menú.** macOS puede tratar una barra translúcida como clara aunque los menús sean oscuros. Por eso se usa un color por etapa; si aún se ve raro, desactiva el dibujo a dos colores.
 
 ## Desinstalar
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/uninstall.sh | bash
 ```
+
+## Licencia
 
 [MIT](LICENSE) © 2026 Takayuki Miyano · Atlas Associates Inc.

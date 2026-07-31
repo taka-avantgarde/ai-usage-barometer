@@ -35,6 +35,29 @@ CL_ON=$(rd claude_on); C5=$(rd c5); C5P=$(rd c5p); C7=$(rd c7); C7P=$(rd c7p)
 CX_ON=$(rd codex_on); CXP=$(rd cxp); MB2=$(rd mb2)
 IV=3; [ -f "$CFG/iv" ] && read -r IV < "$CFG/iv" 2>/dev/null
 case "$IV" in 1|3|5) ;; *) IV=3 ;; esac
+
+# ── 言語（設定 > 言語 で切替。既定は macOS の言語）──
+LANGF="$CFG/lang"
+LG=""; [ -f "$LANGF" ] && read -r LG < "$LANGF" 2>/dev/null
+[ -z "$LG" ] && LG=$(defaults read -g AppleLocale 2>/dev/null | cut -d_ -f1 | cut -d- -f1)
+case "$LG" in en|ja|es|ar|fr|de|zh|ko|pt|nl|it|vi|id|th) ;; *) LG="en" ;; esac
+sub() { local s="$1"; printf '%s' "${s/\{v\}/$2}"; }
+case "$LG" in
+  ja) T_SET="表示設定"; T_SHOW="{v} を表示"; T_PCTOF="{v} の％"; T_MB2="メニューバー2色描画"; T_IV="更新間隔"; T_MIN="分"; T_LANG="言語"; T_REFRESH="今すぐ再読み込み"; T_UPDATED="更新: {v}"; T_LEFT="残り{v}"; T_RESET="{v} に回復"; T_SOON="間もなく"; T_NOCRED="資格情報が見つかりません"; T_BADFMT="APIの形式が想定と違います"; T_CXWAIT="Codex のデータ待ち（Codex CLI を一度実行）"; T_CXMISS="Codex ヘルパーが見つかりません" ;;
+  es) T_SET="Ajustes de pantalla"; T_SHOW="Mostrar {v}"; T_PCTOF="Porcentaje de {v}"; T_MB2="Barra de menús a dos colores"; T_IV="Intervalo de actualización"; T_MIN=" min"; T_LANG="Idioma"; T_REFRESH="Actualizar ahora"; T_UPDATED="Actualizado {v}"; T_LEFT="{v} restante"; T_RESET="se recupera en {v}"; T_SOON="pronto"; T_NOCRED="Credenciales no encontradas"; T_BADFMT="Formato de API inesperado"; T_CXWAIT="Esperando datos de Codex (ejecuta Codex CLI una vez)"; T_CXMISS="Asistente de Codex no encontrado" ;;
+  ar) T_SET="إعدادات العرض"; T_SHOW="إظهار {v}"; T_PCTOF="نسبة {v}"; T_MB2="شريط قوائم بلونين"; T_IV="فاصل التحديث"; T_MIN=" دقيقة"; T_LANG="اللغة"; T_REFRESH="تحديث الآن"; T_UPDATED="تم التحديث {v}"; T_LEFT="متبقٍ {v}"; T_RESET="يتجدد خلال {v}"; T_SOON="قريبًا"; T_NOCRED="لم يتم العثور على بيانات الاعتماد"; T_BADFMT="تنسيق API غير متوقع"; T_CXWAIT="بانتظار بيانات Codex (شغّل Codex CLI مرة)"; T_CXMISS="لم يتم العثور على مساعد Codex" ;;
+  fr) T_SET="Réglages d’affichage"; T_SHOW="Afficher {v}"; T_PCTOF="Pourcentage de {v}"; T_MB2="Barre de menus en deux couleurs"; T_IV="Intervalle d’actualisation"; T_MIN=" min"; T_LANG="Langue"; T_REFRESH="Actualiser"; T_UPDATED="Mis à jour {v}"; T_LEFT="{v} restant"; T_RESET="récupère dans {v}"; T_SOON="bientôt"; T_NOCRED="Identifiants introuvables"; T_BADFMT="Format d’API inattendu"; T_CXWAIT="En attente des données Codex (lancez Codex CLI une fois)"; T_CXMISS="Assistant Codex introuvable" ;;
+  de) T_SET="Anzeigeeinstellungen"; T_SHOW="{v} anzeigen"; T_PCTOF="Prozent von {v}"; T_MB2="Zweifarbige Menüleiste"; T_IV="Aktualisierungsintervall"; T_MIN=" Min"; T_LANG="Sprache"; T_REFRESH="Jetzt aktualisieren"; T_UPDATED="Aktualisiert {v}"; T_LEFT="{v} übrig"; T_RESET="erholt sich in {v}"; T_SOON="bald"; T_NOCRED="Keine Anmeldedaten gefunden"; T_BADFMT="Unerwartetes API-Format"; T_CXWAIT="Warte auf Codex-Daten (Codex CLI einmal ausführen)"; T_CXMISS="Codex-Helfer nicht gefunden" ;;
+  zh) T_SET="显示设置"; T_SHOW="显示 {v}"; T_PCTOF="{v} 百分比"; T_MB2="菜单栏双色绘制"; T_IV="刷新间隔"; T_MIN="分钟"; T_LANG="语言"; T_REFRESH="立即刷新"; T_UPDATED="更新于 {v}"; T_LEFT="剩余{v}"; T_RESET="{v}后恢复"; T_SOON="即将"; T_NOCRED="未找到凭据"; T_BADFMT="API 格式与预期不符"; T_CXWAIT="等待 Codex 数据（请先运行一次 Codex CLI）"; T_CXMISS="未找到 Codex 助手" ;;
+  ko) T_SET="표시 설정"; T_SHOW="{v} 표시"; T_PCTOF="{v} 퍼센트"; T_MB2="메뉴 막대 2색 표시"; T_IV="새로고침 간격"; T_MIN="분"; T_LANG="언어"; T_REFRESH="지금 새로고침"; T_UPDATED="업데이트 {v}"; T_LEFT="{v} 남음"; T_RESET="{v} 후 회복"; T_SOON="곧"; T_NOCRED="자격 증명을 찾을 수 없습니다"; T_BADFMT="예상과 다른 API 형식"; T_CXWAIT="Codex 데이터 대기 중 (Codex CLI를 한 번 실행)"; T_CXMISS="Codex 헬퍼를 찾을 수 없습니다" ;;
+  pt) T_SET="Configurações de exibição"; T_SHOW="Mostrar {v}"; T_PCTOF="Porcentagem de {v}"; T_MB2="Barra de menus em duas cores"; T_IV="Intervalo de atualização"; T_MIN=" min"; T_LANG="Idioma"; T_REFRESH="Atualizar agora"; T_UPDATED="Atualizado {v}"; T_LEFT="{v} restante"; T_RESET="recupera em {v}"; T_SOON="em breve"; T_NOCRED="Credenciais não encontradas"; T_BADFMT="Formato de API inesperado"; T_CXWAIT="Aguardando dados do Codex (execute o Codex CLI uma vez)"; T_CXMISS="Auxiliar do Codex não encontrado" ;;
+  nl) T_SET="Weergave-instellingen"; T_SHOW="{v} tonen"; T_PCTOF="Percentage van {v}"; T_MB2="Menubalk in twee kleuren"; T_IV="Vernieuwingsinterval"; T_MIN=" min"; T_LANG="Taal"; T_REFRESH="Nu vernieuwen"; T_UPDATED="Bijgewerkt {v}"; T_LEFT="{v} over"; T_RESET="herstelt over {v}"; T_SOON="binnenkort"; T_NOCRED="Geen inloggegevens gevonden"; T_BADFMT="Onverwachte API-indeling"; T_CXWAIT="Wachten op Codex-gegevens (voer Codex CLI één keer uit)"; T_CXMISS="Codex-helper niet gevonden" ;;
+  it) T_SET="Impostazioni di visualizzazione"; T_SHOW="Mostra {v}"; T_PCTOF="Percentuale di {v}"; T_MB2="Barra dei menu a due colori"; T_IV="Intervallo di aggiornamento"; T_MIN=" min"; T_LANG="Lingua"; T_REFRESH="Aggiorna ora"; T_UPDATED="Aggiornato {v}"; T_LEFT="{v} rimanente"; T_RESET="si ripristina tra {v}"; T_SOON="a breve"; T_NOCRED="Credenziali non trovate"; T_BADFMT="Formato API imprevisto"; T_CXWAIT="In attesa dei dati Codex (esegui Codex CLI una volta)"; T_CXMISS="Helper Codex non trovato" ;;
+  vi) T_SET="Cài đặt hiển thị"; T_SHOW="Hiện {v}"; T_PCTOF="Phần trăm {v}"; T_MB2="Thanh menu hai màu"; T_IV="Khoảng làm mới"; T_MIN=" phút"; T_LANG="Ngôn ngữ"; T_REFRESH="Làm mới ngay"; T_UPDATED="Cập nhật {v}"; T_LEFT="còn {v}"; T_RESET="hồi lại sau {v}"; T_SOON="sắp tới"; T_NOCRED="Không tìm thấy thông tin đăng nhập"; T_BADFMT="Định dạng API không như mong đợi"; T_CXWAIT="Đang chờ dữ liệu Codex (chạy Codex CLI một lần)"; T_CXMISS="Không tìm thấy trợ lý Codex" ;;
+  id) T_SET="Pengaturan tampilan"; T_SHOW="Tampilkan {v}"; T_PCTOF="Persentase {v}"; T_MB2="Bilah menu dua warna"; T_IV="Interval penyegaran"; T_MIN=" mnt"; T_LANG="Bahasa"; T_REFRESH="Segarkan sekarang"; T_UPDATED="Diperbarui {v}"; T_LEFT="sisa {v}"; T_RESET="pulih dalam {v}"; T_SOON="segera"; T_NOCRED="Kredensial tidak ditemukan"; T_BADFMT="Format API tidak sesuai"; T_CXWAIT="Menunggu data Codex (jalankan Codex CLI sekali)"; T_CXMISS="Pembantu Codex tidak ditemukan" ;;
+  th) T_SET="การตั้งค่าการแสดงผล"; T_SHOW="แสดง {v}"; T_PCTOF="เปอร์เซ็นต์ของ {v}"; T_MB2="แถบเมนูสองสี"; T_IV="ช่วงการรีเฟรช"; T_MIN=" นาที"; T_LANG="ภาษา"; T_REFRESH="รีเฟรชเดี๋ยวนี้"; T_UPDATED="อัปเดตเมื่อ {v}"; T_LEFT="เหลือ {v}"; T_RESET="ฟื้นใน {v}"; T_SOON="เร็ว ๆ นี้"; T_NOCRED="ไม่พบข้อมูลรับรอง"; T_BADFMT="รูปแบบ API ไม่ตรงที่คาดไว้"; T_CXWAIT="กำลังรอข้อมูล Codex (รัน Codex CLI หนึ่งครั้ง)"; T_CXMISS="ไม่พบตัวช่วย Codex" ;;
+  *)  T_SET="Display settings"; T_SHOW="Show {v}"; T_PCTOF="{v} percentage"; T_MB2="Two-colour menu bar"; T_IV="Refresh interval"; T_MIN=" min"; T_LANG="Language"; T_REFRESH="Refresh now"; T_UPDATED="Updated {v}"; T_LEFT="{v} left"; T_RESET="recovers in {v}"; T_SOON="soon"; T_NOCRED="Credentials not found"; T_BADFMT="Unexpected API format"; T_CXWAIT="Waiting for Codex data (run Codex CLI once)"; T_CXMISS="Codex helper not found" ;;
+esac
 # 全部消えるとクリックできなくなるので Claude 5h を最低限残す
 [ "$CL_ON" = 0 ] && [ "$CX_ON" = 0 ] && CL_ON=1
 [ "$CL_ON" = 1 ] && [ "$C5" = 0 ] && [ "$C7" = 0 ] && C5=1
@@ -44,19 +67,39 @@ tg() { # tg <file> <current> <label>
   echo "--$3$([ "$2" = 1 ] && echo '  ✓') | shell=/bin/bash param1=-c param2=\"echo $nx > '$CFG/$1'\" terminal=false refresh=true"
 }
 settings_menu() {
-  echo "⚙ 表示設定 | size=12"
-  tg claude_on "$CL_ON" "Claude を表示"
-  tg c5  "$C5"  "Claude 5h を表示"
-  tg c5p "$C5P" "Claude 5h の％"
-  tg c7  "$C7"  "Claude 7d を表示"
-  tg c7p "$C7P" "Claude 7d の％"
-  tg codex_on "$CX_ON" "Codex を表示"
-  tg cxp "$CXP" "Codex の％"
-  tg mb2 "$MB2" "メニューバー2色描画"
-  echo "⏱ 更新間隔: ${IV}分 | size=12"
-  local m
+  echo "⚙ $T_SET | size=12"
+  tg claude_on "$CL_ON" "$(sub "$T_SHOW" "Claude")"
+  tg c5  "$C5"  "$(sub "$T_SHOW" "Claude 5h")"
+  tg c5p "$C5P" "$(sub "$T_PCTOF" "Claude 5h")"
+  tg c7  "$C7"  "$(sub "$T_SHOW" "Claude 7d")"
+  tg c7p "$C7P" "$(sub "$T_PCTOF" "Claude 7d")"
+  tg codex_on "$CX_ON" "$(sub "$T_SHOW" "Codex")"
+  tg cxp "$CXP" "$(sub "$T_PCTOF" "Codex")"
+  tg mb2 "$MB2" "$T_MB2"
+  echo "⏱ $T_IV: ${IV}$T_MIN | size=12"
+  local m c nm
   for m in 1 3 5; do
-    echo "--${m}分$([ "$IV" = "$m" ] && echo '  ✓') | shell=/bin/bash param1=-c param2=\"echo $m > '$CFG/iv'; mkdir -p '$HOME/.cache/codex-usage-barometer'; echo $((m*60)) > '$HOME/.cache/codex-usage-barometer/interval'\" terminal=false refresh=true"
+    echo "--${m}$T_MIN$([ "$IV" = "$m" ] && echo '  ✓') | shell=/bin/bash param1=-c param2=\"echo $m > '$CFG/iv'; mkdir -p '$HOME/.cache/codex-usage-barometer'; echo $((m*60)) > '$HOME/.cache/codex-usage-barometer/interval'\" terminal=false refresh=true"
+  done
+  echo "🌐 $T_LANG | size=12"
+  for c in en ja es ar fr de zh ko pt nl it vi id th; do
+    case "$c" in
+    en) nm="English" ;;
+    ja) nm="日本語" ;;
+    es) nm="Español" ;;
+    ar) nm="العربية" ;;
+    fr) nm="Français" ;;
+    de) nm="Deutsch" ;;
+    zh) nm="简体中文" ;;
+    ko) nm="한국어" ;;
+    pt) nm="Português" ;;
+    nl) nm="Nederlands" ;;
+    it) nm="Italiano" ;;
+    vi) nm="Tiếng Việt" ;;
+    id) nm="Bahasa Indonesia" ;;
+    th) nm="ไทย" ;;
+    esac
+    echo "--${nm}$([ "$LG" = "$c" ] && echo '  ✓') | shell=/bin/bash param1=-c param2=\"echo $c > '$LANGF'\" terminal=false refresh=true"
   done
 }
 
@@ -83,9 +126,9 @@ remain() { local iso="$1" ts e n d; [ -z "$iso" ] && { echo ""; return; }
   ts=$(printf '%s' "$ts" | sed -E 's/\.[0-9]+//; s/([+-][0-9][0-9]):([0-9][0-9])$/\1\2/')
   e=$(date -j -f "%Y-%m-%dT%H:%M:%S%z" "$ts" +%s 2>/dev/null)
   [ -z "$e" ] && { echo "$iso"; return; }
-  n=$(date +%s); d=$((e-n)); (( d<0 )) && { echo "間もなく"; return; }
-  if (( d>=86400 )); then printf '残り%dd%dh' $((d/86400)) $(((d%86400)/3600))
-  else printf '残り%dh%02dm' $((d/3600)) $(((d%3600)/60)); fi; }
+  n=$(date +%s); d=$((e-n)); (( d<0 )) && { echo "$T_SOON"; return; }
+  if (( d>=86400 )); then printf '%dd %dh' $((d/86400)) $(((d%86400)/3600))
+  else printf '%dh %02dm' $((d/3600)) $(((d%3600)/60)); fi; }
 
 # ── Claude（OAuth API・IV分ごとに取得、間はキャッシュ表示）──
 P5=-1; P7=-1; R5=""; R7=""; CL_ERR=""
@@ -103,7 +146,7 @@ elif [ "$CL_ON" = 1 ]; then
   [ -z "$TOKEN" ] && TOKEN=$(jq -r '.claudeAiOauth.accessToken // .accessToken // empty' \
           "$HOME/.claude/.credentials.json" 2>/dev/null)
   if [ -z "$TOKEN" ]; then
-    CL_ERR="資格情報が見つかりません"
+    CL_ERR="$T_NOCRED"
   else
     RESP=$(curl -s -m 8 -w $'\n%{http_code}' "$ENDPOINT" \
             -H "Authorization: Bearer $TOKEN" -H "anthropic-beta: $BETA")
@@ -115,7 +158,7 @@ elif [ "$CL_ON" = 1 ]; then
       U7=$(printf '%s' "$BODY" | jq -r '.seven_day.utilization // empty' 2>/dev/null)
       R5=$(printf '%s' "$BODY" | jq -r '.five_hour.resets_at // empty' 2>/dev/null)
       R7=$(printf '%s' "$BODY" | jq -r '.seven_day.resets_at // empty' 2>/dev/null)
-      [ -z "$U5" ] && [ -z "$U7" ] && CL_ERR="APIの形式が想定と違います"
+      [ -z "$U5" ] && [ -z "$U7" ] && CL_ERR="$T_BADFMT"
       P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
       [ -z "$CL_ERR" ] && printf '%s\t%s\t%s\t%s\t%s\n' "$NOW" "$U5" "$U7" "$R5" "$R7" > "$CACHEF"
     fi
@@ -155,9 +198,9 @@ if [ "$CX_ON" = 1 ]; then
     done <<EOF_CX
 $(printf '%s\n' "$CX_OUT" | sed -n '/^---$/,$p')
 EOF_CX
-    [ $n = 0 ] && CX_ERR="Codex のデータ待ち（Codex CLI を一度実行）"
+    [ $n = 0 ] && CX_ERR="$T_CXWAIT"
   else
-    CX_ERR="Codex ヘルパーが見つかりません"
+    CX_ERR="$T_CXMISS"
   fi
 fi
 
@@ -276,12 +319,12 @@ if [ "$CL_ON" = 1 ]; then
     echo "⚠ $CL_ERR | $FONT color=#FF9F0A"
   else
     if [ "$C5" = 1 ]; then
-      echo "5h  $(bar $REM5 $DROP_W)$([ "$C5P" = 1 ] && printf '  残り%s' "$(fmt $REM5)") | $FONT color=$(clcol $P5)"
-      [ -n "$R5" ] && echo "       $(remain "$R5") に回復 | size=11 color=#888888"
+      echo "5h  $(bar $REM5 $DROP_W)$([ "$C5P" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $REM5)")") | $FONT color=$(clcol $P5)"
+      [ -n "$R5" ] && echo "       $(sub "$T_RESET" "$(remain "$R5")") | size=11 color=#888888"
     fi
     if [ "$C7" = 1 ]; then
-      echo "7d  $(bar $REM7 $DROP_W)$([ "$C7P" = 1 ] && printf '  残り%s' "$(fmt $REM7)") | $FONT color=$(clcol $P7)"
-      [ -n "$R7" ] && echo "       $(remain "$R7") に回復 | size=11 color=#888888"
+      echo "7d  $(bar $REM7 $DROP_W)$([ "$C7P" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $REM7)")") | $FONT color=$(clcol $P7)"
+      [ -n "$R7" ] && echo "       $(sub "$T_RESET" "$(remain "$R7")") | size=11 color=#888888"
     fi
   fi
 fi
@@ -291,12 +334,12 @@ if [ "$CX_ON" = 1 ]; then
     echo "⚠ $CX_ERR | $FONT color=#FF9F0A"
   else
     if [ -n "$CX_L1" ]; then
-      echo "$CX_L1  $(bar $CX_R1 $DROP_W)$([ "$CXP" = 1 ] && printf '  残り%s' "$(fmt $CX_R1)") | $FONT color=$(cxcol $CX_U1)"
-      [ -n "$CX_T1" ] && echo "       残り$CX_T1 に回復 | size=11 color=#888888"
+      echo "$CX_L1  $(bar $CX_R1 $DROP_W)$([ "$CXP" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $CX_R1)")") | $FONT color=$(cxcol $CX_U1)"
+      [ -n "$CX_T1" ] && echo "       $(sub "$T_RESET" "$CX_T1") | size=11 color=#888888"
     fi
     if [ -n "$CX_L2" ]; then
-      echo "$CX_L2  $(bar $CX_R2 $DROP_W)$([ "$CXP" = 1 ] && printf '  残り%s' "$(fmt $CX_R2)") | $FONT color=$(cxcol $CX_U2)"
-      [ -n "$CX_T2" ] && echo "       残り$CX_T2 に回復 | size=11 color=#888888"
+      echo "$CX_L2  $(bar $CX_R2 $DROP_W)$([ "$CXP" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $CX_R2)")") | $FONT color=$(cxcol $CX_U2)"
+      [ -n "$CX_T2" ] && echo "       $(sub "$T_RESET" "$CX_T2") | size=11 color=#888888"
     fi
     [ -n "$CX_CREDITS" ] && echo "$CX_CREDITS | size=11 color=#888888"
   fi
@@ -304,5 +347,5 @@ fi
 echo "---"
 settings_menu
 echo "---"
-echo "更新: $(date '+%H:%M:%S') | size=11 color=#888888"
-echo "今すぐ再読み込み | refresh=true"
+echo "$(sub "$T_UPDATED" "$(date '+%H:%M:%S')") | size=11 color=#888888"
+echo "$T_REFRESH | refresh=true"
