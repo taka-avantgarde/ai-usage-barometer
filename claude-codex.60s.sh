@@ -71,7 +71,7 @@ bar() { local p=$1 w=$2 i f s=""; (( p<0 )) && p=0; (( p>100 )) && p=100
   for ((i=0;i<f;i++)); do s+="$FILL"; done
   for ((i=f;i<w;i++)); do s+="$EMPTY"; done; printf '%s' "$s"; }
 # サービス固有色。状態（通常/警告/逼迫）は同系色内で濃くなる。
-CL_OK="#B87966"; CL_WARN="#A86048"; CL_DANGER="#9C4931"   # Claude: マット・ピンクベージュ
+CL_OK="#B86B54"; CL_WARN="#A85337"; CL_DANGER="#9C3D21"   # Claude: マット・ピンクベージュ
 CX_OK="#4F7FA8"; CX_WARN="#0E8BA1"; CX_DANGER="#ED5D40"   # Codex: 既存の青系
 clcol() { local p=$1; if (( p>=DANGER )); then echo "$CL_DANGER"
   elif (( p>=WARN )); then echo "$CL_WARN"; else echo "$CL_OK"; fi; }
@@ -227,12 +227,18 @@ for item in spec:
     ops.append("BT /F1 11 Tf %.1f 5 Td (%s) Tj ET"%(X,label)); X+=len(label)*CW+3
     fw=BARW*rem/100.0
     if fw>=0.5: ops.append("%.1f %.1f %.1f %.1f re f"%(X,BY,fw,BH))
-    dx=X+fw+2.0
-    while dx<X+BARW-0.5:
-        for i,dy in enumerate((6.0,10.0)):
-            xx=dx+(1.5 if i%2 else 0.0)
-            if xx<X+BARW-0.5: ops.append("%.1f %.1f 1 1 re f"%(xx,dy))
-        dx+=3.5
+    # 消費分はドロップダウンの ░ と同じ「全高の網目」。ただし密度は控えめ
+    # （面積比 約17%。░ の25%より軽く、太く見えないようにする）
+    PITCH=2.2; DOT=0.9
+    dx=X+fw+1.4; c=0
+    while dx<X+BARW-DOT:
+        yy=BY+0.6; r=0
+        while yy<BY+BH-DOT:
+            xx=dx+(PITCH/2 if r%2 else 0.0)
+            if xx<X+BARW-DOT:
+                ops.append("%.2f %.2f %.1f %.1f re f"%(xx,yy,DOT,DOT))
+            yy+=PITCH; r+=1
+        dx+=PITCH; c+=1
     X+=BARW+4
     if showp=="1":
         t="%d%%"%rem
