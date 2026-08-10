@@ -27,9 +27,9 @@ con l’aumentare dell’uso:
 
 | Fase | Uso | Claude | Codex |
 |---|---:|---|---|
-| normale | 0–69% usato | `#F2C6A0` | `#BEEAF3` |
-| attenzione | 70–89% usato | `#EDA66F` | `#96DCE9` |
-| critico | 90–100% usato | `#E88952` | `#6BC9DC` |
+| normale | 0–69% usato | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
+| attenzione | 70–89% usato | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
+| critico | 90–100% usato | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
 
 ## Impostazioni
 

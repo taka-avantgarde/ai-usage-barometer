@@ -26,9 +26,9 @@ Codex سماويًا أبيض. تزداد درجة اللون قليلًا مع 
 
 | المرحلة | الاستهلاك | Claude | Codex |
 |---|---:|---|---|
-| عادي | 0–69% مستهلك | `#F2C6A0` | `#BEEAF3` |
-| تحذير | 70–89% مستهلك | `#EDA66F` | `#96DCE9` |
-| حرج | 90–100% مستهلك | `#E88952` | `#6BC9DC` |
+| عادي | 0–69% مستهلك | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
+| تحذير | 70–89% مستهلك | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
+| حرج | 90–100% مستهلك | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
 
 ## الإعدادات
 

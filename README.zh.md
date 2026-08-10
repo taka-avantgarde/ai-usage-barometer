@@ -26,9 +26,9 @@ Claude 与 Codex 共用一项，中间以细线分隔。进度条为电量式：
 
 | 阶段 | 使用量 | Claude | Codex |
 |---|---:|---|---|
-| 正常 | 0–69% 已用 | `#F2C6A0` | `#BEEAF3` |
-| 警告 | 70–89% 已用 | `#EDA66F` | `#96DCE9` |
-| 紧张 | 90–100% 已用 | `#E88952` | `#6BC9DC` |
+| 正常 | 0–69% 已用 | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
+| 警告 | 70–89% 已用 | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
+| 紧张 | 90–100% 已用 | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
 
 ## 设置
 

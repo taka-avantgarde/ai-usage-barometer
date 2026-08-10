@@ -27,9 +27,9 @@ kräftiger:
 
 | Stufe | Nutzung | Claude | Codex |
 |---|---:|---|---|
-| normal | 0–69% genutzt | `#F2C6A0` | `#BEEAF3` |
-| Warnung | 70–89% genutzt | `#EDA66F` | `#96DCE9` |
-| kritisch | 90–100% genutzt | `#E88952` | `#6BC9DC` |
+| normal | 0–69% genutzt | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
+| Warnung | 70–89% genutzt | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
+| kritisch | 90–100% genutzt | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
 
 ## Einstellungen
 

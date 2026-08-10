@@ -26,9 +26,9 @@ xanh da trời. Màu sẽ đậm dần trong cùng tông khi mức sử dụng t
 
 | Mức | Đã dùng | Claude | Codex |
 |---|---:|---|---|
-| bình thường | 0–69% đã dùng | `#F2C6A0` | `#BEEAF3` |
-| cảnh báo | 70–89% đã dùng | `#EDA66F` | `#96DCE9` |
-| nguy cấp | 90–100% đã dùng | `#E88952` | `#6BC9DC` |
+| bình thường | 0–69% đã dùng | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
+| cảnh báo | 70–89% đã dùng | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
+| nguy cấp | 90–100% đã dùng | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
 
 ## Cài đặt
 
