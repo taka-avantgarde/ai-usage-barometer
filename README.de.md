@@ -25,9 +25,9 @@ Die Farbe richtet sich nach der Nutzung, ein fast leerer Balken wirkt daher krä
 
 | Stufe | Nutzung | Claude | Codex |
 |---|---:|---|---|
-| normal | 0–69% genutzt | `#C68976` | `#7299B9` |
-| Warnung | 70–89% genutzt | `#B9755F` | `#3EA2B4` |
-| kritisch | 90–100% genutzt | `#B0644D` | `#F17D66` |
+| normal | 0–69% genutzt | `#F2C6A0` | `#7299B9` |
+| Warnung | 70–89% genutzt | `#EDA66F` | `#3EA2B4` |
+| kritisch | 90–100% genutzt | `#E88952` | `#F17D66` |
 
 ## Einstellungen
 

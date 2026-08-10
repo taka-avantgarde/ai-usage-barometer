@@ -113,8 +113,8 @@ bar() { local p=$1 w=$2 i f s=""; (( p<0 )) && p=0; (( p>100 )) && p=100
   f=$(( (p*w+50)/100 )); (( f>w )) && f=w
   for ((i=0;i<f;i++)); do s+="$FILL"; done
   for ((i=f;i<w;i++)); do s+="$EMPTY"; done; printf '%s' "$s"; }
-# サービス固有色。元の色相を保ったまま白を20%混ぜ、同系色内で段階を分ける。
-CL_OK="#C68976"; CL_WARN="#B9755F"; CL_DANGER="#B0644D"   # Claude: 明るいピンクベージュ
+# サービス固有色。白を混ぜた明るい色調を保ち、同系色内で段階を分ける。
+CL_OK="#F2C6A0"; CL_WARN="#EDA66F"; CL_DANGER="#E88952"   # Claude: 明るい白オレンジ系
 CX_OK="#7299B9"; CX_WARN="#3EA2B4"; CX_DANGER="#F17D66"   # Codex: 明るい青系
 clcol() { local p=$1; if (( p>=DANGER )); then echo "$CL_DANGER"
   elif (( p>=WARN )); then echo "$CL_WARN"; else echo "$CL_OK"; fi; }

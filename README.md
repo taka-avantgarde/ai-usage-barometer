@@ -25,9 +25,9 @@ Colour is driven by usage, so a nearly empty bar reads as a deep tone:
 
 | Stage | Usage | Claude | Codex |
 |---|---:|---|---|
-| healthy | 0–69% used | `#C68976` | `#7299B9` |
-| warning | 70–89% used | `#B9755F` | `#3EA2B4` |
-| critical | 90–100% used | `#B0644D` | `#F17D66` |
+| healthy | 0–69% used | `#F2C6A0` | `#7299B9` |
+| warning | 70–89% used | `#EDA66F` | `#3EA2B4` |
+| critical | 90–100% used | `#E88952` | `#F17D66` |
 
 ## Settings
 
