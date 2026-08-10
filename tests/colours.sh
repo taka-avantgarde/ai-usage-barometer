@@ -20,6 +20,8 @@ done
 for colour in F2C6A0 EDA66F E88952 BEEAF3 96DCE9 6BC9DC; do
   grep -q "#$colour" "$ROOT/install.sh"
 done
+grep -q 'Claude uses white-orange' "$ROOT/README.md"
+grep -q 'uses white-cyan' "$ROOT/README.md"
 
 # Exercise the active renderer with healthy, warning and critical Claude bars,
 # plus a healthy Codex bar, without reading real credentials or calling APIs.

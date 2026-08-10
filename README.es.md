@@ -21,7 +21,9 @@ Claude y Codex comparten un elemento, separados por una línea fina. Las barras 
 
 La barra de menús se dibuja como imagen vectorial para que cada servicio conserve su color dentro de un mismo elemento. Si no es posible, se usa texto plano automáticamente.
 
-El color depende del uso, así que una barra casi vacía se ve más intensa:
+Ambas paletas se mantienen claras y mezcladas con blanco: Claude usa blanco
+anaranjado y Codex blanco celeste. El tono se intensifica ligeramente dentro
+de la misma gama a medida que aumenta el uso:
 
 | Etapa | Uso | Claude | Codex |
 |---|---:|---|---|

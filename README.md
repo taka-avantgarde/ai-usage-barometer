@@ -21,7 +21,8 @@ Claude and Codex share a single item, separated by a thin rule. Bars are battery
 
 The menu bar is drawn as a vector image so each service keeps its own colour inside one item. A plain-text fallback is used automatically when that is unavailable.
 
-Colour is driven by usage, so a nearly empty bar reads as a deep tone:
+Both palettes stay bright and white-tinted: Claude uses white-orange and Codex
+uses white-cyan. Usage selects progressively stronger shades within each hue:
 
 | Stage | Usage | Claude | Codex |
 |---|---:|---|---|

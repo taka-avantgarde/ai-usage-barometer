@@ -21,7 +21,9 @@ Claude et Codex partagent un élément, séparés par un trait fin. Les barres s
 
 La barre de menus est dessinée en vectoriel afin que chaque service garde sa couleur dans un même élément. Un repli en texte simple est utilisé automatiquement si nécessaire.
 
-La couleur dépend de l’usage : une barre presque vide apparaît plus soutenue.
+Les deux palettes restent claires et teintées de blanc : Claude utilise un
+orange blanc et Codex un bleu ciel blanc. La teinte se renforce légèrement
+avec l’usage :
 
 | Étape | Usage | Claude | Codex |
 |---|---:|---|---|

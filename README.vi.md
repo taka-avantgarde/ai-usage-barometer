@@ -21,7 +21,8 @@ Claude và Codex dùng chung một mục, ngăn bởi một vạch mảnh. Thanh
 
 Thanh menu được vẽ dạng ảnh vector nên mỗi dịch vụ giữ được màu riêng trong cùng một mục. Nếu không thể, hệ thống tự chuyển sang văn bản thuần.
 
-Màu phụ thuộc mức sử dụng, nên thanh gần cạn sẽ đậm hơn:
+Cả hai bảng màu đều sáng và pha trắng: Claude dùng trắng cam, Codex dùng trắng
+xanh da trời. Màu sẽ đậm dần trong cùng tông khi mức sử dụng tăng:
 
 | Mức | Đã dùng | Claude | Codex |
 |---|---:|---|---|
