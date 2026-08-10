@@ -26,9 +26,9 @@ Claude และ Codex ใช้รายการเดียวร่วมก
 
 | ระดับ | ใช้ไป | Claude | Codex |
 |---|---:|---|---|
-| ปกติ | 0–69% ใช้ไป | `#F2C6A0` | `#BEEAF3` |
-| เตือน | 70–89% ใช้ไป | `#EDA66F` | `#96DCE9` |
-| วิกฤต | 90–100% ใช้ไป | `#E88952` | `#6BC9DC` |
+| ปกติ | 0–69% ใช้ไป | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
+| เตือน | 70–89% ใช้ไป | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
+| วิกฤต | 90–100% ใช้ไป | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
 
 ## การตั้งค่า
 

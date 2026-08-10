@@ -26,9 +26,9 @@ uses white-cyan. Usage selects progressively stronger shades within each hue:
 
 | Stage | Usage | Claude | Codex |
 |---|---:|---|---|
-| healthy | 0–69% used | `#F2C6A0` | `#BEEAF3` |
-| warning | 70–89% used | `#EDA66F` | `#96DCE9` |
-| critical | 90–100% used | `#E88952` | `#6BC9DC` |
+| healthy | 0–69% used | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
+| warning | 70–89% used | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
+| critical | 90–100% used | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
 
 ## Settings
 

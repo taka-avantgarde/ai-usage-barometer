@@ -27,9 +27,9 @@ Codex는 화이트 스카이블루를 사용하며 사용량이 늘수록 같은
 
 | 단계 | 사용량 | Claude | Codex |
 |---|---:|---|---|
-| 정상 | 0–69% 사용 | `#F2C6A0` | `#BEEAF3` |
-| 경고 | 70–89% 사용 | `#EDA66F` | `#96DCE9` |
-| 위험 | 90–100% 사용 | `#E88952` | `#6BC9DC` |
+| 정상 | 0–69% 사용 | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
+| 경고 | 70–89% 사용 | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
+| 위험 | 90–100% 사용 | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
 
 ## 설정
 

@@ -17,6 +17,18 @@ for doc in "$ROOT"/README*.md "$ROOT/DESIGN.md"; do
     grep -q "#$colour" "$doc"
   done
 done
+
+for entry in \
+  claude-healthy:F2C6A0 claude-warning:EDA66F claude-critical:E88952 \
+  codex-healthy:BEEAF3 codex-warning:96DCE9 codex-critical:6BC9DC; do
+  swatch="${entry%%:*}"
+  colour="${entry#*:}"
+  grep -q "fill=\"#$colour\"" "$ROOT/assets/colors/$swatch.svg"
+  for readme in "$ROOT"/README*.md; do
+    grep -q "assets/colors/$swatch.svg" "$readme"
+  done
+done
+
 for colour in F2C6A0 EDA66F E88952 BEEAF3 96DCE9 6BC9DC; do
   grep -q "#$colour" "$ROOT/install.sh"
 done
