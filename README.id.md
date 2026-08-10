@@ -21,13 +21,15 @@ Claude dan Codex berbagi satu item, dipisahkan garis tipis. Bilah bergaya batera
 
 Bilah menu digambar sebagai gambar vektor sehingga tiap layanan mempertahankan warnanya dalam satu item. Jika tidak memungkinkan, otomatis beralih ke teks biasa.
 
-Warna mengikuti pemakaian, jadi bilah yang hampir habis tampak lebih pekat:
+Kedua palet tetap cerah dengan campuran putih: Claude menggunakan putih-oranye
+dan Codex putih-biru muda. Warnanya sedikit menguat dalam rumpun yang sama saat
+pemakaian meningkat:
 
 | Tahap | Pemakaian | Claude | Codex |
 |---|---:|---|---|
-| normal | 0–69% terpakai | `#B86B54` | `#4F7FA8` |
-| peringatan | 70–89% terpakai | `#A85337` | `#0E8BA1` |
-| kritis | 90–100% terpakai | `#9C3D21` | `#ED5D40` |
+| normal | 0–69% terpakai | `#F2C6A0` | `#BEEAF3` |
+| peringatan | 70–89% terpakai | `#EDA66F` | `#96DCE9` |
+| kritis | 90–100% terpakai | `#E88952` | `#6BC9DC` |
 
 ## Pengaturan
 

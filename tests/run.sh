@@ -25,10 +25,12 @@ run_plugin() {
 }
 
 for script in \
-  ai-usage.60s.sh install.sh uninstall.sh claude-usage.sh codex-usage.sh \
-  claude-statusline-capture.sh configure-claude-statusline.sh tests/run.sh; do
+  ai-usage.60s.sh claude-codex.60s.sh install.sh uninstall.sh claude-usage.sh codex-usage.sh \
+  claude-statusline-capture.sh configure-claude-statusline.sh tests/colours.sh tests/run.sh; do
   bash -n "$ROOT/$script"
 done
+
+"$ROOT/tests/colours.sh"
 
 # Official Claude Code statusLine capture, including transparent chaining of an
 # existing user status line.

@@ -21,13 +21,15 @@ Claude und Codex teilen sich ein Element, getrennt durch eine feine Linie. Die B
 
 Die Menüleiste wird als Vektorbild gezeichnet, damit jeder Dienst innerhalb eines Elements seine eigene Farbe behält. Andernfalls wird automatisch Text verwendet.
 
-Die Farbe richtet sich nach der Nutzung, ein fast leerer Balken wirkt daher kräftiger.
+Beide Paletten bleiben hell und weiß getönt: Claude verwendet Weiß-Orange,
+Codex Weiß-Hellblau. Mit zunehmender Nutzung wird der jeweilige Farbton etwas
+kräftiger:
 
 | Stufe | Nutzung | Claude | Codex |
 |---|---:|---|---|
-| normal | 0–69% genutzt | `#B86B54` | `#4F7FA8` |
-| Warnung | 70–89% genutzt | `#A85337` | `#0E8BA1` |
-| kritisch | 90–100% genutzt | `#9C3D21` | `#ED5D40` |
+| normal | 0–69% genutzt | `#F2C6A0` | `#BEEAF3` |
+| Warnung | 70–89% genutzt | `#EDA66F` | `#96DCE9` |
+| kritisch | 90–100% genutzt | `#E88952` | `#6BC9DC` |
 
 ## Einstellungen
 

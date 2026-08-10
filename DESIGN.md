@@ -26,13 +26,14 @@ which service a bar belongs to.
 
 | Stage | Usage | Claude | Codex |
 |---|---:|---|---|
-| healthy | 0–69% | `#B86B54` | `#4F7FA8` |
-| warning | 70–89% | `#A85337` | `#0E8BA1` |
-| critical | 90–100% | `#9C3D21` | `#ED5D40` |
+| healthy | 0–69% | `#F2C6A0` | `#BEEAF3` |
+| warning | 70–89% | `#EDA66F` | `#96DCE9` |
+| critical | 90–100% | `#E88952` | `#6BC9DC` |
 
-Claude is a matte deep pink-beige: low enough in value to stay matte, saturated
-enough not to wash out. Pushing saturation further turns it rust-coloured and
-stops reading as pink-beige.
+Claude uses a bright white-orange palette, shifted away from pink-beige so it
+reads clearly as orange. Codex uses a bright white-cyan palette, shifted away
+from steel blue so it reads clearly as light blue. The three usage stages
+remain distinct within each service.
 
 **Do not use `light,dark` colour pairs.** macOS can treat a translucent menu bar
 as light while menus render dark, so a pair makes the same gauge show two

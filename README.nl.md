@@ -21,13 +21,15 @@ Claude en Codex delen één item, gescheiden door een dunne streep. De balken zi
 
 De menubalk wordt als vectorafbeelding getekend zodat elke dienst binnen één item zijn eigen kleur houdt. Anders wordt automatisch platte tekst gebruikt.
 
-De kleur volgt het verbruik, dus een bijna lege balk oogt dieper:
+Beide paletten blijven licht en met wit gemengd: Claude gebruikt wit-oranje en
+Codex wit-lichtblauw. Bij meer verbruik wordt de tint binnen dezelfde
+kleurgroep iets sterker:
 
 | Fase | Verbruik | Claude | Codex |
 |---|---:|---|---|
-| normaal | 0–69% gebruikt | `#B86B54` | `#4F7FA8` |
-| waarschuwing | 70–89% gebruikt | `#A85337` | `#0E8BA1` |
-| kritiek | 90–100% gebruikt | `#9C3D21` | `#ED5D40` |
+| normaal | 0–69% gebruikt | `#F2C6A0` | `#BEEAF3` |
+| waarschuwing | 70–89% gebruikt | `#EDA66F` | `#96DCE9` |
+| kritiek | 90–100% gebruikt | `#E88952` | `#6BC9DC` |
 
 ## Instellingen
 
