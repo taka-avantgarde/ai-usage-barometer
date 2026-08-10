@@ -25,9 +25,9 @@ Warna mengikuti pemakaian, jadi bilah yang hampir habis tampak lebih pekat:
 
 | Tahap | Pemakaian | Claude | Codex |
 |---|---:|---|---|
-| normal | 0–69% terpakai | `#B86B54` | `#4F7FA8` |
-| peringatan | 70–89% terpakai | `#A85337` | `#0E8BA1` |
-| kritis | 90–100% terpakai | `#9C3D21` | `#ED5D40` |
+| normal | 0–69% terpakai | `#C68976` | `#7299B9` |
+| peringatan | 70–89% terpakai | `#B9755F` | `#3EA2B4` |
+| kritis | 90–100% terpakai | `#B0644D` | `#F17D66` |
 
 ## Pengaturan
 

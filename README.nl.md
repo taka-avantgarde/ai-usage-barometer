@@ -25,9 +25,9 @@ De kleur volgt het verbruik, dus een bijna lege balk oogt dieper:
 
 | Fase | Verbruik | Claude | Codex |
 |---|---:|---|---|
-| normaal | 0–69% gebruikt | `#B86B54` | `#4F7FA8` |
-| waarschuwing | 70–89% gebruikt | `#A85337` | `#0E8BA1` |
-| kritiek | 90–100% gebruikt | `#9C3D21` | `#ED5D40` |
+| normaal | 0–69% gebruikt | `#C68976` | `#7299B9` |
+| waarschuwing | 70–89% gebruikt | `#B9755F` | `#3EA2B4` |
+| kritiek | 90–100% gebruikt | `#B0644D` | `#F17D66` |
 
 ## Instellingen
 

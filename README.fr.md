@@ -25,9 +25,9 @@ La couleur dépend de l’usage : une barre presque vide apparaît plus soutenue
 
 | Étape | Usage | Claude | Codex |
 |---|---:|---|---|
-| normal | 0–69% utilisé | `#B86B54` | `#4F7FA8` |
-| alerte | 70–89% utilisé | `#A85337` | `#0E8BA1` |
-| critique | 90–100% utilisé | `#9C3D21` | `#ED5D40` |
+| normal | 0–69% utilisé | `#C68976` | `#7299B9` |
+| alerte | 70–89% utilisé | `#B9755F` | `#3EA2B4` |
+| critique | 90–100% utilisé | `#B0644D` | `#F17D66` |
 
 ## Réglages
 
