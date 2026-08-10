@@ -25,9 +25,9 @@ El color depende del uso, así que una barra casi vacía se ve más intensa:
 
 | Etapa | Uso | Claude | Codex |
 |---|---:|---|---|
-| normal | 0–69% usado | `#F2C6A0` | `#7299B9` |
-| aviso | 70–89% usado | `#EDA66F` | `#3EA2B4` |
-| crítico | 90–100% usado | `#E88952` | `#F17D66` |
+| normal | 0–69% usado | `#F2C6A0` | `#BEEAF3` |
+| aviso | 70–89% usado | `#EDA66F` | `#96DCE9` |
+| crítico | 90–100% usado | `#E88952` | `#6BC9DC` |
 
 ## Ajustes
 

@@ -137,7 +137,7 @@ Menu-bar behaviour:
 • Claude and Codex share one menu-bar item; service names appear only in the dropdown
 • Every 5h/7d window is coloured independently
 • Claude: #F2C6A0 → #EDA66F → #E88952
-• Codex:  #7299B9 → #3EA2B4 → #F17D66
+• Codex:  #BEEAF3 → #96DCE9 → #6BC9DC
 • If Codex returns a real 300-minute window, its 5h bar appears automatically
 • If one provider has no usable window, the other provider remains visible
 

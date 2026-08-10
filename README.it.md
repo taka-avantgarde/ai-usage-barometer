@@ -25,9 +25,9 @@ Il colore dipende dall’uso: una barra quasi vuota appare più intensa.
 
 | Fase | Uso | Claude | Codex |
 |---|---:|---|---|
-| normale | 0–69% usato | `#F2C6A0` | `#7299B9` |
-| attenzione | 70–89% usato | `#EDA66F` | `#3EA2B4` |
-| critico | 90–100% usato | `#E88952` | `#F17D66` |
+| normale | 0–69% usato | `#F2C6A0` | `#BEEAF3` |
+| attenzione | 70–89% usato | `#EDA66F` | `#96DCE9` |
+| critico | 90–100% usato | `#E88952` | `#6BC9DC` |
 
 ## Impostazioni
 

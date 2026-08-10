@@ -25,9 +25,9 @@ Màu phụ thuộc mức sử dụng, nên thanh gần cạn sẽ đậm hơn:
 
 | Mức | Đã dùng | Claude | Codex |
 |---|---:|---|---|
-| bình thường | 0–69% đã dùng | `#F2C6A0` | `#7299B9` |
-| cảnh báo | 70–89% đã dùng | `#EDA66F` | `#3EA2B4` |
-| nguy cấp | 90–100% đã dùng | `#E88952` | `#F17D66` |
+| bình thường | 0–69% đã dùng | `#F2C6A0` | `#BEEAF3` |
+| cảnh báo | 70–89% đã dùng | `#EDA66F` | `#96DCE9` |
+| nguy cấp | 90–100% đã dùng | `#E88952` | `#6BC9DC` |
 
 ## Cài đặt
 
