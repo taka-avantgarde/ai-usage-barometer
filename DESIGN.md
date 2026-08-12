@@ -44,8 +44,9 @@ different colours on the same screen. One value per stage avoids this entirely.
 
 A SwiftBar text item can carry only one colour, so the menu bar is drawn as a
 **PDF vector image**. That is what allows Claude and Codex to keep distinct
-colours inside a single item. A plain-text fallback (one colour) is used when
-`python3` is missing or when the user turns off two-colour drawing.
+colours inside a single item. The vector renderer is always used when
+`python3` is available; a plain-text fallback (one colour) is used only when
+the renderer is unavailable.
 
 Colour of the fallback: Claude's colour while Claude is shown, otherwise Codex's.
 
@@ -58,7 +59,7 @@ a hidden gauge never tints the bar.
 All toggles live under **⚙ Display settings** and flip on a single click. State
 is in `~/.cache/claude-codex-bar/` and survives upgrades.
 
-`claude_on`, `c5`, `c5p`, `c7`, `c7p`, `codex_on`, `cxp`, `mb2`, `iv`, `lang`
+`claude_on`, `c5`, `c5p`, `c7`, `c7p`, `codex_on`, `cxp`, `iv`, `lang`
 
 The settings menu is also emitted on the error paths, so a broken state can
 still be recovered from the dropdown.

@@ -45,7 +45,6 @@ Ouvrez le menu et utilisez **⚙ Réglages d’affichage**. Chaque entrée bascu
 | Pourcentage de Claude 7d | Afficher ou masquer son pourcentage |
 | Afficher Codex | Afficher ou masquer Codex |
 | Pourcentage de Codex | Afficher ou masquer les pourcentages Codex |
-| Barre de menus en deux couleurs | Vectoriel (deux couleurs) ou texte (une couleur) |
 | Intervalle d’actualisation | 1, 3 ou 5 minutes |
 | Langue | 14 langues ; suit macOS par défaut |
 
@@ -65,7 +64,7 @@ Les résultats sont mis en cache pendant l’intervalle : le point de terminaiso
 
 **Un avertissement Codex s’affiche.** L’assistant manque ou Codex n’a pas encore produit de données. Relancez l’installateur puis utilisez Codex CLI une fois.
 
-**Les couleurs diffèrent entre la barre et le menu.** macOS peut considérer une barre translucide comme claire alors que les menus sont sombres. C’est pourquoi une seule couleur par étape est utilisée ; sinon, désactivez le dessin en deux couleurs.
+**Les couleurs diffèrent entre la barre et le menu.** macOS peut considérer une barre translucide comme claire alors que les menus sont sombres. Le rendu vectoriel en deux couleurs est utilisé lorsque Python est disponible ; le texte en une couleur ne sert que de solution de secours si Python manque.
 
 ## Désinstallation
 

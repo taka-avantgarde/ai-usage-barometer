@@ -44,7 +44,6 @@ Open the dropdown and use **⚙ Display settings**. Every entry toggles on click
 | Claude 7d percentage | Show or hide the 7-day percentage |
 | Show Codex | Show or hide Codex entirely |
 | Codex percentage | Show or hide Codex percentages |
-| Two-colour menu bar | Vector drawing (two colours) or plain text (one colour) |
 | Refresh interval | 1, 3, or 5 minutes |
 | Language | 14 languages; follows macOS by default |
 
@@ -64,7 +63,7 @@ Results are cached for the refresh interval, so the endpoint is polled at most o
 
 **Codex shows a warning.** The helper is missing or Codex has not produced data yet. Re-run the installer, then use Codex CLI once.
 
-**Colours differ between the menu bar and the dropdown.** macOS can treat a translucent menu bar as light while menus render dark. The plugin uses one colour per stage for exactly this reason; if it still looks off, turn off two-colour drawing to compare.
+**Colours differ between the menu bar and the dropdown.** macOS can treat a translucent menu bar as light while menus render dark. The menu bar uses the two-colour vector renderer whenever Python is available; it falls back to one-colour text only when Python is unavailable.
 
 ## Uninstall
 

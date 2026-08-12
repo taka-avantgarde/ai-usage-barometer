@@ -45,7 +45,6 @@ beiden Mischungen einen starken Blauanteil:
 | Prozent von Claude 7d | Dessen Prozentwert ein-/ausblenden |
 | Codex anzeigen | Codex ein-/ausblenden |
 | Prozent von Codex | Codex-Prozentwerte ein-/ausblenden |
-| Zweifarbige Menüleiste | Vektor (zwei Farben) oder Text (eine Farbe) |
 | Aktualisierungsintervall | 1, 3 oder 5 Minuten |
 | Sprache | 14 Sprachen; folgt standardmäßig macOS |
 
