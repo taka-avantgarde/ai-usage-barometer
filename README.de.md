@@ -21,15 +21,16 @@ Claude und Codex teilen sich ein Element, getrennt durch eine feine Linie. Die B
 
 Die Menüleiste wird als Vektorbild gezeichnet, damit jeder Dienst innerhalb eines Elements seine eigene Farbe behält. Andernfalls wird automatisch Text verwendet.
 
-Beide Paletten bleiben hell und weiß getönt: Claude verwendet Weiß-Orange,
-Codex Weiß-Hellblau. Mit zunehmender Nutzung wird der jeweilige Farbton etwas
-kräftiger:
+Beide Paletten verwenden gesättigte, kontrastreiche Farben: Claude verwendet
+Orange, Codex Cyan. Bei 11–30% Restkapazität mischt die Warnfarbe Orange bei;
+bei höchstens 10% enthält die kritische Farbe kräftiges Rot. Codex behält in
+beiden Mischungen einen starken Blauanteil:
 
 | Stufe | Nutzung | Claude | Codex |
 |---|---:|---|---|
-| normal | 0–69% genutzt | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
-| Warnung | 70–89% genutzt | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
-| kritisch | 90–100% genutzt | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
+| normal | 0–69% genutzt | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
+| Warnung | 70–89% genutzt | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
+| kritisch | 90–100% genutzt | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
 
 ## Einstellungen
 

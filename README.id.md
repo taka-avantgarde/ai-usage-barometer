@@ -21,15 +21,16 @@ Claude dan Codex berbagi satu item, dipisahkan garis tipis. Bilah bergaya batera
 
 Bilah menu digambar sebagai gambar vektor sehingga tiap layanan mempertahankan warnanya dalam satu item. Jika tidak memungkinkan, otomatis beralih ke teks biasa.
 
-Kedua palet tetap cerah dengan campuran putih: Claude menggunakan putih-oranye
-dan Codex putih-biru muda. Warnanya sedikit menguat dalam rumpun yang sama saat
-pemakaian meningkat:
+Kedua palet memakai warna jenuh dengan kontras tinggi: Claude menggunakan
+oranye dan Codex sian. Saat tersisa 11–30%, warna peringatan mencampurkan
+oranye; saat tersisa 10% atau kurang, warna kritis mencampurkan merah cerah.
+Codex mempertahankan unsur biru kuat pada kedua campuran:
 
 | Tahap | Pemakaian | Claude | Codex |
 |---|---:|---|---|
-| normal | 0–69% terpakai | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
-| peringatan | 70–89% terpakai | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
-| kritis | 90–100% terpakai | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
+| normal | 0–69% terpakai | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
+| peringatan | 70–89% terpakai | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
+| kritis | 90–100% terpakai | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
 
 ## Pengaturan
 

@@ -114,8 +114,8 @@ bar() { local p=$1 w=$2 i f s=""; (( p<0 )) && p=0; (( p>100 )) && p=100
   for ((i=0;i<f;i++)); do s+="$FILL"; done
   for ((i=f;i<w;i++)); do s+="$EMPTY"; done; printf '%s' "$s"; }
 # サービス固有色。白を混ぜた明るい色調を保ち、同系色内で段階を分ける。
-CL_OK="#F2C6A0"; CL_WARN="#EDA66F"; CL_DANGER="#E88952"   # Claude: 明るい白オレンジ系
-CX_OK="#BEEAF3"; CX_WARN="#96DCE9"; CX_DANGER="#6BC9DC"   # Codex: 明るい白水色系
+CL_OK="#C66D28"; CL_WARN="#B65A1E"; CL_DANGER="#C52E22"   # Claude: オレンジ警告・赤橙の逼迫
+CX_OK="#1A8BA6"; CX_WARN="#52768A"; CX_DANGER="#783F78"   # Codex: 青橙警告・青赤の逼迫
 clcol() { local p=$1; if (( p>=DANGER )); then echo "$CL_DANGER"
   elif (( p>=WARN )); then echo "$CL_WARN"; else echo "$CL_OK"; fi; }
 cxcol() { local p=$1; if (( p>=DANGER )); then echo "$CX_DANGER"

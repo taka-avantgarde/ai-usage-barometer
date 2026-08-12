@@ -21,15 +21,16 @@ Claude en Codex delen één item, gescheiden door een dunne streep. De balken zi
 
 De menubalk wordt als vectorafbeelding getekend zodat elke dienst binnen één item zijn eigen kleur houdt. Anders wordt automatisch platte tekst gebruikt.
 
-Beide paletten blijven licht en met wit gemengd: Claude gebruikt wit-oranje en
-Codex wit-lichtblauw. Bij meer verbruik wordt de tint binnen dezelfde
-kleurgroep iets sterker:
+Beide paletten gebruiken verzadigde kleuren met hoog contrast: Claude gebruikt
+oranje en Codex cyaan. Bij 11–30% resterend mengt de waarschuwing oranje bij;
+bij 10% of minder bevat de kritieke kleur helder rood. Codex houdt in beide
+mengkleuren duidelijk blauw:
 
 | Fase | Verbruik | Claude | Codex |
 |---|---:|---|---|
-| normaal | 0–69% gebruikt | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
-| waarschuwing | 70–89% gebruikt | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
-| kritiek | 90–100% gebruikt | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
+| normaal | 0–69% gebruikt | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
+| waarschuwing | 70–89% gebruikt | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
+| kritiek | 90–100% gebruikt | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
 
 ## Instellingen
 

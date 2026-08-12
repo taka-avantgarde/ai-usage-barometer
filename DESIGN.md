@@ -26,14 +26,15 @@ which service a bar belongs to.
 
 | Stage | Usage | Claude | Codex |
 |---|---:|---|---|
-| healthy | 0–69% | `#F2C6A0` | `#BEEAF3` |
-| warning | 70–89% | `#EDA66F` | `#96DCE9` |
-| critical | 90–100% | `#E88952` | `#6BC9DC` |
+| healthy | 0–69% | `#C66D28` | `#1A8BA6` |
+| warning | 70–89% | `#B65A1E` | `#52768A` |
+| critical | 90–100% | `#C52E22` | `#783F78` |
 
-Claude uses a bright white-orange palette, shifted away from pink-beige so it
-reads clearly as orange. Codex uses a bright white-cyan palette, shifted away
-from steel blue so it reads clearly as light blue. The three usage stages
-remain distinct within each service.
+Healthy bars keep their service identity: orange for Claude and cyan for Codex.
+Warning bars mix in orange when 11–30% remains; Codex retains a blue majority.
+Critical bars mix in vivid red when 10% or less remains; Codex combines it with
+blue as violet-red. Every stage targets at least about 3:1 contrast against a
+light gray (`#E6E6E6`) macOS menu-bar background.
 
 **Do not use `light,dark` colour pairs.** macOS can treat a translucent menu bar
 as light while menus render dark, so a pair makes the same gauge show two
