@@ -21,15 +21,16 @@ Claude와 Codex가 얇은 구분선을 사이에 두고 한 항목을 공유합�
 
 메뉴 막대는 벡터 이미지로 그려지므로 한 항목 안에서 서비스별 색을 유지합니다. 불가능한 환경에서는 자동으로 텍스트로 전환됩니다.
 
-두 팔레트 모두 흰색이 섞인 밝은 톤입니다. Claude는 화이트 오렌지,
-Codex는 화이트 스카이블루를 사용하며 사용량이 늘수록 같은 계열 안에서
-조금씩 진해집니다:
+두 팔레트 모두 채도와 대비가 높은 색을 사용합니다. Claude는 오렌지,
+Codex는 시안을 사용합니다. 잔여량이 11–30%이면 경고색에 오렌지가,
+10% 이하이면 위험색에 선명한 빨강이 섞입니다. Codex는 두 혼합색 모두
+파랑을 강하게 유지합니다:
 
 | 단계 | 사용량 | Claude | Codex |
 |---|---:|---|---|
-| 정상 | 0–69% 사용 | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
-| 경고 | 70–89% 사용 | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
-| 위험 | 90–100% 사용 | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
+| 정상 | 0–69% 사용 | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
+| 경고 | 70–89% 사용 | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
+| 위험 | 90–100% 사용 | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
 
 ## 설정
 

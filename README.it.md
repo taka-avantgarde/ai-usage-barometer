@@ -21,15 +21,16 @@ Claude e Codex condividono un elemento, separati da una linea sottile. Le barre 
 
 La barra dei menu è disegnata come immagine vettoriale, così ogni servizio mantiene il proprio colore in un unico elemento. Altrimenti si passa automaticamente al testo semplice.
 
-Entrambe le palette restano chiare e mescolate con il bianco: Claude usa
-bianco-arancio e Codex bianco-azzurro. La tonalità si intensifica leggermente
-con l’aumentare dell’uso:
+Entrambe le palette usano colori saturi e ad alto contrasto: Claude usa
+l’arancione e Codex il ciano. Con l’11–30% rimanente, l’avviso incorpora
+arancione; con il 10% o meno, lo stato critico incorpora rosso vivo. Codex
+mantiene una forte componente blu in entrambe le miscele:
 
 | Fase | Uso | Claude | Codex |
 |---|---:|---|---|
-| normale | 0–69% usato | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
-| attenzione | 70–89% usato | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
-| critico | 90–100% usato | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
+| normale | 0–69% usato | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
+| attenzione | 70–89% usato | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
+| critico | 90–100% usato | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
 
 ## Impostazioni
 

@@ -21,14 +21,15 @@ Claude và Codex dùng chung một mục, ngăn bởi một vạch mảnh. Thanh
 
 Thanh menu được vẽ dạng ảnh vector nên mỗi dịch vụ giữ được màu riêng trong cùng một mục. Nếu không thể, hệ thống tự chuyển sang văn bản thuần.
 
-Cả hai bảng màu đều sáng và pha trắng: Claude dùng trắng cam, Codex dùng trắng
-xanh da trời. Màu sẽ đậm dần trong cùng tông khi mức sử dụng tăng:
+Cả hai bảng màu đều có độ bão hòa và tương phản cao: Claude dùng cam, Codex dùng
+lục lam. Khi còn 11–30%, màu cảnh báo pha cam; khi còn 10% trở xuống, màu nguy
+cấp pha đỏ tươi. Codex giữ thành phần xanh lam mạnh trong cả hai màu pha:
 
 | Mức | Đã dùng | Claude | Codex |
 |---|---:|---|---|
-| bình thường | 0–69% đã dùng | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
-| cảnh báo | 70–89% đã dùng | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
-| nguy cấp | 90–100% đã dùng | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
+| bình thường | 0–69% đã dùng | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
+| cảnh báo | 70–89% đã dùng | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
+| nguy cấp | 90–100% đã dùng | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
 
 ## Cài đặt
 

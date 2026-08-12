@@ -21,14 +21,14 @@ Claude と Codex を細い区切り線で分けて1項目にまとめていま�
 
 メニューバーはベクター画像として描画するため、1項目の中でサービスごとに別の色を保てます。描画できない環境では自動的にテキスト表示に切り替わります。
 
-どちらも白を含む明るい配色で、Claudeは白オレンジ、Codexは白水色です。
-使用量に応じて、同系色内で少しずつ濃くなります。
+どちらも彩度とコントラストを高めた配色で、Claudeはオレンジ、Codexはシアンです。
+残り11〜30%ではオレンジを混ぜた警告色、残り10%以下では鮮やかな赤を混ぜた逼迫色になります。Codexはどちらも青を強く残します。
 
 | 段階 | 使用量 | Claude | Codex |
 |---|---:|---|---|
-| 通常 | 0–69% 使用 | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
-| 警告 | 70–89% 使用 | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
-| 逼迫 | 90–100% 使用 | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
+| 通常 | 0–69% 使用 | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
+| 警告 | 70–89% 使用 | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
+| 逼迫 | 90–100% 使用 | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
 
 ## 設定
 

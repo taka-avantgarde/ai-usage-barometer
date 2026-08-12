@@ -21,14 +21,15 @@
 
 يُرسم شريط القوائم كصورة متجهية ليحتفظ كل خدمة بلونها داخل عنصر واحد. وإن تعذّر ذلك يُستخدم نص عادي تلقائيًا.
 
-تظل اللوحتان فاتحتين وممزوجتين بالأبيض: يستخدم Claude برتقاليًا أبيض، ويستخدم
-Codex سماويًا أبيض. تزداد درجة اللون قليلًا مع ارتفاع الاستهلاك:
+تستخدم اللوحتان ألوانًا مشبعة وعالية التباين: يستخدم Claude البرتقالي، ويستخدم
+Codex السماوي. عند بقاء 11–30% يمتزج لون التحذير بالبرتقالي، وعند بقاء 10% أو
+أقل يمتزج اللون الحرج بالأحمر الزاهي. يحتفظ Codex بالأزرق في كلا المزيجين:
 
 | المرحلة | الاستهلاك | Claude | Codex |
 |---|---:|---|---|
-| عادي | 0–69% مستهلك | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
-| تحذير | 70–89% مستهلك | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
-| حرج | 90–100% مستهلك | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
+| عادي | 0–69% مستهلك | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
+| تحذير | 70–89% مستهلك | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
+| حرج | 90–100% مستهلك | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
 
 ## الإعدادات
 

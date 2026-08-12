@@ -21,14 +21,14 @@ Claude 与 Codex 共用一项，中间以细线分隔。进度条为电量式：
 
 菜单栏以矢量图绘制，因此同一项内每个服务都能保留各自的颜色。无法绘制时会自动改用纯文本。
 
-两套配色都保持明亮并融入白色：Claude 使用白橙色，Codex 使用白水色。
-随着使用量增加，同一色系会逐渐加深：
+两套配色都采用高饱和度、高对比度颜色：Claude 使用橙色，Codex 使用青色。
+剩余11–30%时，警告色会混入橙色；剩余10%或更少时，紧张色会混入鲜红色。Codex在两种混色中都保留较强的蓝色：
 
 | 阶段 | 使用量 | Claude | Codex |
 |---|---:|---|---|
-| 正常 | 0–69% 已用 | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
-| 警告 | 70–89% 已用 | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
-| 紧张 | 90–100% 已用 | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
+| 正常 | 0–69% 已用 | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
+| 警告 | 70–89% 已用 | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
+| 紧张 | 90–100% 已用 | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
 
 ## 设置
 

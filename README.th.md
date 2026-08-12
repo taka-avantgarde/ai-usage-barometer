@@ -21,14 +21,15 @@ Claude และ Codex ใช้รายการเดียวร่วมก
 
 แถบเมนูวาดเป็นภาพเวกเตอร์ เพื่อให้แต่ละบริการคงสีของตนไว้ในรายการเดียว หากทำไม่ได้จะสลับไปใช้ข้อความธรรมดาโดยอัตโนมัติ
 
-ทั้งสองพาเลตเป็นโทนสว่างผสมสีขาว: Claude ใช้สีขาวอมส้ม และ Codex ใช้สีขาวอมฟ้า
-โดยสีจะเข้มขึ้นเล็กน้อยในโทนเดิมตามปริมาณการใช้:
+ทั้งสองพาเลตใช้สีอิ่มตัวและมีคอนทราสต์สูง: Claude ใช้สีส้ม และ Codex ใช้สีไซแอน
+เมื่อเหลือ 11–30% สีเตือนจะผสมสีส้ม และเมื่อเหลือ 10% หรือน้อยกว่า
+สีวิกฤตจะผสมสีแดงสด โดย Codex ยังคงส่วนผสมสีน้ำเงินที่ชัดเจนในทั้งสองระดับ:
 
 | ระดับ | ใช้ไป | Claude | Codex |
 |---|---:|---|---|
-| ปกติ | 0–69% ใช้ไป | ![#F2C6A0](assets/colors/claude-healthy.svg) `#F2C6A0` | ![#BEEAF3](assets/colors/codex-healthy.svg) `#BEEAF3` |
-| เตือน | 70–89% ใช้ไป | ![#EDA66F](assets/colors/claude-warning.svg) `#EDA66F` | ![#96DCE9](assets/colors/codex-warning.svg) `#96DCE9` |
-| วิกฤต | 90–100% ใช้ไป | ![#E88952](assets/colors/claude-critical.svg) `#E88952` | ![#6BC9DC](assets/colors/codex-critical.svg) `#6BC9DC` |
+| ปกติ | 0–69% ใช้ไป | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
+| เตือน | 70–89% ใช้ไป | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
+| วิกฤต | 90–100% ใช้ไป | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
 
 ## การตั้งค่า
 
