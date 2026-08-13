@@ -50,6 +50,8 @@ Klik bilah dan gunakan **⚙ Pengaturan tampilan**. Setiap entri beralih saat di
 
 Menyembunyikan semuanya akan menyisakan item kosong yang tak bisa diklik, sehingga bilah 5 jam Claude selalu dipertahankan. Warna hanya ditentukan oleh bilah yang tampil. Pengaturan tersimpan di `~/.cache/claude-codex-bar/` dan bertahan setelah pembaruan.
 
+Saat Claude atau Codex dinonaktifkan, pembaruan data untuk layanan tersebut dihentikan. Pengaturan 5 jam, 7 hari, dan persentase tetap terlihat redup serta terkunci; nilai sebelumnya dipulihkan saat layanan diaktifkan kembali.
+
 ## Sumber data
 
 **Claude** dibaca dari endpoint OAuth `api.anthropic.com/api/oauth/usage`, memakai token yang sudah disimpan Claude Code di Keychain macOS (`Claude Code-credentials`, atau `~/.claude/.credentials.json`). Tidak ada penulisan ke keduanya, dan token hanya meninggalkan Mac dalam permintaan ke Anthropic. Saat pertama kali, pilih **Selalu Izinkan**.

@@ -50,6 +50,8 @@ Abre el menú y usa **⚙ Ajustes de pantalla**. Cada entrada se alterna con un 
 
 Ocultarlo todo dejaría un elemento vacío e imposible de pulsar, por eso siempre se conserva la barra de 5 horas de Claude. El color depende solo de las barras visibles. Los ajustes están en `~/.cache/claude-codex-bar/` y se conservan al actualizar.
 
+Al desactivar Claude o Codex, se detiene la actualización de datos de ese servicio. Los ajustes de 5h, 7d y porcentaje permanecen atenuados y bloqueados; al volver a activarlo se restauran sus valores anteriores.
+
 ## Fuentes de datos
 
 **Claude** se lee del endpoint OAuth `api.anthropic.com/api/oauth/usage`, con el token que Claude Code ya guarda en el llavero de macOS (`Claude Code-credentials`, o `~/.claude/.credentials.json`). No se escribe en ninguno de los dos y el token solo sale del Mac en la petición a Anthropic. La primera vez, elige **Permitir siempre**.

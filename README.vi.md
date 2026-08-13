@@ -49,6 +49,8 @@ Nhấp vào thanh và dùng **⚙ Cài đặt hiển thị**. Mỗi mục đảo
 
 Ẩn hết sẽ để lại một mục trống không nhấp được, nên thanh 5 giờ của Claude luôn được giữ. Màu chỉ do các thanh đang hiển thị quyết định. Cài đặt nằm ở `~/.cache/claude-codex-bar/` và được giữ qua các bản cập nhật.
 
+Khi tắt Claude hoặc Codex, việc cập nhật dữ liệu của dịch vụ đó sẽ dừng lại. Các cài đặt 5h, 7d và phần trăm vẫn hiển thị mờ và bị khóa; các giá trị trước đó sẽ được khôi phục khi bật lại dịch vụ.
+
 ## Nguồn dữ liệu
 
 **Claude** được đọc từ endpoint OAuth `api.anthropic.com/api/oauth/usage`, dùng token mà Claude Code đã lưu trong Keychain của macOS (`Claude Code-credentials`, hoặc `~/.claude/.credentials.json`). Không ghi vào hai nơi đó, và token chỉ rời máy trong yêu cầu gửi tới Anthropic. Lần đầu chạy hãy chọn **Luôn cho phép**.
