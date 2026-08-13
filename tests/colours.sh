@@ -34,7 +34,6 @@ for colour in C66D28 B65A1E C52E22 1A8BA6 52768A 783F78; do
 done
 grep -q 'Claude uses orange' "$ROOT/README.md"
 grep -q 'Codex uses cyan' "$ROOT/README.md"
-
 # Two-colour rendering is no longer a user setting. Legacy mb2 state must not
 # disable the vector renderer or reappear in the settings menu.
 ! grep -Eq '\b(MB2|mb2|T_MB2)\b' "$ROOT/claude-codex.60s.sh"
