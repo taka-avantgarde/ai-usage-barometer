@@ -19,6 +19,9 @@ for doc in "$ROOT"/README*.md "$ROOT/DESIGN.md"; do
 done
 for doc in "$ROOT"/README*.md; do
   grep -Eqi 'persistent settings panel|開いたまま|permanece abierto|تبقى .*مفتوحة|reste ouvert|bleibt geöffnet|保持打开|열린 상태|permanece aberto|blijft open|resta aperto|vẫn mở|tetap terbuka|เปิดค้างไว้' "$doc"
+  grep -q 'Codex 5h' "$doc"
+  grep -q 'Codex 7d' "$doc"
+  grep -q 'GitHub Releases' "$doc"
 done
 
 for entry in \
@@ -114,6 +117,40 @@ grep -q 'label.muted' "$ROOT/settings.html"
 grep -q "label.classList.toggle('muted', !on)" "$ROOT/settings.html"
 grep -q "label.querySelector('input').disabled = !on" "$ROOT/settings.html"
 grep -q 'swiftbar.persistentWebView' "$ROOT/claude-codex.60s.sh"
+for key in cx5 cx5p cx7 cx7p; do
+  grep -q "id=\"$key\"" "$ROOT/settings.html"
+done
+
+# Codex 5h/7d windows and their percentages are independently selectable.
+cat > "$TMP/codex-two-windows.sh" <<'CODEX'
+#!/usr/bin/env bash
+echo "Codex 5h ████░  7d ███░░"
+echo "---"
+echo "Codex usage"
+echo "---"
+echo "5h  ████████░░  20% used"
+echo "7d  ██████░░░░  40% used"
+echo "---"
+CODEX
+chmod +x "$TMP/codex-two-windows.sh"
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/cx5"
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/cx7"
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/cx7p"
+CODEX_WINDOWS="$(HOME="$TMP/home" CODEX_HELPER="$TMP/codex-two-windows.sh" "$ROOT/claude-codex.60s.sh")"
+! grep -q '^5h  .*color=#1A8BA6' <<< "$CODEX_WINDOWS"
+grep -q '^7d  .*color=#1A8BA6' <<< "$CODEX_WINDOWS"
+! grep -q '^7d  .*left' <<< "$CODEX_WINDOWS"
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/cx5"
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/cx7p"
+
+# A fresh cached release avoids network access while exercising both update
+# notices and the settings-page version parameter.
+printf 'v9.9.9\n' > "$TMP/home/.cache/claude-codex-bar/latest_release"
+UPDATE_OUT="$(HOME="$TMP/home" AI_USAGE_UPDATE_CHECK=1 AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" "$ROOT/claude-codex.60s.sh")"
+grep -q '^⬆ Update v9.9.9 available' <<< "$UPDATE_OUT"
+grep -q 'update=v9.9.9' <<< "$UPDATE_OUT"
+grep -q "id=\"install-update\"" "$ROOT/settings.html"
+grep -q 'AUB_ACTION=update' "$ROOT/settings.html"
 
 # Disabling both services must not silently re-enable Claude. The header remains
 # clickable through the neutral fallback while every child row stays muted.

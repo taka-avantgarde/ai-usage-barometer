@@ -26,7 +26,7 @@ run_plugin() {
 
 for script in \
   ai-usage.60s.sh claude-codex.60s.sh install.sh uninstall.sh claude-usage.sh codex-usage.sh \
-  claude-statusline-capture.sh configure-claude-statusline.sh tests/colours.sh tests/run.sh; do
+  claude-statusline-capture.sh configure-claude-statusline.sh update.sh tests/colours.sh tests/run.sh; do
   bash -n "$ROOT/$script"
 done
 grep -q 'swiftbar://refreshplugin?name=claude-codex.60s.sh' "$ROOT/settings.html"
@@ -201,6 +201,7 @@ SWIFTBAR_PLUGIN_DIR="$INSTALL_HOME/SwiftBar" \
 [[ -x "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/claude-usage.sh" ]]
 [[ -x "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/codex-usage.sh" ]]
 [[ -r "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/settings.html" ]]
+[[ -x "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/update.sh" ]]
 [[ -x "$INSTALL_HOME/.claude/ai-usage-barometer-statusline.sh" ]]
 ! grep -q ';;&' "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/codex-usage.sh"
 jq -e --arg wrapper "$INSTALL_HOME/.claude/ai-usage-barometer-statusline.sh" '.theme == "dark" and .statusLine.command == $wrapper and .statusLine.padding == 3' "$INSTALL_HOME/.claude/settings.json" >/dev/null
