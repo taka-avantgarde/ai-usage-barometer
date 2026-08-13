@@ -19,7 +19,7 @@ Claude and Codex share a single item, separated by a thin rule. Bars are battery
 └──── Claude ────┘     └─ Codex ─┘
 ```
 
-The menu bar is drawn as a vector image so each service keeps its own colour inside one item. A plain-text fallback is used automatically when that is unavailable.
+The menu bar is drawn as a vector image so each service keeps its own colour inside one item. It uses a dark charcoal `#20252B` backdrop with light labels for readability on the translucent macOS menu bar. A plain-text fallback is used automatically when that is unavailable.
 
 Both palettes use saturated, high-contrast colours: Claude uses orange and
 Codex uses cyan. At 11–30% remaining, warning shades mix in orange; at 10% or
