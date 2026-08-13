@@ -88,6 +88,28 @@ CODEX_CRITICAL="$(HOME="$TMP/home" CODEX_USED=90 CODEX_HELPER="$TMP/codex-stage.
 grep -q '^7d  .*color=#52768A$' <<< "$CODEX_WARNING"
 grep -q '^7d  .*color=#783F78$' <<< "$CODEX_CRITICAL"
 
+# Turning a service off skips its helper/API work while keeping child settings
+# visible as non-interactive, muted rows. Existing child values are preserved.
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
+cat > "$TMP/should-not-run.sh" <<'STOP'
+#!/usr/bin/env bash
+echo "Codex helper must not run when Codex is disabled" >&2
+exit 99
+STOP
+chmod +x "$TMP/should-not-run.sh"
+DISABLED_OUT="$(HOME="$TMP/home" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
+grep -q -- '--Codex percentage | color=#666666 disabled=true' <<< "$DISABLED_OUT"
+! grep -q 'must not run' <<< "$DISABLED_OUT"
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
+
+# A disabled Claude service uses the same muted, locked child rows.
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/claude_on"
+DISABLED_CLAUDE="$(HOME="$TMP/home" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" "$ROOT/claude-codex.60s.sh")"
+grep -q -- '--Show Claude 5h | color=#666666 disabled=true' <<< "$DISABLED_CLAUDE"
+grep -q -- '--Show Claude 7d | color=#666666 disabled=true' <<< "$DISABLED_CLAUDE"
+grep -q -- '--Claude 5h percentage | color=#666666 disabled=true' <<< "$DISABLED_CLAUDE"
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/claude_on"
+
 # Small menu-bar marks need enough contrast against the common light-gray
 # translucent macOS background. Keep even the healthy stages near 3:1.
 python3 - <<'PY'
