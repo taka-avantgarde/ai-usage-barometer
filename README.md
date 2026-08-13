@@ -43,13 +43,18 @@ Open the dropdown and choose **⚙ Display settings**. It opens a persistent set
 | Show Claude 7d | Show or hide the 7-day window |
 | Claude 7d percentage | Show or hide the 7-day percentage |
 | Show Codex | Show or hide Codex entirely |
-| Codex percentage | Show or hide Codex percentages |
+| Show Codex 5h | Show or hide the 5-hour window when Codex provides it |
+| Codex 5h percentage | Show or hide the 5-hour percentage |
+| Show Codex 7d | Show or hide the 7-day window |
+| Codex 7d percentage | Show or hide the 7-day percentage |
 | Refresh interval | 1, 3, or 5 minutes |
 | Language | 14 languages; follows macOS by default |
 
-Hiding everything would leave an unclickable empty item, so the plugin always keeps Claude's 5-hour bar. Menu-bar colour is decided only by the gauges actually shown. Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
+When every gauge is hidden, a neutral `AI …` item remains so settings stay clickable. Menu-bar colour is decided only by the gauges actually shown. Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
 
 Turning Claude or Codex off skips that service's data refresh. Its 5h, 7d, and percentage settings remain visible but are dimmed and locked; their previous values are restored when the service is turned on again.
+
+The plugin checks GitHub Releases at most once a day. When an operator update is available, the dropdown and Display settings show a notice with release notes and an **Update now** button.
 
 ## Data sources
 

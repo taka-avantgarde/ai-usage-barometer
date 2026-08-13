@@ -43,13 +43,18 @@ Nhấp vào thanh và chọn **⚙ Cài đặt hiển thị**. Bảng cài đặ
 | Hiện Claude 7d | Hiện hoặc ẩn khung 7 ngày |
 | Phần trăm Claude 7d | Hiện hoặc ẩn phần trăm tương ứng |
 | Hiện Codex | Hiện hoặc ẩn Codex |
-| Phần trăm Codex | Hiện hoặc ẩn phần trăm của Codex |
+| Hiện Codex 5h | Hiện hoặc ẩn khung 5 giờ khi có dữ liệu |
+| Phần trăm Codex 5h | Hiện hoặc ẩn phần trăm 5 giờ |
+| Hiện Codex 7d | Hiện hoặc ẩn khung 7 ngày |
+| Phần trăm Codex 7d | Hiện hoặc ẩn phần trăm 7 ngày |
 | Khoảng làm mới | 1, 3 hoặc 5 phút |
 | Ngôn ngữ | 14 ngôn ngữ; mặc định theo macOS |
 
-Ẩn hết sẽ để lại một mục trống không nhấp được, nên thanh 5 giờ của Claude luôn được giữ. Màu chỉ do các thanh đang hiển thị quyết định. Cài đặt nằm ở `~/.cache/claude-codex-bar/` và được giữ qua các bản cập nhật.
+Khi ẩn mọi đồng hồ, mục trung tính `AI …` vẫn còn để mở cài đặt. Màu chỉ do các thanh đang hiển thị quyết định. Cài đặt nằm ở `~/.cache/claude-codex-bar/` và được giữ qua các bản cập nhật.
 
 Khi tắt Claude hoặc Codex, việc cập nhật dữ liệu của dịch vụ đó sẽ dừng lại. Các cài đặt 5h, 7d và phần trăm vẫn hiển thị mờ và bị khóa; các giá trị trước đó sẽ được khôi phục khi bật lại dịch vụ.
+
+Tiện ích kiểm tra GitHub Releases nhiều nhất một lần mỗi ngày. Khi có bản cập nhật từ nhà vận hành, menu và cài đặt sẽ hiện thông báo, ghi chú và **Cập nhật ngay**.
 
 ## Nguồn dữ liệu
 

@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.3.1</xbar.version>
+# <xbar.version>v0.3.2</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.3.1"
+VERSION="v0.3.2"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -29,12 +29,16 @@ FILL="█"; EMPTY="░"; FONT="font=Menlo size=12"; SCALE="auto"
 SELF_DIR="$(cd "$(dirname "${SWIFTBAR_PLUGIN_PATH:-$0}")" 2>/dev/null && pwd)"
 CODEX_HELPER="${CODEX_HELPER:-$SELF_DIR/.ai-usage-barometer/codex-usage.sh}"
 SETTINGS_PAGE="${AI_USAGE_SETTINGS_PAGE:-$SELF_DIR/.ai-usage-barometer/settings.html}"
+UPDATER="${AI_USAGE_UPDATER:-$SELF_DIR/.ai-usage-barometer/update.sh}"
 
 # ── 表示設定 ──
 CFG="$HOME/.cache/claude-codex-bar"; mkdir -p "$CFG" 2>/dev/null
 rd() { local v=1; [ -f "$CFG/$1" ] && read -r v < "$CFG/$1" 2>/dev/null; case "$v" in 0|1) ;; *) v=1 ;; esac; printf '%s' "$v"; }
 CL_ON=$(rd claude_on); C5=$(rd c5); C5P=$(rd c5p); C7=$(rd c7); C7P=$(rd c7p)
-CX_ON=$(rd codex_on); CXP=$(rd cxp)
+CX_ON=$(rd codex_on); CXP=$(rd cxp); CX5=$(rd cx5); CX7=$(rd cx7)
+# Preserve the legacy shared Codex percentage preference on first upgrade.
+if [ -f "$CFG/cx5p" ]; then CX5P=$(rd cx5p); else CX5P=$CXP; fi
+if [ -f "$CFG/cx7p" ]; then CX7P=$(rd cx7p); else CX7P=$CXP; fi
 IV=3; [ -f "$CFG/iv" ] && read -r IV < "$CFG/iv" 2>/dev/null
 case "$IV" in 1|3|5) ;; *) IV=3 ;; esac
 
@@ -44,7 +48,7 @@ case "$IV" in 1|3|5) ;; *) IV=3 ;; esac
 apply_web_setting() {
   local key="${AUB_KEY:-}" value="${AUB_VALUE:-}"
   case "$key" in
-    claude_on|codex_on|c5|c5p|c7|c7p|cxp)
+    claude_on|codex_on|c5|c5p|c7|c7p|cx5|cx5p|cx7|cx7p)
       case "$value" in 0|1) printf '%s\n' "$value" > "$CFG/$key" ;; esac
       ;;
     iv)
@@ -62,11 +66,14 @@ apply_web_setting() {
   esac
 }
 [ -n "${AUB_KEY:-}" ] && apply_web_setting
+if [ "${AUB_ACTION:-}" = update ] && [ -x "$UPDATER" ]; then
+  "$UPDATER" >/tmp/ai-usage-barometer-update.log 2>&1 &
+fi
 # Refresh values after a web-view action so the same invocation renders the
 # updated menu-bar state rather than the values read before applying it.
 if [ -n "${AUB_KEY:-}" ]; then
   CL_ON=$(rd claude_on); C5=$(rd c5); C5P=$(rd c5p); C7=$(rd c7); C7P=$(rd c7p)
-  CX_ON=$(rd codex_on); CXP=$(rd cxp)
+  CX_ON=$(rd codex_on); CX5=$(rd cx5); CX5P=$(rd cx5p); CX7=$(rd cx7); CX7P=$(rd cx7p)
   IV=3; [ -f "$CFG/iv" ] && read -r IV < "$CFG/iv" 2>/dev/null
   case "$IV" in 1|3|5) ;; *) IV=3 ;; esac
 fi
@@ -97,6 +104,42 @@ esac
 # ここで片方を強制的にオンへ戻すと、無効化した子設定が通常表示へ戻ってしまう。
 [ "$CL_ON" = 1 ] && [ "$C5" = 0 ] && [ "$C7" = 0 ] && C5=1
 
+semver_is_newer() {
+  local candidate="${1#v}" current="${2#v}"
+  awk -v a="$candidate" -v b="$current" '
+    function parts(v, p) { split(v, p, ".") }
+    BEGIN {
+      parts(a, A); parts(b, B)
+      for (i=1; i<=3; i++) {
+        av=(A[i] == "" ? 0 : A[i]+0); bv=(B[i] == "" ? 0 : B[i]+0)
+        if (av > bv) exit 0
+        if (av < bv) exit 1
+      }
+      exit 1
+    }'
+}
+latest_release_version() {
+  local file="$CFG/latest_release" now mtime=0 latest="" enabled="${AI_USAGE_UPDATE_CHECK:-}"
+  [ -z "$enabled" ] && [ -n "${SWIFTBAR_PLUGIN_PATH:-}" ] && enabled=1
+  [ "$enabled" = 1 ] || return 1
+  now=$(date +%s)
+  if [ -f "$file" ]; then
+    mtime=$(stat -f %m "$file" 2>/dev/null || stat -c %Y "$file" 2>/dev/null || echo 0)
+    if [ $((now-mtime)) -lt 86400 ]; then read -r latest < "$file" 2>/dev/null; fi
+  fi
+  if [ -z "$latest" ]; then
+    latest=$(curl -fsSL --connect-timeout 3 --max-time 6 \
+      -H 'Accept: application/vnd.github+json' \
+      https://api.github.com/repos/taka-avantgarde/ai-usage-barometer/releases/latest 2>/dev/null |
+      jq -r '.tag_name // empty' 2>/dev/null)
+    [ -n "$latest" ] && printf '%s\n' "$latest" > "$file"
+  fi
+  [ -n "$latest" ] && printf '%s\n' "$latest"
+}
+LATEST_VERSION=$(latest_release_version || true)
+UPDATE_AVAILABLE=0
+[ -n "$LATEST_VERSION" ] && semver_is_newer "$LATEST_VERSION" "$VERSION" && UPDATE_AVAILABLE=1
+
 uri() {
   python3 - "$1" <<'PY'
 import pathlib
@@ -109,7 +152,7 @@ PY
 settings_menu() {
   local page="$SETTINGS_PAGE"
   if [ -f "$page" ]; then
-    echo "⚙ $T_SET | size=12 href=$(uri "$page")?claude_on=$CL_ON&c5=$C5&c5p=$C5P&c7=$C7&c7p=$C7P&codex_on=$CX_ON&cxp=$CXP&iv=$IV&lang=$LG webview=true webvieww=430 webviewh=660"
+    echo "⚙ $T_SET | size=12 href=$(uri "$page")?claude_on=$CL_ON&c5=$C5&c5p=$C5P&c7=$C7&c7p=$C7P&codex_on=$CX_ON&cx5=$CX5&cx5p=$CX5P&cx7=$CX7&cx7p=$CX7P&iv=$IV&lang=$LG&update=$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION") webview=true webvieww=430 webviewh=720"
   else
     echo "⚠ $T_SET | size=12 color=#FF9F0A tooltip=Settings helper missing; re-run the installer"
   fi
@@ -218,6 +261,21 @@ fi
 
 CX_R1=$(( CX_U1<0 ? -1 : 100-CX_U1 )); CX_R2=$(( CX_U2<0 ? -1 : 100-CX_U2 ))
 
+cx_window_enabled() {
+  case "$1" in
+    5h) [ "$CX5" = 1 ] ;;
+    7d) [ "$CX7" = 1 ] ;;
+    *) return 0 ;;
+  esac
+}
+cx_window_percentage() {
+  case "$1" in
+    5h) printf '%s' "$CX5P" ;;
+    7d) printf '%s' "$CX7P" ;;
+    *) printf '1' ;;
+  esac
+}
+
 # ── メニューバー ──
 # 1項目=1色の制約があるため、Claude 表示中は Claude の色、
 # Claude 非表示のときだけ Codex の色を使う（各サービスの最悪値で段階が決まる）。
@@ -227,8 +285,8 @@ if [ "$CL_ON" = 1 ] && [ -z "$CL_ERR" ]; then
   [ "$C7" = 1 ] && (( P7 > CL_WORST )) && CL_WORST=$P7
 fi
 if [ "$CX_ON" = 1 ] && [ -z "$CX_ERR" ]; then
-  (( CX_U1 > CX_WORST )) && CX_WORST=$CX_U1
-  (( CX_U2 > CX_WORST )) && CX_WORST=$CX_U2
+  cx_window_enabled "$CX_L1" && (( CX_U1 > CX_WORST )) && CX_WORST=$CX_U1
+  cx_window_enabled "$CX_L2" && (( CX_U2 > CX_WORST )) && CX_WORST=$CX_U2
 fi
 if [ "$CL_ON" = 1 ]; then
   (( CL_WORST<0 )) && CL_WORST=0
@@ -247,9 +305,14 @@ if [ "$CL_ON" = 1 ]; then
   fi
 fi
 if [ "$CX_ON" = 1 ] && [ -z "$CX_ERR" ] && [ -n "$CX_L1" ]; then
-  CXMB="$CX_L1 $(bar $CX_R1 $MBAR_W)$([ "$CXP" = 1 ] && printf ' %s' "$(fmt $CX_R1)")"
-  [ -n "$CX_L2" ] && CXMB="$CXMB  $CX_L2 $(bar $CX_R2 $MBAR_W)$([ "$CXP" = 1 ] && printf ' %s' "$(fmt $CX_R2)")"
-  MB="${MB:+$MB │ }$CXMB"
+  CXMB=""
+  if cx_window_enabled "$CX_L1"; then
+    CXMB="$CX_L1 $(bar $CX_R1 $MBAR_W)$([ "$(cx_window_percentage "$CX_L1")" = 1 ] && printf ' %s' "$(fmt $CX_R1)")"
+  fi
+  if [ -n "$CX_L2" ] && cx_window_enabled "$CX_L2"; then
+    CXMB="${CXMB:+$CXMB  }$CX_L2 $(bar $CX_R2 $MBAR_W)$([ "$(cx_window_percentage "$CX_L2")" = 1 ] && printf ' %s' "$(fmt $CX_R2)")"
+  fi
+  [ -n "$CXMB" ] && MB="${MB:+$MB │ }$CXMB"
 fi
 [ -z "$MB" ] && MB="AI …"
 
@@ -259,10 +322,18 @@ if [ "$CL_ON" = 1 ] && [ -z "$CL_ERR" ]; then
   [ "$C5" = 1 ] && [ "$REM5" -ge 0 ] && PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}5h,$REM5,$(clcol $P5),$C5P"
   [ "$C7" = 1 ] && [ "$REM7" -ge 0 ] && PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}7d,$REM7,$(clcol $P7),$C7P"
 fi
-if [ "$CX_ON" = 1 ] && [ -z "$CX_ERR" ] && [ "$CX_R1" -ge 0 ]; then
-  [ -n "$PDF_SPEC" ] && PDF_SPEC="$PDF_SPEC;|"
-  PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}$CX_L1,$CX_R1,$(cxcol $CX_U1),$CXP"
-  [ -n "$CX_L2" ] && [ "$CX_R2" -ge 0 ] && PDF_SPEC="$PDF_SPEC;$CX_L2,$CX_R2,$(cxcol $CX_U2),$CXP"
+if [ "$CX_ON" = 1 ] && [ -z "$CX_ERR" ]; then
+  CX_PDF=""
+  if [ "$CX_R1" -ge 0 ] && cx_window_enabled "$CX_L1"; then
+    CX_PDF="$CX_L1,$CX_R1,$(cxcol $CX_U1),$(cx_window_percentage "$CX_L1")"
+  fi
+  if [ -n "$CX_L2" ] && [ "$CX_R2" -ge 0 ] && cx_window_enabled "$CX_L2"; then
+    CX_PDF="${CX_PDF:+$CX_PDF;}$CX_L2,$CX_R2,$(cxcol $CX_U2),$(cx_window_percentage "$CX_L2")"
+  fi
+  if [ -n "$CX_PDF" ]; then
+    [ -n "$PDF_SPEC" ] && PDF_SPEC="$PDF_SPEC;|"
+    PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}$CX_PDF"
+  fi
 fi
 B64=""
 if [ -n "$PDF_SPEC" ] && command -v python3 >/dev/null 2>&1; then
@@ -350,18 +421,19 @@ if [ "$CX_ON" = 1 ]; then
   if [ -n "$CX_ERR" ]; then
     echo "⚠ $CX_ERR | $FONT color=#FF9F0A"
   else
-    if [ -n "$CX_L1" ]; then
-      echo "$CX_L1  $(bar $CX_R1 $DROP_W)$([ "$CXP" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $CX_R1)")") | $FONT color=$(cxcol $CX_U1)"
+    if [ -n "$CX_L1" ] && cx_window_enabled "$CX_L1"; then
+      echo "$CX_L1  $(bar $CX_R1 $DROP_W)$([ "$(cx_window_percentage "$CX_L1")" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $CX_R1)")") | $FONT color=$(cxcol $CX_U1)"
       [ -n "$CX_T1" ] && echo "       $(sub "$T_RESET" "$CX_T1") | size=11 color=#888888"
     fi
-    if [ -n "$CX_L2" ]; then
-      echo "$CX_L2  $(bar $CX_R2 $DROP_W)$([ "$CXP" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $CX_R2)")") | $FONT color=$(cxcol $CX_U2)"
+    if [ -n "$CX_L2" ] && cx_window_enabled "$CX_L2"; then
+      echo "$CX_L2  $(bar $CX_R2 $DROP_W)$([ "$(cx_window_percentage "$CX_L2")" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $CX_R2)")") | $FONT color=$(cxcol $CX_U2)"
       [ -n "$CX_T2" ] && echo "       $(sub "$T_RESET" "$CX_T2") | size=11 color=#888888"
     fi
     [ -n "$CX_CREDITS" ] && echo "$CX_CREDITS | size=11 color=#888888"
   fi
 fi
 echo "---"
+[ "$UPDATE_AVAILABLE" = 1 ] && echo "⬆ Update $LATEST_VERSION available | color=#FF9F0A href=https://github.com/taka-avantgarde/ai-usage-barometer/releases/latest"
 settings_menu
 echo "---"
 echo "$(sub "$T_UPDATED" "$(date '+%H:%M:%S')") | size=11 color=#888888"

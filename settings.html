@@ -19,10 +19,23 @@
     .radios { display: flex; gap: 17px; }
     .radios label { min-height: 28px; }
     .status { min-height: 18px; margin-top: 8px; color: #6e6e73; font-size: 12px; }
+    .update { display: none; margin: 0 0 16px; padding: 12px 14px; border-radius: 12px; background: color-mix(in srgb, #ff9f0a 16%, Canvas); border: 1px solid color-mix(in srgb, #ff9f0a 45%, transparent); }
+    .update.visible { display: block; }
+    .update-title { margin-bottom: 8px; font-weight: 650; }
+    .update-actions { display: flex; gap: 8px; }
+    .update a, .update button { padding: 6px 10px; border: 0; border-radius: 7px; background: #1a8ba6; color: white; font: inherit; text-decoration: none; cursor: pointer; }
+    .update a { background: #6e6e73; }
   </style>
 </head>
 <body>
   <h1 id="title">Display settings</h1>
+  <div id="update" class="update">
+    <div id="update-title" class="update-title"></div>
+    <div class="update-actions">
+      <a href="https://github.com/taka-avantgarde/ai-usage-barometer/releases/latest" target="_blank" data-i18n="releaseNotes">Release notes</a>
+      <button id="install-update" type="button" data-i18n="installUpdate">Update now</button>
+    </div>
+  </div>
   <section>
     <h2>Claude</h2>
     <label><input id="claude_on" type="checkbox"> <span data-i18n="showClaude">Show Claude</span></label>
@@ -34,7 +47,10 @@
   <section>
     <h2>Codex</h2>
     <label><input id="codex_on" type="checkbox"> <span data-i18n="showCodex">Show Codex</span></label>
-    <label class="child codex-child"><input id="cxp" type="checkbox"> <span data-i18n="codexPct">Codex percentage</span></label>
+    <label class="child codex-child"><input id="cx5" type="checkbox"> <span data-i18n="showCodex5h">Show Codex 5h</span></label>
+    <label class="child codex-child"><input id="cx5p" type="checkbox"> <span data-i18n="codex5hPct">Codex 5h percentage</span></label>
+    <label class="child codex-child"><input id="cx7" type="checkbox"> <span data-i18n="showCodex7d">Show Codex 7d</span></label>
+    <label class="child codex-child"><input id="cx7p" type="checkbox"> <span data-i18n="codex7dPct">Codex 7d percentage</span></label>
   </section>
   <section>
     <h2 data-i18n="interval">Refresh interval</h2>
@@ -59,10 +75,10 @@
   <div id="status" class="status" aria-live="polite"></div>
   <script>
     const params = new URLSearchParams(location.search);
-    const toggleIds = ['claude_on', 'c5', 'c5p', 'c7', 'c7p', 'codex_on', 'cxp'];
+    const toggleIds = ['claude_on', 'c5', 'c5p', 'c7', 'c7p', 'codex_on', 'cx5', 'cx5p', 'cx7', 'cx7p'];
     const copy = {
-      en: { title:'Display settings', showClaude:'Show Claude', showClaude5h:'Show Claude 5h', claude5hPct:'Claude 5h percentage', showClaude7d:'Show Claude 7d', claude7dPct:'Claude 7d percentage', showCodex:'Show Codex', codexPct:'Codex percentage', interval:'Refresh interval (minutes)', language:'Language', saved:'Saved' },
-      ja: { title:'表示設定', showClaude:'Claude を表示', showClaude5h:'Claude 5h を表示', claude5hPct:'Claude 5h の％', showClaude7d:'Claude 7d を表示', claude7dPct:'Claude 7d の％', showCodex:'Codex を表示', codexPct:'Codex の％', interval:'更新間隔（分）', language:'言語', saved:'保存しました' }
+      en: { title:'Display settings', showClaude:'Show Claude', showClaude5h:'Show Claude 5h', claude5hPct:'Claude 5h percentage', showClaude7d:'Show Claude 7d', claude7dPct:'Claude 7d percentage', showCodex:'Show Codex', showCodex5h:'Show Codex 5h', codex5hPct:'Codex 5h percentage', showCodex7d:'Show Codex 7d', codex7dPct:'Codex 7d percentage', interval:'Refresh interval (minutes)', language:'Language', saved:'Saved', updateAvailable:'Update {v} is available', releaseNotes:'Release notes', installUpdate:'Update now' },
+      ja: { title:'表示設定', showClaude:'Claude を表示', showClaude5h:'Claude 5h を表示', claude5hPct:'Claude 5h の％', showClaude7d:'Claude 7d を表示', claude7dPct:'Claude 7d の％', showCodex:'Codex を表示', showCodex5h:'Codex 5h を表示', codex5hPct:'Codex 5h の％', showCodex7d:'Codex 7d を表示', codex7dPct:'Codex 7d の％', interval:'更新間隔（分）', language:'言語', saved:'保存しました', updateAvailable:'アップデート {v} を利用できます', releaseNotes:'更新内容', installUpdate:'今すぐ更新' }
     };
 
     function setLanguage() {
@@ -73,6 +89,10 @@
       document.querySelectorAll('[data-i18n]').forEach(node => {
         node.textContent = text[node.dataset.i18n] || copy.en[node.dataset.i18n];
       });
+      const version = params.get('update');
+      if (version) {
+        document.querySelector('#update-title').textContent = text.updateAvailable.replace('{v}', version);
+      }
     }
 
     function muteChildren(service) {
@@ -105,6 +125,11 @@
     const language = document.querySelector('#lang');
     language.value = params.get('lang') || 'en';
     language.addEventListener('change', () => { setLanguage(); save('lang', language.value); });
+    const updateVersion = params.get('update');
+    document.querySelector('#update').classList.toggle('visible', Boolean(updateVersion));
+    document.querySelector('#install-update').addEventListener('click', () => {
+      location.href = 'swiftbar://refreshplugin?name=claude-codex.60s.sh&AUB_ACTION=update';
+    });
     muteChildren('claude');
     muteChildren('codex');
     setLanguage();

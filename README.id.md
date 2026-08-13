@@ -44,13 +44,18 @@ Klik bilah lalu pilih **⚙ Pengaturan tampilan**. Panel pengaturan tetap terbuk
 | Tampilkan Claude 7d | Tampilkan atau sembunyikan jendela 7 hari |
 | Persentase Claude 7d | Tampilkan atau sembunyikan persentasenya |
 | Tampilkan Codex | Tampilkan atau sembunyikan Codex |
-| Persentase Codex | Tampilkan atau sembunyikan persentase Codex |
+| Tampilkan Codex 5h | Tampilkan atau sembunyikan jendela 5 jam bila tersedia |
+| Persentase Codex 5h | Tampilkan atau sembunyikan persentase 5 jam |
+| Tampilkan Codex 7d | Tampilkan atau sembunyikan jendela 7 hari |
+| Persentase Codex 7d | Tampilkan atau sembunyikan persentase 7 hari |
 | Interval penyegaran | 1, 3, atau 5 menit |
 | Bahasa | 14 bahasa; mengikuti macOS secara bawaan |
 
-Menyembunyikan semuanya akan menyisakan item kosong yang tak bisa diklik, sehingga bilah 5 jam Claude selalu dipertahankan. Warna hanya ditentukan oleh bilah yang tampil. Pengaturan tersimpan di `~/.cache/claude-codex-bar/` dan bertahan setelah pembaruan.
+Saat semua meter disembunyikan, item netral `AI …` tetap tersedia untuk membuka pengaturan. Warna hanya ditentukan oleh bilah yang tampil. Pengaturan tersimpan di `~/.cache/claude-codex-bar/` dan bertahan setelah pembaruan.
 
 Saat Claude atau Codex dinonaktifkan, pembaruan data untuk layanan tersebut dihentikan. Pengaturan 5 jam, 7 hari, dan persentase tetap terlihat redup serta terkunci; nilai sebelumnya dipulihkan saat layanan diaktifkan kembali.
+
+Plugin memeriksa GitHub Releases paling banyak sekali sehari. Jika ada pembaruan dari operator, menu dan pengaturan menampilkan pemberitahuan, catatan rilis, dan **Perbarui sekarang**.
 
 ## Sumber data
 

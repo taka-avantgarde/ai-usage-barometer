@@ -44,13 +44,18 @@ Open het menu en kies **⚙ Weergave-instellingen**. Het instellingenpaneel blij
 | Claude 7d tonen | Venster van 7 dagen tonen of verbergen |
 | Percentage van Claude 7d | Bijbehorend percentage tonen of verbergen |
 | Codex tonen | Codex tonen of verbergen |
-| Percentage van Codex | Codex-percentages tonen of verbergen |
+| Codex 5h tonen | Het 5-uursvenster tonen of verbergen wanneer beschikbaar |
+| Percentage van Codex 5h | Het 5-uurspercentage tonen of verbergen |
+| Codex 7d tonen | Het 7-daagse venster tonen of verbergen |
+| Percentage van Codex 7d | Het 7-daagse percentage tonen of verbergen |
 | Vernieuwingsinterval | 1, 3 of 5 minuten |
 | Taal | 14 talen; volgt standaard macOS |
 
-Alles verbergen zou een leeg, niet-klikbaar item opleveren; daarom blijft de 5-uursbalk van Claude altijd staan. De kleur volgt alleen zichtbare balken. Instellingen staan in `~/.cache/claude-codex-bar/` en blijven behouden.
+Wanneer alle meters verborgen zijn, blijft een neutraal item `AI …` beschikbaar om de instellingen te openen. De kleur volgt alleen zichtbare balken. Instellingen staan in `~/.cache/claude-codex-bar/` en blijven behouden.
 
 Wanneer Claude of Codex wordt uitgeschakeld, stopt het vernieuwen van de gegevens voor die dienst. De instellingen voor 5h, 7d en percentages blijven gedimd en vergrendeld; bij opnieuw inschakelen worden de vorige waarden hersteld.
+
+De plugin controleert GitHub Releases maximaal eenmaal per dag. Bij een update van de beheerder tonen menu en instellingen een melding, release-opmerkingen en **Nu bijwerken**.
 
 ## Gegevensbronnen
 
