@@ -66,15 +66,29 @@ tg() { # tg <file> <current> <label>
   local nx=$([ "$2" = 1 ] && echo 0 || echo 1)
   echo "--$3$([ "$2" = 1 ] && echo '  ✓') | shell=/bin/bash param1=-c param2=\"echo $nx > '$CFG/$1'\" terminal=false refresh=true"
 }
+tg_disabled() { # Keep child settings visible, but prevent changes while its service is off.
+  echo "--$1 | color=#666666 disabled=true"
+}
 settings_menu() {
   echo "⚙ $T_SET | size=12"
   tg claude_on "$CL_ON" "$(sub "$T_SHOW" "Claude")"
-  tg c5  "$C5"  "$(sub "$T_SHOW" "Claude 5h")"
-  tg c5p "$C5P" "$(sub "$T_PCTOF" "Claude 5h")"
-  tg c7  "$C7"  "$(sub "$T_SHOW" "Claude 7d")"
-  tg c7p "$C7P" "$(sub "$T_PCTOF" "Claude 7d")"
+  if [ "$CL_ON" = 1 ]; then
+    tg c5  "$C5"  "$(sub "$T_SHOW" "Claude 5h")"
+    tg c5p "$C5P" "$(sub "$T_PCTOF" "Claude 5h")"
+    tg c7  "$C7"  "$(sub "$T_SHOW" "Claude 7d")"
+    tg c7p "$C7P" "$(sub "$T_PCTOF" "Claude 7d")"
+  else
+    tg_disabled "$(sub "$T_SHOW" "Claude 5h")"
+    tg_disabled "$(sub "$T_PCTOF" "Claude 5h")"
+    tg_disabled "$(sub "$T_SHOW" "Claude 7d")"
+    tg_disabled "$(sub "$T_PCTOF" "Claude 7d")"
+  fi
   tg codex_on "$CX_ON" "$(sub "$T_SHOW" "Codex")"
-  tg cxp "$CXP" "$(sub "$T_PCTOF" "Codex")"
+  if [ "$CX_ON" = 1 ]; then
+    tg cxp "$CXP" "$(sub "$T_PCTOF" "Codex")"
+  else
+    tg_disabled "$(sub "$T_PCTOF" "Codex")"
+  fi
   echo "⏱ $T_IV: ${IV}$T_MIN | size=12"
   local m c nm
   for m in 1 3 5; do

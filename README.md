@@ -49,6 +49,8 @@ Open the dropdown and use **⚙ Display settings**. Every entry toggles on click
 
 Hiding everything would leave an unclickable empty item, so the plugin always keeps Claude's 5-hour bar. Menu-bar colour is decided only by the gauges actually shown. Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
 
+Turning Claude or Codex off skips that service's data refresh. Its 5h, 7d, and percentage settings remain visible but are dimmed and locked; their previous values are restored when the service is turned on again.
+
 ## Data sources
 
 **Claude** is read from the OAuth usage endpoint `api.anthropic.com/api/oauth/usage`, using the access token Claude Code already stores in the macOS Keychain item `Claude Code-credentials` (falling back to `~/.claude/.credentials.json`). Nothing is written to either location, and the token never leaves your Mac except in the request to Anthropic. macOS may ask you to allow Keychain access on first run — choose **Always Allow**.
