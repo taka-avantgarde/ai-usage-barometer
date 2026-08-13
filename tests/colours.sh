@@ -98,19 +98,30 @@ exit 99
 STOP
 chmod +x "$TMP/should-not-run.sh"
 DISABLED_OUT="$(HOME="$TMP/home" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
-grep -q -- '--Codex percentage | color=#666666$' <<< "$DISABLED_OUT"
-! grep -A1 -- '--Codex percentage | color=#666666$' <<< "$DISABLED_OUT" | grep -q 'shell='
+grep -q -- '--Codex percentage | color=#6E6E73,#8E8E93$' <<< "$DISABLED_OUT"
+! grep -A1 -- '--Codex percentage | color=#6E6E73,#8E8E93$' <<< "$DISABLED_OUT" | grep -q 'shell='
 ! grep -q 'must not run' <<< "$DISABLED_OUT"
 printf '1\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
 
 # A disabled Claude service uses the same muted, locked child rows.
 printf '0\n' > "$TMP/home/.cache/claude-codex-bar/claude_on"
 DISABLED_CLAUDE="$(HOME="$TMP/home" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" "$ROOT/claude-codex.60s.sh")"
-grep -q -- '--Show Claude 5h | color=#666666$' <<< "$DISABLED_CLAUDE"
-grep -q -- '--Show Claude 7d | color=#666666$' <<< "$DISABLED_CLAUDE"
-grep -q -- '--Claude 5h percentage | color=#666666$' <<< "$DISABLED_CLAUDE"
-! grep -A1 -- '--Show Claude 5h | color=#666666$' <<< "$DISABLED_CLAUDE" | grep -q 'shell='
+grep -q -- '--Show Claude 5h | color=#6E6E73,#8E8E93$' <<< "$DISABLED_CLAUDE"
+grep -q -- '--Show Claude 7d | color=#6E6E73,#8E8E93$' <<< "$DISABLED_CLAUDE"
+grep -q -- '--Claude 5h percentage | color=#6E6E73,#8E8E93$' <<< "$DISABLED_CLAUDE"
+! grep -A1 -- '--Show Claude 5h | color=#6E6E73,#8E8E93$' <<< "$DISABLED_CLAUDE" | grep -q 'shell='
+
+# Disabling both services must not silently re-enable Claude. The header remains
+# clickable through the neutral fallback while every child row stays muted.
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
+BOTH_DISABLED="$(HOME="$TMP/home" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
+grep -q '^AI … |' <<< "$BOTH_DISABLED"
+grep -q -- '--Show Claude 5h | color=#6E6E73,#8E8E93$' <<< "$BOTH_DISABLED"
+grep -q -- '--Codex percentage | color=#6E6E73,#8E8E93$' <<< "$BOTH_DISABLED"
+! grep -q '^Claude |' <<< "$BOTH_DISABLED"
+! grep -q '^Codex |' <<< "$BOTH_DISABLED"
 printf '1\n' > "$TMP/home/.cache/claude-codex-bar/claude_on"
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
 
 # Small menu-bar marks need enough contrast against the common light-gray
 # translucent macOS background. Keep even the healthy stages near 3:1.
