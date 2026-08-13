@@ -3,7 +3,7 @@
 # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 set -euo pipefail
 
-VERSION="0.2.7"
+VERSION="0.3.1"
 REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 BRANCH="${AI_USAGE_BRANCH:-main}"
 PLUGIN_DIR="${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}"
@@ -70,6 +70,7 @@ install_repo_file "$PLUGIN" "$TARGET"
 install_repo_file "claude-usage.sh" "$SUPPORT_DIR/claude-usage.sh"
 install_repo_file "claude-statusline-capture.sh" "$CLAUDE_CAPTURE_TARGET"
 install_repo_file "configure-claude-statusline.sh" "$SUPPORT_DIR/configure-claude-statusline.sh"
+install_repo_file "settings.html" "$SUPPORT_DIR/settings.html"
 
 if [[ -n "${AI_USAGE_CODEX_SOURCE:-}" && -f "$AI_USAGE_CODEX_SOURCE" ]]; then
   install -m 755 "$AI_USAGE_CODEX_SOURCE" "$SUPPORT_DIR/codex-usage.sh"

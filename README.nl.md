@@ -34,7 +34,7 @@ mengkleuren duidelijk blauw:
 
 ## Instellingen
 
-Open het menu en gebruik **⚙ Weergave-instellingen**. Elk item schakelt met één klik en werkt direct.
+Open het menu en kies **⚙ Weergave-instellingen**. Het instellingenpaneel blijft open, zodat je meerdere opties achter elkaar kunt wijzigen zonder het na elke klik opnieuw te openen. Wijzigingen werken direct.
 
 | Instelling | Effect |
 |---|---|

@@ -34,7 +34,7 @@ Codex mempertahankan unsur biru kuat pada kedua campuran:
 
 ## Pengaturan
 
-Klik bilah dan gunakan **⚙ Pengaturan tampilan**. Setiap entri beralih saat diklik dan langsung berlaku.
+Klik bilah lalu pilih **⚙ Pengaturan tampilan**. Panel pengaturan tetap terbuka sehingga beberapa opsi dapat diubah berurutan tanpa membukanya lagi setelah setiap klik. Perubahan langsung berlaku.
 
 | Pengaturan | Efek |
 |---|---|

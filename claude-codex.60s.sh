@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.3.0</xbar.version>
+# <xbar.version>v0.3.1</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
@@ -15,10 +15,11 @@
 # <swiftbar.hideRunInTerminal>true</swiftbar.hideRunInTerminal>
 # <swiftbar.hideLastUpdated>true</swiftbar.hideLastUpdated>
 # <swiftbar.refreshOnOpen>true</swiftbar.refreshOnOpen>
+# <swiftbar.persistentWebView>true</swiftbar.persistentWebView>
 #
 # License: MIT
 #
-VERSION="v0.3.0"
+VERSION="v0.3.1"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -27,6 +28,7 @@ FILL="█"; EMPTY="░"; FONT="font=Menlo size=12"; SCALE="auto"
 
 SELF_DIR="$(cd "$(dirname "${SWIFTBAR_PLUGIN_PATH:-$0}")" 2>/dev/null && pwd)"
 CODEX_HELPER="${CODEX_HELPER:-$SELF_DIR/.ai-usage-barometer/codex-usage.sh}"
+SETTINGS_PAGE="${AI_USAGE_SETTINGS_PAGE:-$SELF_DIR/.ai-usage-barometer/settings.html}"
 
 # ── 表示設定 ──
 CFG="$HOME/.cache/claude-codex-bar"; mkdir -p "$CFG" 2>/dev/null
@@ -35,6 +37,39 @@ CL_ON=$(rd claude_on); C5=$(rd c5); C5P=$(rd c5p); C7=$(rd c7); C7P=$(rd c7p)
 CX_ON=$(rd codex_on); CXP=$(rd cxp)
 IV=3; [ -f "$CFG/iv" ] && read -r IV < "$CFG/iv" 2>/dev/null
 case "$IV" in 1|3|5) ;; *) IV=3 ;; esac
+
+# SwiftBar's refresh URL exposes extra query items as environment variables.
+# The persistent settings web view uses that channel so several switches can
+# be changed without dismissing the popover after every click.
+apply_web_setting() {
+  local key="${AUB_KEY:-}" value="${AUB_VALUE:-}"
+  case "$key" in
+    claude_on|codex_on|c5|c5p|c7|c7p|cxp)
+      case "$value" in 0|1) printf '%s\n' "$value" > "$CFG/$key" ;; esac
+      ;;
+    iv)
+      case "$value" in
+        1|3|5)
+          printf '%s\n' "$value" > "$CFG/iv"
+          mkdir -p "$HOME/.cache/codex-usage-barometer"
+          printf '%s\n' "$((value*60))" > "$HOME/.cache/codex-usage-barometer/interval"
+          ;;
+      esac
+      ;;
+    lang)
+      case "$value" in en|ja|es|ar|fr|de|zh|ko|pt|nl|it|vi|id|th) printf '%s\n' "$value" > "$CFG/lang" ;; esac
+      ;;
+  esac
+}
+[ -n "${AUB_KEY:-}" ] && apply_web_setting
+# Refresh values after a web-view action so the same invocation renders the
+# updated menu-bar state rather than the values read before applying it.
+if [ -n "${AUB_KEY:-}" ]; then
+  CL_ON=$(rd claude_on); C5=$(rd c5); C5P=$(rd c5p); C7=$(rd c7); C7P=$(rd c7p)
+  CX_ON=$(rd codex_on); CXP=$(rd cxp)
+  IV=3; [ -f "$CFG/iv" ] && read -r IV < "$CFG/iv" 2>/dev/null
+  case "$IV" in 1|3|5) ;; *) IV=3 ;; esac
+fi
 
 # ── 言語（設定 > 言語 で切替。既定は macOS の言語）──
 LANGF="$CFG/lang"
@@ -62,61 +97,22 @@ esac
 # ここで片方を強制的にオンへ戻すと、無効化した子設定が通常表示へ戻ってしまう。
 [ "$CL_ON" = 1 ] && [ "$C5" = 0 ] && [ "$C7" = 0 ] && C5=1
 
-tg() { # tg <file> <current> <label>
-  local nx=$([ "$2" = 1 ] && echo 0 || echo 1)
-  echo "--$3$([ "$2" = 1 ] && echo '  ✓') | shell=/bin/bash param1=-c param2=\"echo $nx > '$CFG/$1'\" terminal=false refresh=true"
-}
-tg_disabled() { # Keep child settings visible, but omit an action while its service is off.
-  # SwiftBar has no supported disabled=true item parameter. An actionless item
-  # is therefore the reliable lock: it remains visible and muted, but cannot
-  # write a child setting until the parent service is enabled again.
-  echo "--$1 | color=#6E6E73,#8E8E93"
+uri() {
+  python3 - "$1" <<'PY'
+import pathlib
+import sys
+import urllib.parse
+
+print(pathlib.Path(sys.argv[1]).resolve().as_uri().replace("#", "%23"))
+PY
 }
 settings_menu() {
-  echo "⚙ $T_SET | size=12"
-  tg claude_on "$CL_ON" "$(sub "$T_SHOW" "Claude")"
-  if [ "$CL_ON" = 1 ]; then
-    tg c5  "$C5"  "$(sub "$T_SHOW" "Claude 5h")"
-    tg c5p "$C5P" "$(sub "$T_PCTOF" "Claude 5h")"
-    tg c7  "$C7"  "$(sub "$T_SHOW" "Claude 7d")"
-    tg c7p "$C7P" "$(sub "$T_PCTOF" "Claude 7d")"
+  local page="$SETTINGS_PAGE"
+  if [ -f "$page" ]; then
+    echo "⚙ $T_SET | size=12 href=$(uri "$page")?claude_on=$CL_ON&c5=$C5&c5p=$C5P&c7=$C7&c7p=$C7P&codex_on=$CX_ON&cxp=$CXP&iv=$IV&lang=$LG webview=true webvieww=430 webviewh=660"
   else
-    tg_disabled "$(sub "$T_SHOW" "Claude 5h")"
-    tg_disabled "$(sub "$T_PCTOF" "Claude 5h")"
-    tg_disabled "$(sub "$T_SHOW" "Claude 7d")"
-    tg_disabled "$(sub "$T_PCTOF" "Claude 7d")"
+    echo "⚠ $T_SET | size=12 color=#FF9F0A tooltip=Settings helper missing; re-run the installer"
   fi
-  tg codex_on "$CX_ON" "$(sub "$T_SHOW" "Codex")"
-  if [ "$CX_ON" = 1 ]; then
-    tg cxp "$CXP" "$(sub "$T_PCTOF" "Codex")"
-  else
-    tg_disabled "$(sub "$T_PCTOF" "Codex")"
-  fi
-  echo "⏱ $T_IV: ${IV}$T_MIN | size=12"
-  local m c nm
-  for m in 1 3 5; do
-    echo "--${m}$T_MIN$([ "$IV" = "$m" ] && echo '  ✓') | shell=/bin/bash param1=-c param2=\"echo $m > '$CFG/iv'; mkdir -p '$HOME/.cache/codex-usage-barometer'; echo $((m*60)) > '$HOME/.cache/codex-usage-barometer/interval'\" terminal=false refresh=true"
-  done
-  echo "🌐 $T_LANG | size=12"
-  for c in en ja es ar fr de zh ko pt nl it vi id th; do
-    case "$c" in
-    en) nm="English" ;;
-    ja) nm="日本語" ;;
-    es) nm="Español" ;;
-    ar) nm="العربية" ;;
-    fr) nm="Français" ;;
-    de) nm="Deutsch" ;;
-    zh) nm="简体中文" ;;
-    ko) nm="한국어" ;;
-    pt) nm="Português" ;;
-    nl) nm="Nederlands" ;;
-    it) nm="Italiano" ;;
-    vi) nm="Tiếng Việt" ;;
-    id) nm="Bahasa Indonesia" ;;
-    th) nm="ไทย" ;;
-    esac
-    echo "--${nm}$([ "$LG" = "$c" ] && echo '  ✓') | shell=/bin/bash param1=-c param2=\"echo $c > '$LANGF'\" terminal=false refresh=true"
-  done
 }
 
 to_pct() { local v="$1"; [ -z "$v" ] && { echo "-1"; return; }

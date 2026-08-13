@@ -34,7 +34,7 @@ mantiene una forte componente blu in entrambe le miscele:
 
 ## Impostazioni
 
-Apri il menu e usa **⚙ Impostazioni di visualizzazione**. Ogni voce si alterna con un clic e ha effetto immediato.
+Apri il menu e scegli **⚙ Impostazioni di visualizzazione**. Il pannello resta aperto, così puoi modificare più opzioni di seguito senza riaprirlo dopo ogni clic. Le modifiche hanno effetto immediato.
 
 | Impostazione | Effetto |
 |---|---|

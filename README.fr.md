@@ -34,7 +34,7 @@ conserve du bleu dans les deux mélanges :
 
 ## Réglages
 
-Ouvrez le menu et utilisez **⚙ Réglages d’affichage**. Chaque entrée bascule au clic et s’applique immédiatement.
+Ouvrez le menu et choisissez **⚙ Réglages d’affichage**. Le panneau reste ouvert afin de modifier plusieurs options à la suite sans qu’il se ferme après chaque clic. Les changements s’appliquent immédiatement.
 
 | Réglage | Effet |
 |---|---|

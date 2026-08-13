@@ -34,7 +34,7 @@ beiden Mischungen einen starken Blauanteil:
 
 ## Einstellungen
 
-Öffne das Menü und nutze **⚙ Anzeigeeinstellungen**. Jeder Eintrag schaltet per Klick um und wirkt sofort.
+Öffne das Menü und wähle **⚙ Anzeigeeinstellungen**. Das Einstellungsfenster bleibt geöffnet, sodass mehrere Optionen nacheinander geändert werden können, ohne dass es sich nach jedem Klick schließt. Änderungen wirken sofort.
 
 | Einstellung | Wirkung |
 |---|---|
