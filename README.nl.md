@@ -50,6 +50,8 @@ Open het menu en gebruik **⚙ Weergave-instellingen**. Elk item schakelt met é
 
 Alles verbergen zou een leeg, niet-klikbaar item opleveren; daarom blijft de 5-uursbalk van Claude altijd staan. De kleur volgt alleen zichtbare balken. Instellingen staan in `~/.cache/claude-codex-bar/` en blijven behouden.
 
+Wanneer Claude of Codex wordt uitgeschakeld, stopt het vernieuwen van de gegevens voor die dienst. De instellingen voor 5h, 7d en percentages blijven gedimd en vergrendeld; bij opnieuw inschakelen worden de vorige waarden hersteld.
+
 ## Gegevensbronnen
 
 **Claude** wordt gelezen van het OAuth-eindpunt `api.anthropic.com/api/oauth/usage`, met het token dat Claude Code al bewaart in de macOS-sleutelhanger (`Claude Code-credentials`, anders `~/.claude/.credentials.json`). Er wordt niets naar geschreven en het token verlaat je Mac alleen in het verzoek aan Anthropic. Kies bij de eerste keer **Altijd toestaan**.

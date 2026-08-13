@@ -48,6 +48,8 @@ Claude 与 Codex 共用一项，中间以细线分隔。进度条为电量式：
 
 若全部隐藏会留下无法点击的空项，因此始终保留 Claude 的 5 小时进度条。颜色只由实际显示的进度条决定。设置保存在 `~/.cache/claude-codex-bar/`，升级后仍保留。
 
+取消 Claude 或 Codex 的勾选后，该服务将停止更新数据。5 小时、7 天和百分比设置仍会以灰暗且不可操作的状态显示；重新启用服务时会恢复之前的设置值。
+
 ## 数据来源
 
 **Claude** 读取 OAuth 用量端点 `api.anthropic.com/api/oauth/usage`，使用 Claude Code 已保存在 macOS 钥匙串 `Claude Code-credentials`（或 `~/.claude/.credentials.json`）中的令牌。不会写入这两处，令牌除发往 Anthropic 的请求外不会离开本机。首次运行请选择 **始终允许**。

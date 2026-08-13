@@ -50,6 +50,8 @@ Codex는 시안을 사용합니다. 잔여량이 11–30%이면 경고색에 오
 
 모두 숨기면 클릭할 수 없는 빈 항목이 되므로 Claude의 5시간 막대는 항상 남습니다. 색은 실제로 표시 중인 막대만으로 결정됩니다. 설정은 `~/.cache/claude-codex-bar/`에 저장되어 업데이트 후에도 유지됩니다.
 
+Claude 또는 Codex를 끄면 해당 서비스의 데이터 갱신이 중지됩니다. 5시간·7일·퍼센트 설정은 흐리게 표시되고 잠기며, 서비스를 다시 켜면 이전 설정값이 복원됩니다.
+
 ## 데이터 출처
 
 **Claude**는 OAuth 사용량 엔드포인트 `api.anthropic.com/api/oauth/usage`에서 읽습니다. 인증에는 Claude Code가 macOS 키체인 `Claude Code-credentials`(없으면 `~/.claude/.credentials.json`)에 저장해 둔 토큰을 사용합니다. 두 위치에 쓰지 않으며, 토큰은 Anthropic 요청 외에는 Mac을 벗어나지 않습니다. 첫 실행 시 **항상 허용**을 선택하세요.

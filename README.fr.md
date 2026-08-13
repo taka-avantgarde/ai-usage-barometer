@@ -50,6 +50,8 @@ Ouvrez le menu et utilisez **⚙ Réglages d’affichage**. Chaque entrée bascu
 
 Tout masquer laisserait un élément vide et non cliquable : la barre 5 heures de Claude est donc toujours conservée. La couleur ne dépend que des jauges affichées. Les réglages sont dans `~/.cache/claude-codex-bar/` et survivent aux mises à jour.
 
+Lorsque Claude ou Codex est désactivé, la mise à jour des données de ce service est arrêtée. Les réglages 5h, 7d et pourcentage restent grisés et verrouillés ; leurs valeurs précédentes sont restaurées lors de la réactivation.
+
 ## Sources de données
 
 **Claude** provient du point de terminaison OAuth `api.anthropic.com/api/oauth/usage`, avec le jeton que Claude Code stocke déjà dans le trousseau macOS (`Claude Code-credentials`, sinon `~/.claude/.credentials.json`). Rien n’y est écrit et le jeton ne quitte le Mac que dans la requête vers Anthropic. Au premier lancement, choisissez **Toujours autoriser**.
