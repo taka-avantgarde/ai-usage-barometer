@@ -44,13 +44,18 @@ beiden Mischungen einen starken Blauanteil:
 | Claude 7d anzeigen | 7-Tage-Fenster ein-/ausblenden |
 | Prozent von Claude 7d | Dessen Prozentwert ein-/ausblenden |
 | Codex anzeigen | Codex ein-/ausblenden |
-| Prozent von Codex | Codex-Prozentwerte ein-/ausblenden |
+| Codex 5h anzeigen | 5-Stunden-Fenster ein-/ausblenden, wenn verfügbar |
+| Prozent von Codex 5h | 5-Stunden-Prozentwert ein-/ausblenden |
+| Codex 7d anzeigen | 7-Tage-Fenster ein-/ausblenden |
+| Prozent von Codex 7d | 7-Tage-Prozentwert ein-/ausblenden |
 | Aktualisierungsintervall | 1, 3 oder 5 Minuten |
 | Sprache | 14 Sprachen; folgt standardmäßig macOS |
 
-Alles auszublenden ergäbe ein leeres, nicht anklickbares Element – der 5-Stunden-Balken von Claude bleibt daher immer erhalten. Die Farbe richtet sich nur nach sichtbaren Balken. Einstellungen liegen in `~/.cache/claude-codex-bar/` und überstehen Updates.
+Sind alle Anzeigen ausgeblendet, bleibt ein neutraler Eintrag `AI …`, über den die Einstellungen erreichbar sind. Die Farbe richtet sich nur nach sichtbaren Balken. Einstellungen liegen in `~/.cache/claude-codex-bar/` und überstehen Updates.
 
 Wenn Claude oder Codex deaktiviert wird, wird die Datenaktualisierung für diesen Dienst angehalten. Die Einstellungen für 5h, 7d und Prozent bleiben abgeblendet und gesperrt; beim erneuten Aktivieren werden ihre vorherigen Werte wiederhergestellt.
+
+Das Plugin prüft GitHub Releases höchstens einmal täglich. Ist ein Betreiber-Update verfügbar, zeigen Menü und Einstellungen einen Hinweis, Versionshinweise und **Jetzt aktualisieren**.
 
 ## Datenquellen
 

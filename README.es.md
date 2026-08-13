@@ -44,13 +44,18 @@ Abre el menú y elige **⚙ Ajustes de pantalla**. El panel permanece abierto pa
 | Mostrar Claude 7d | Mostrar u ocultar la ventana de 7 días |
 | Porcentaje de Claude 7d | Mostrar u ocultar su porcentaje |
 | Mostrar Codex | Mostrar u ocultar Codex |
-| Porcentaje de Codex | Mostrar u ocultar los porcentajes de Codex |
+| Mostrar Codex 5h | Mostrar u ocultar la ventana de 5 horas cuando esté disponible |
+| Porcentaje de Codex 5h | Mostrar u ocultar el porcentaje de 5 horas |
+| Mostrar Codex 7d | Mostrar u ocultar la ventana de 7 días |
+| Porcentaje de Codex 7d | Mostrar u ocultar el porcentaje de 7 días |
 | Intervalo de actualización | 1, 3 o 5 minutos |
 | Idioma | 14 idiomas; sigue a macOS por defecto |
 
-Ocultarlo todo dejaría un elemento vacío e imposible de pulsar, por eso siempre se conserva la barra de 5 horas de Claude. El color depende solo de las barras visibles. Los ajustes están en `~/.cache/claude-codex-bar/` y se conservan al actualizar.
+Si se ocultan todos los indicadores, queda un elemento neutro `AI …` para poder abrir los ajustes. El color depende solo de las barras visibles. Los ajustes están en `~/.cache/claude-codex-bar/` y se conservan al actualizar.
 
 Al desactivar Claude o Codex, se detiene la actualización de datos de ese servicio. Los ajustes de 5h, 7d y porcentaje permanecen atenuados y bloqueados; al volver a activarlo se restauran sus valores anteriores.
+
+El complemento comprueba GitHub Releases como máximo una vez al día. Si hay una actualización del operador, el menú y los ajustes muestran el aviso, las notas y **Actualizar ahora**.
 
 ## Fuentes de datos
 

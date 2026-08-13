@@ -44,13 +44,18 @@ Abra o menu e escolha **⚙ Configurações de exibição**. O painel permanece 
 | Mostrar Claude 7d | Mostrar ou ocultar a janela de 7 dias |
 | Porcentagem de Claude 7d | Mostrar ou ocultar sua porcentagem |
 | Mostrar Codex | Mostrar ou ocultar o Codex |
-| Porcentagem do Codex | Mostrar ou ocultar as porcentagens do Codex |
+| Mostrar Codex 5h | Mostrar ou ocultar a janela de 5 horas quando disponível |
+| Porcentagem do Codex 5h | Mostrar ou ocultar a porcentagem de 5 horas |
+| Mostrar Codex 7d | Mostrar ou ocultar a janela de 7 dias |
+| Porcentagem do Codex 7d | Mostrar ou ocultar a porcentagem de 7 dias |
 | Intervalo de atualização | 1, 3 ou 5 minutos |
 | Idioma | 14 idiomas; segue o macOS por padrão |
 
-Ocultar tudo deixaria um item vazio e sem clique, por isso a barra de 5 horas do Claude é sempre mantida. A cor considera apenas as barras visíveis. As configurações ficam em `~/.cache/claude-codex-bar/` e sobrevivem a atualizações.
+Quando todos os medidores estão ocultos, um item neutro `AI …` permanece para abrir as configurações. A cor considera apenas as barras visíveis. As configurações ficam em `~/.cache/claude-codex-bar/` e sobrevivem a atualizações.
 
 Ao desativar o Claude ou o Codex, a atualização de dados desse serviço é interrompida. As configurações de 5h, 7d e porcentagem permanecem esmaecidas e bloqueadas; ao reativar o serviço, os valores anteriores são restaurados.
+
+O plugin verifica o GitHub Releases no máximo uma vez por dia. Se houver atualização do operador, o menu e as configurações mostram o aviso, as notas e **Atualizar agora**.
 
 ## Fontes de dados
 

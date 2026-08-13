@@ -44,13 +44,18 @@ Ouvrez le menu et choisissez **⚙ Réglages d’affichage**. Le panneau reste o
 | Afficher Claude 7d | Afficher ou masquer la fenêtre 7 jours |
 | Pourcentage de Claude 7d | Afficher ou masquer son pourcentage |
 | Afficher Codex | Afficher ou masquer Codex |
-| Pourcentage de Codex | Afficher ou masquer les pourcentages Codex |
+| Afficher Codex 5h | Afficher ou masquer la fenêtre 5 heures si disponible |
+| Pourcentage de Codex 5h | Afficher ou masquer le pourcentage 5 heures |
+| Afficher Codex 7d | Afficher ou masquer la fenêtre 7 jours |
+| Pourcentage de Codex 7d | Afficher ou masquer le pourcentage 7 jours |
 | Intervalle d’actualisation | 1, 3 ou 5 minutes |
 | Langue | 14 langues ; suit macOS par défaut |
 
-Tout masquer laisserait un élément vide et non cliquable : la barre 5 heures de Claude est donc toujours conservée. La couleur ne dépend que des jauges affichées. Les réglages sont dans `~/.cache/claude-codex-bar/` et survivent aux mises à jour.
+Si toutes les jauges sont masquées, un élément neutre `AI …` reste disponible pour ouvrir les réglages. La couleur ne dépend que des jauges affichées. Les réglages sont dans `~/.cache/claude-codex-bar/` et survivent aux mises à jour.
 
 Lorsque Claude ou Codex est désactivé, la mise à jour des données de ce service est arrêtée. Les réglages 5h, 7d et pourcentage restent grisés et verrouillés ; leurs valeurs précédentes sont restaurées lors de la réactivation.
+
+Le module vérifie GitHub Releases au plus une fois par jour. Une mise à jour de l’opérateur est signalée dans le menu et les réglages, avec les notes et **Mettre à jour**.
 
 ## Sources de données
 
