@@ -46,7 +46,9 @@ A SwiftBar text item can carry only one colour, so the menu bar is drawn as a
 **PDF vector image**. That is what allows Claude and Codex to keep distinct
 colours inside a single item. The vector renderer is always used when
 `python3` is available; a plain-text fallback (one colour) is used only when
-the renderer is unavailable.
+the renderer is unavailable. The vector item has a dark charcoal backdrop
+(`#20252B`) with light labels, so the service colours remain legible on
+macOS's translucent light menu bar.
 
 Colour of the fallback: Claude's colour while Claude is shown, otherwise Codex's.
 

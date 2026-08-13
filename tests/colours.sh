@@ -58,6 +58,8 @@ import sys
 
 pdf = base64.b64decode(sys.argv[1]).decode("latin-1")
 for operation in (
+    "0.1255 0.1451 0.1686 rg 0.5 1.0",  # dark charcoal backdrop: #20252B
+    "0.92 0.94 0.96 rg",                  # light labels on the backdrop
     "0.7765 0.4275 0.1569 rg",  # Claude healthy: #C66D28
     "0.7725 0.1804 0.1333 rg",  # Claude critical: #C52E22
     "0.1020 0.5451 0.6510 rg",  # Codex healthy: #1A8BA6

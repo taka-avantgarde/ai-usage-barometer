@@ -259,14 +259,16 @@ spec=[x for x in sys.argv[1].split(";") if x]
 def rgb(h):
     h=h.lstrip("#"); return tuple(int(h[i:i+2],16)/255 for i in (0,2,4))
 X=2.0; ops=[]; CW=6.2; BARW=30.0; BY=4.0; BH=10.0
+TEXT_COL="0.92 0.94 0.96 rg"
 for item in spec:
     if item=="|":
         ops.append("0.55 0.55 0.55 RG 0.8 w %.1f 3 m %.1f 15 l S"%(X+3,X+3)); X+=10.0; continue
     label,rem,hexc,showp=item.split(",")
     rem=max(0,min(100,int(rem))); r,g,b=rgb(hexc)
     col="%.4f %.4f %.4f"%(r,g,b)
-    ops.append("%s rg"%col)
+    ops.append(TEXT_COL)
     ops.append("BT /F1 11 Tf %.1f 5 Td (%s) Tj ET"%(X,label)); X+=len(label)*CW+3
+    ops.append("%s rg"%col)
     fw=BARW*rem/100.0
     if fw>=0.5: ops.append("%.1f %.1f %.1f %.1f re f"%(X,BY,fw,BH))
     # 消費分はドロップダウンの ░ と同じ「全高の網目」。ただし密度は控えめ
@@ -284,9 +286,12 @@ for item in spec:
     X+=BARW+4
     if showp=="1":
         t="%d%%"%rem
+        ops.append(TEXT_COL)
         ops.append("BT /F1 11 Tf %.1f 5 Td (%s) Tj ET"%(X,t)); X+=len(t)*CW+2
     X+=5.0
 W=X+2
+BG_LEFT=0.5; BG_BOTTOM=1.0; BG_WIDTH=W-1.0; BG_HEIGHT=16.0
+ops.insert(0, "0.1255 0.1451 0.1686 rg %.1f %.1f %.1f %.1f re f"%(BG_LEFT,BG_BOTTOM,BG_WIDTH,BG_HEIGHT))
 sb=("\n".join(ops)+"\n").encode()
 objs=[(1,b"<< /Type /Catalog /Pages 2 0 R >>"),
       (2,b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>"),
