@@ -66,8 +66,11 @@ tg() { # tg <file> <current> <label>
   local nx=$([ "$2" = 1 ] && echo 0 || echo 1)
   echo "--$3$([ "$2" = 1 ] && echo '  ✓') | shell=/bin/bash param1=-c param2=\"echo $nx > '$CFG/$1'\" terminal=false refresh=true"
 }
-tg_disabled() { # Keep child settings visible, but prevent changes while its service is off.
-  echo "--$1 | color=#666666 disabled=true"
+tg_disabled() { # Keep child settings visible, but omit an action while its service is off.
+  # SwiftBar has no supported disabled=true item parameter. An actionless item
+  # is therefore the reliable lock: it remains visible and muted, but cannot
+  # write a child setting until the parent service is enabled again.
+  echo "--$1 | color=#666666"
 }
 settings_menu() {
   echo "⚙ $T_SET | size=12"
