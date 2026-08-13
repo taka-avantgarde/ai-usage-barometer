@@ -34,7 +34,7 @@ misturas:
 
 ## Configurações
 
-Abra o menu e use **⚙ Configurações de exibição**. Cada item alterna com um clique e vale imediatamente.
+Abra o menu e escolha **⚙ Configurações de exibição**. O painel permanece aberto para alterar várias opções em sequência, sem fechar após cada clique. As mudanças entram em vigor imediatamente.
 
 | Ajuste | Efeito |
 |---|---|

@@ -33,7 +33,7 @@ less, critical shades mix in vivid red. Codex keeps blue in both blends:
 
 ## Settings
 
-Open the dropdown and use **⚙ Display settings**. Every entry toggles on click and takes effect immediately in both the menu bar and the dropdown.
+Open the dropdown and choose **⚙ Display settings**. It opens a persistent settings panel, so you can change several options without the panel closing after each click. Changes take effect immediately.
 
 | Setting | Effect |
 |---|---|

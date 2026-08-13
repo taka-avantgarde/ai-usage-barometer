@@ -29,6 +29,7 @@ for script in \
   claude-statusline-capture.sh configure-claude-statusline.sh tests/colours.sh tests/run.sh; do
   bash -n "$ROOT/$script"
 done
+grep -q 'swiftbar://refreshplugin?name=claude-codex.60s.sh' "$ROOT/settings.html"
 
 "$ROOT/tests/colours.sh"
 
@@ -196,9 +197,10 @@ HOME="$INSTALL_HOME" \
 AI_USAGE_TEST_MODE=1 AI_USAGE_LOCAL_SOURCE="$ROOT" \
 SWIFTBAR_PLUGIN_DIR="$INSTALL_HOME/SwiftBar" \
   "$ROOT/install.sh" >/dev/null
-[[ -x "$INSTALL_HOME/SwiftBar/ai-usage.60s.sh" ]]
+[[ -x "$INSTALL_HOME/SwiftBar/claude-codex.60s.sh" ]]
 [[ -x "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/claude-usage.sh" ]]
 [[ -x "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/codex-usage.sh" ]]
+[[ -r "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/settings.html" ]]
 [[ -x "$INSTALL_HOME/.claude/ai-usage-barometer-statusline.sh" ]]
 ! grep -q ';;&' "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/codex-usage.sh"
 jq -e --arg wrapper "$INSTALL_HOME/.claude/ai-usage-barometer-statusline.sh" '.theme == "dark" and .statusLine.command == $wrapper and .statusLine.padding == 3' "$INSTALL_HOME/.claude/settings.json" >/dev/null

@@ -17,6 +17,9 @@ for doc in "$ROOT"/README*.md "$ROOT/DESIGN.md"; do
     grep -q "#$colour" "$doc"
   done
 done
+for doc in "$ROOT"/README*.md; do
+  grep -Eqi 'persistent settings panel|開いたまま|permanece abierto|تبقى .*مفتوحة|reste ouvert|bleibt geöffnet|保持打开|열린 상태|permanece aberto|blijft open|resta aperto|vẫn mở|tetap terbuka|เปิดค้างไว้' "$doc"
+done
 
 for entry in \
   claude-healthy:C66D28 claude-warning:B65A1E claude-critical:C52E22 \
@@ -88,8 +91,8 @@ CODEX_CRITICAL="$(HOME="$TMP/home" CODEX_USED=90 CODEX_HELPER="$TMP/codex-stage.
 grep -q '^7d  .*color=#52768A$' <<< "$CODEX_WARNING"
 grep -q '^7d  .*color=#783F78$' <<< "$CODEX_CRITICAL"
 
-# Turning a service off skips its helper/API work while keeping child settings
-# visible as non-interactive, muted rows. Existing child values are preserved.
+# Turning a service off skips its helper/API work. Display settings are supplied
+# by a persistent web view whose child controls are muted and disabled in place.
 printf '0\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
 cat > "$TMP/should-not-run.sh" <<'STOP'
 #!/usr/bin/env bash
@@ -97,29 +100,40 @@ echo "Codex helper must not run when Codex is disabled" >&2
 exit 99
 STOP
 chmod +x "$TMP/should-not-run.sh"
-DISABLED_OUT="$(HOME="$TMP/home" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
-grep -q -- '--Codex percentage | color=#6E6E73,#8E8E93$' <<< "$DISABLED_OUT"
-! grep -A1 -- '--Codex percentage | color=#6E6E73,#8E8E93$' <<< "$DISABLED_OUT" | grep -q 'shell='
+DISABLED_OUT="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
+grep -q 'webview=true' <<< "$DISABLED_OUT"
+grep -q 'codex_on=0' <<< "$DISABLED_OUT"
 ! grep -q 'must not run' <<< "$DISABLED_OUT"
 printf '1\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
 
-# A disabled Claude service uses the same muted, locked child rows.
+# The web page provides visible gray locked rows for disabled services.
 printf '0\n' > "$TMP/home/.cache/claude-codex-bar/claude_on"
-DISABLED_CLAUDE="$(HOME="$TMP/home" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" "$ROOT/claude-codex.60s.sh")"
-grep -q -- '--Show Claude 5h | color=#6E6E73,#8E8E93$' <<< "$DISABLED_CLAUDE"
-grep -q -- '--Show Claude 7d | color=#6E6E73,#8E8E93$' <<< "$DISABLED_CLAUDE"
-grep -q -- '--Claude 5h percentage | color=#6E6E73,#8E8E93$' <<< "$DISABLED_CLAUDE"
-! grep -A1 -- '--Show Claude 5h | color=#6E6E73,#8E8E93$' <<< "$DISABLED_CLAUDE" | grep -q 'shell='
+DISABLED_CLAUDE="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" "$ROOT/claude-codex.60s.sh")"
+grep -q 'claude_on=0' <<< "$DISABLED_CLAUDE"
+grep -q 'label.muted' "$ROOT/settings.html"
+grep -q "label.classList.toggle('muted', !on)" "$ROOT/settings.html"
+grep -q "label.querySelector('input').disabled = !on" "$ROOT/settings.html"
+grep -q 'swiftbar.persistentWebView' "$ROOT/claude-codex.60s.sh"
 
 # Disabling both services must not silently re-enable Claude. The header remains
 # clickable through the neutral fallback while every child row stays muted.
 printf '0\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
-BOTH_DISABLED="$(HOME="$TMP/home" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
+BOTH_DISABLED="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
 grep -q '^AI … |' <<< "$BOTH_DISABLED"
-grep -q -- '--Show Claude 5h | color=#6E6E73,#8E8E93$' <<< "$BOTH_DISABLED"
-grep -q -- '--Codex percentage | color=#6E6E73,#8E8E93$' <<< "$BOTH_DISABLED"
+grep -q 'claude_on=0' <<< "$BOTH_DISABLED"
+grep -q 'codex_on=0' <<< "$BOTH_DISABLED"
 ! grep -q '^Claude |' <<< "$BOTH_DISABLED"
 ! grep -q '^Codex |' <<< "$BOTH_DISABLED"
+
+# URL-scheme parameters are validated before writing and are reflected in the
+# same plugin invocation. Invalid keys and values must not create files.
+WEB_ACTION="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP/should-not-run.sh" AUB_KEY=codex_on AUB_VALUE=1 "$ROOT/claude-codex.60s.sh")"
+grep -q 'codex_on=1' <<< "$WEB_ACTION"
+[[ "$(cat "$TMP/home/.cache/claude-codex-bar/codex_on")" == 1 ]]
+HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP/should-not-run.sh" AUB_KEY=codex_on AUB_VALUE=bad "$ROOT/claude-codex.60s.sh" >/dev/null
+[[ "$(cat "$TMP/home/.cache/claude-codex-bar/codex_on")" == 1 ]]
+HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP/should-not-run.sh" AUB_KEY=unexpected AUB_VALUE=1 "$ROOT/claude-codex.60s.sh" >/dev/null
+[[ ! -e "$TMP/home/.cache/claude-codex-bar/unexpected" ]]
 printf '1\n' > "$TMP/home/.cache/claude-codex-bar/claude_on"
 printf '1\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
 

@@ -34,7 +34,7 @@ mezclas:
 
 ## Ajustes
 
-Abre el menú y usa **⚙ Ajustes de pantalla**. Cada entrada se alterna con un clic y se aplica al instante.
+Abre el menú y elige **⚙ Ajustes de pantalla**. El panel permanece abierto para que puedas cambiar varias opciones seguidas sin que se cierre tras cada clic. Los cambios se aplican al instante.
 
 | Ajuste | Efecto |
 |---|---|

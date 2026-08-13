@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI Usage Barometer settings</title>
+  <style>
+    :root { color-scheme: light dark; font: 14px -apple-system, BlinkMacSystemFont, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 18px; background: Canvas; color: CanvasText; }
+    h1 { margin: 0 0 16px; font-size: 20px; }
+    section { margin: 0 0 18px; padding: 14px; border: 1px solid color-mix(in srgb, CanvasText 15%, transparent); border-radius: 12px; }
+    h2 { margin: 0 0 9px; font-size: 13px; color: #6e6e73; }
+    label { display: flex; align-items: center; gap: 9px; min-height: 34px; }
+    label.child { padding-left: 24px; }
+    label.muted { color: #8e8e93; opacity: .68; }
+    input { width: 17px; height: 17px; accent-color: #1a8ba6; }
+    select { width: 100%; padding: 7px 9px; border-radius: 8px; }
+    .radios { display: flex; gap: 17px; }
+    .radios label { min-height: 28px; }
+    .status { min-height: 18px; margin-top: 8px; color: #6e6e73; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1 id="title">Display settings</h1>
+  <section>
+    <h2>Claude</h2>
+    <label><input id="claude_on" type="checkbox"> <span data-i18n="showClaude">Show Claude</span></label>
+    <label class="child claude-child"><input id="c5" type="checkbox"> <span data-i18n="showClaude5h">Show Claude 5h</span></label>
+    <label class="child claude-child"><input id="c5p" type="checkbox"> <span data-i18n="claude5hPct">Claude 5h percentage</span></label>
+    <label class="child claude-child"><input id="c7" type="checkbox"> <span data-i18n="showClaude7d">Show Claude 7d</span></label>
+    <label class="child claude-child"><input id="c7p" type="checkbox"> <span data-i18n="claude7dPct">Claude 7d percentage</span></label>
+  </section>
+  <section>
+    <h2>Codex</h2>
+    <label><input id="codex_on" type="checkbox"> <span data-i18n="showCodex">Show Codex</span></label>
+    <label class="child codex-child"><input id="cxp" type="checkbox"> <span data-i18n="codexPct">Codex percentage</span></label>
+  </section>
+  <section>
+    <h2 data-i18n="interval">Refresh interval</h2>
+    <div class="radios">
+      <label><input name="iv" type="radio" value="1">1</label>
+      <label><input name="iv" type="radio" value="3">3</label>
+      <label><input name="iv" type="radio" value="5">5</label>
+    </div>
+  </section>
+  <section>
+    <h2 data-i18n="language">Language</h2>
+    <select id="lang">
+      <option value="en">English</option><option value="ja">日本語</option>
+      <option value="es">Español</option><option value="ar">العربية</option>
+      <option value="fr">Français</option><option value="de">Deutsch</option>
+      <option value="zh">简体中文</option><option value="ko">한국어</option>
+      <option value="pt">Português</option><option value="nl">Nederlands</option>
+      <option value="it">Italiano</option><option value="vi">Tiếng Việt</option>
+      <option value="id">Bahasa Indonesia</option><option value="th">ไทย</option>
+    </select>
+  </section>
+  <div id="status" class="status" aria-live="polite"></div>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const toggleIds = ['claude_on', 'c5', 'c5p', 'c7', 'c7p', 'codex_on', 'cxp'];
+    const copy = {
+      en: { title:'Display settings', showClaude:'Show Claude', showClaude5h:'Show Claude 5h', claude5hPct:'Claude 5h percentage', showClaude7d:'Show Claude 7d', claude7dPct:'Claude 7d percentage', showCodex:'Show Codex', codexPct:'Codex percentage', interval:'Refresh interval (minutes)', language:'Language', saved:'Saved' },
+      ja: { title:'表示設定', showClaude:'Claude を表示', showClaude5h:'Claude 5h を表示', claude5hPct:'Claude 5h の％', showClaude7d:'Claude 7d を表示', claude7dPct:'Claude 7d の％', showCodex:'Codex を表示', codexPct:'Codex の％', interval:'更新間隔（分）', language:'言語', saved:'保存しました' }
+    };
+
+    function setLanguage() {
+      const lang = document.querySelector('#lang').value;
+      const text = copy[lang] || copy.en;
+      document.documentElement.lang = lang;
+      document.querySelector('#title').textContent = text.title;
+      document.querySelectorAll('[data-i18n]').forEach(node => {
+        node.textContent = text[node.dataset.i18n] || copy.en[node.dataset.i18n];
+      });
+    }
+
+    function muteChildren(service) {
+      const on = document.querySelector(`#${service}_on`).checked;
+      document.querySelectorAll(`.${service}-child`).forEach(label => {
+        label.classList.toggle('muted', !on);
+        label.querySelector('input').disabled = !on;
+      });
+    }
+
+    function save(key, value) {
+      params.set(key, value);
+      document.querySelector('#status').textContent = (copy[document.querySelector('#lang').value] || copy.en).saved;
+      location.href = `swiftbar://refreshplugin?name=claude-codex.60s.sh&AUB_KEY=${encodeURIComponent(key)}&AUB_VALUE=${encodeURIComponent(value)}`;
+    }
+
+    toggleIds.forEach(id => {
+      const input = document.querySelector(`#${id}`);
+      input.checked = params.get(id) !== '0';
+      input.addEventListener('change', () => {
+        if (id === 'claude_on') muteChildren('claude');
+        if (id === 'codex_on') muteChildren('codex');
+        save(id, input.checked ? '1' : '0');
+      });
+    });
+    document.querySelectorAll('input[name="iv"]').forEach(input => {
+      input.checked = input.value === (params.get('iv') || '3');
+      input.addEventListener('change', () => save('iv', input.value));
+    });
+    const language = document.querySelector('#lang');
+    language.value = params.get('lang') || 'en';
+    language.addEventListener('change', () => { setLanguage(); save('lang', language.value); });
+    muteChildren('claude');
+    muteChildren('codex');
+    setLanguage();
+  </script>
+</body>
+</html>

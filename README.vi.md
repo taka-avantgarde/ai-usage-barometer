@@ -33,7 +33,7 @@ cấp pha đỏ tươi. Codex giữ thành phần xanh lam mạnh trong cả hai
 
 ## Cài đặt
 
-Nhấp vào thanh và dùng **⚙ Cài đặt hiển thị**. Mỗi mục đảo trạng thái khi nhấp và có hiệu lực ngay.
+Nhấp vào thanh và chọn **⚙ Cài đặt hiển thị**. Bảng cài đặt vẫn mở để bạn thay đổi nhiều tùy chọn liên tiếp mà không phải mở lại sau mỗi lần nhấp. Thay đổi có hiệu lực ngay.
 
 | Tùy chọn | Tác dụng |
 |---|---|
