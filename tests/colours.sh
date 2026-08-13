@@ -98,7 +98,7 @@ exit 99
 STOP
 chmod +x "$TMP/should-not-run.sh"
 DISABLED_OUT="$(HOME="$TMP/home" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
-grep -q -- '--Show Codex percentage | color=#666666 disabled=true' <<< "$DISABLED_OUT"
+grep -q -- '--Codex percentage | color=#666666 disabled=true' <<< "$DISABLED_OUT"
 ! grep -q 'must not run' <<< "$DISABLED_OUT"
 printf '1\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
 
