@@ -58,8 +58,8 @@ case "$LG" in
   th) T_SET="การตั้งค่าการแสดงผล"; T_SHOW="แสดง {v}"; T_PCTOF="เปอร์เซ็นต์ของ {v}"; T_IV="ช่วงการรีเฟรช"; T_MIN=" นาที"; T_LANG="ภาษา"; T_REFRESH="รีเฟรชเดี๋ยวนี้"; T_UPDATED="อัปเดตเมื่อ {v}"; T_LEFT="เหลือ {v}"; T_RESET="ฟื้นใน {v}"; T_SOON="เร็ว ๆ นี้"; T_NOCRED="ไม่พบข้อมูลรับรอง"; T_BADFMT="รูปแบบ API ไม่ตรงที่คาดไว้"; T_CXWAIT="กำลังรอข้อมูล Codex (รัน Codex CLI หนึ่งครั้ง)"; T_CXMISS="ไม่พบตัวช่วย Codex" ;;
   *)  T_SET="Display settings"; T_SHOW="Show {v}"; T_PCTOF="{v} percentage"; T_IV="Refresh interval"; T_MIN=" min"; T_LANG="Language"; T_REFRESH="Refresh now"; T_UPDATED="Updated {v}"; T_LEFT="{v} left"; T_RESET="recovers in {v}"; T_SOON="soon"; T_NOCRED="Credentials not found"; T_BADFMT="Unexpected API format"; T_CXWAIT="Waiting for Codex data (run Codex CLI once)"; T_CXMISS="Codex helper not found" ;;
 esac
-# 全部消えるとクリックできなくなるので Claude 5h を最低限残す
-[ "$CL_ON" = 0 ] && [ "$CX_ON" = 0 ] && CL_ON=1
+# 両サービスがオフでも後段の「AI …」ヘッダーがクリック可能な項目を残す。
+# ここで片方を強制的にオンへ戻すと、無効化した子設定が通常表示へ戻ってしまう。
 [ "$CL_ON" = 1 ] && [ "$C5" = 0 ] && [ "$C7" = 0 ] && C5=1
 
 tg() { # tg <file> <current> <label>
@@ -70,7 +70,7 @@ tg_disabled() { # Keep child settings visible, but omit an action while its serv
   # SwiftBar has no supported disabled=true item parameter. An actionless item
   # is therefore the reliable lock: it remains visible and muted, but cannot
   # write a child setting until the parent service is enabled again.
-  echo "--$1 | color=#666666"
+  echo "--$1 | color=#6E6E73,#8E8E93"
 }
 settings_menu() {
   echo "⚙ $T_SET | size=12"
