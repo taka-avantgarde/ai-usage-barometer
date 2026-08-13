@@ -44,7 +44,6 @@ Nhấp vào thanh và dùng **⚙ Cài đặt hiển thị**. Mỗi mục đảo
 | Phần trăm Claude 7d | Hiện hoặc ẩn phần trăm tương ứng |
 | Hiện Codex | Hiện hoặc ẩn Codex |
 | Phần trăm Codex | Hiện hoặc ẩn phần trăm của Codex |
-| Thanh menu hai màu | Vector (hai màu) hoặc văn bản (một màu) |
 | Khoảng làm mới | 1, 3 hoặc 5 phút |
 | Ngôn ngữ | 14 ngôn ngữ; mặc định theo macOS |
 
@@ -64,7 +63,7 @@ Kết quả được lưu đệm trong khoảng làm mới, nên mỗi khoảng 
 
 **Hiện cảnh báo Codex.** Thiếu trợ lý hoặc Codex chưa tạo dữ liệu. Chạy lại trình cài đặt rồi dùng Codex CLI một lần.
 
-**Màu khác nhau giữa thanh menu và menu thả xuống.** macOS có thể coi thanh menu trong suốt là sáng dù menu tối. Vì vậy mỗi mức chỉ dùng một màu; nếu vẫn lệch, hãy tắt vẽ hai màu.
+**Màu khác nhau giữa thanh menu và menu thả xuống.** macOS có thể coi thanh menu trong suốt là sáng dù menu tối. Khi có Python, trình vẽ vector hai màu luôn được dùng; văn bản một màu chỉ là phương án dự phòng khi thiếu Python.
 
 ## Gỡ cài đặt
 

@@ -45,7 +45,6 @@ Klik bilah dan gunakan **⚙ Pengaturan tampilan**. Setiap entri beralih saat di
 | Persentase Claude 7d | Tampilkan atau sembunyikan persentasenya |
 | Tampilkan Codex | Tampilkan atau sembunyikan Codex |
 | Persentase Codex | Tampilkan atau sembunyikan persentase Codex |
-| Bilah menu dua warna | Vektor (dua warna) atau teks (satu warna) |
 | Interval penyegaran | 1, 3, atau 5 menit |
 | Bahasa | 14 bahasa; mengikuti macOS secara bawaan |
 
@@ -65,7 +64,7 @@ Hasil disimpan sementara selama interval, jadi endpoint dipanggil paling banyak 
 
 **Muncul peringatan Codex.** Pembantu tidak ada atau Codex belum menghasilkan data. Jalankan ulang pemasang lalu gunakan Codex CLI sekali.
 
-**Warna berbeda antara bilah menu dan menu.** macOS bisa memperlakukan bilah menu transparan sebagai terang meski menu gelap. Karena itu tiap tahap hanya memakai satu warna; jika masih janggal, matikan penggambaran dua warna.
+**Warna berbeda antara bilah menu dan menu.** macOS bisa memperlakukan bilah menu transparan sebagai terang meski menu gelap. Renderer vektor dua warna digunakan saat Python tersedia; teks satu warna hanya digunakan sebagai fallback saat Python tidak tersedia.
 
 ## Copot pemasangan
 

@@ -34,16 +34,21 @@ for colour in C66D28 B65A1E C52E22 1A8BA6 52768A 783F78; do
 done
 grep -q 'Claude uses orange' "$ROOT/README.md"
 grep -q 'Codex uses cyan' "$ROOT/README.md"
+# Two-colour rendering is no longer a user setting. Legacy mb2 state must not
+# disable the vector renderer or reappear in the settings menu.
+! grep -Eq '\b(MB2|mb2|T_MB2)\b' "$ROOT/claude-codex.60s.sh"
 
 # Exercise the active renderer with healthy, warning and critical Claude bars,
 # plus a healthy Codex bar, without reading real credentials or calling APIs.
 mkdir -p "$TMP/home/.cache/claude-codex-bar"
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/mb2"
 printf '%s\t%s\t%s\t\t\n' "$(date +%s)" 0.10 0.95 > "$TMP/home/.cache/claude-codex-bar/claude.tsv"
 OUT="$(HOME="$TMP/home" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" "$ROOT/claude-codex.60s.sh")"
 
 grep -q '^5h  .*color=#C66D28$' <<< "$OUT"
 grep -q '^7d  .*color=#C52E22$' <<< "$OUT"
 grep -q '^7d  .*color=#1A8BA6$' <<< "$OUT"
+! grep -q 'Two-colour menu bar' <<< "$OUT"
 
 IMAGE="$(head -n 1 <<< "$OUT" | sed -nE 's/.*image=([^ ]+).*/\1/p')"
 [[ -n "$IMAGE" ]]

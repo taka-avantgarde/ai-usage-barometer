@@ -45,7 +45,6 @@ Open het menu en gebruik **⚙ Weergave-instellingen**. Elk item schakelt met é
 | Percentage van Claude 7d | Bijbehorend percentage tonen of verbergen |
 | Codex tonen | Codex tonen of verbergen |
 | Percentage van Codex | Codex-percentages tonen of verbergen |
-| Menubalk in twee kleuren | Vector (twee kleuren) of tekst (één kleur) |
 | Vernieuwingsinterval | 1, 3 of 5 minuten |
 | Taal | 14 talen; volgt standaard macOS |
 
@@ -65,7 +64,7 @@ Resultaten worden gecachet gedurende het interval, dus het eindpunt wordt hoogst
 
 **Er verschijnt een Codex-waarschuwing.** De helper ontbreekt of Codex heeft nog geen gegevens. Voer het installatieprogramma opnieuw uit en gebruik Codex CLI één keer.
 
-**Kleuren verschillen tussen menubalk en menu.** macOS kan een doorschijnende menubalk als licht behandelen terwijl menu’s donker zijn. Daarom één kleur per fase; zo niet, schakel tweekleurentekening uit.
+**Kleuren verschillen tussen menubalk en menu.** macOS kan een doorschijnende menubalk als licht behandelen terwijl menu’s donker zijn. De tweekleurige vectorweergave wordt gebruikt als Python beschikbaar is; tekst in één kleur is alleen de fallback wanneer Python ontbreekt.
 
 ## Verwijderen
 
