@@ -55,6 +55,8 @@ Sind alle Anzeigen ausgeblendet, bleibt ein neutraler Eintrag `AI …`, über de
 
 Wenn Claude oder Codex deaktiviert wird, wird die Datenaktualisierung für diesen Dienst angehalten. Die Einstellungen für 5h, 7d und Prozent bleiben abgeblendet und gesperrt; beim erneuten Aktivieren werden ihre vorherigen Werte wiederhergestellt.
 
+Sind bei einem Dienst sowohl 5h als auch 7d abgewählt, werden der Dienst und seine Fehler vollständig ausgeblendet und seine Datenquelle nicht abgefragt.
+
 Das Plugin prüft GitHub Releases höchstens einmal täglich. Ist ein Betreiber-Update verfügbar, zeigen Menü und Einstellungen einen Hinweis, Versionshinweise und **Jetzt aktualisieren**.
 
 ## Datenquellen

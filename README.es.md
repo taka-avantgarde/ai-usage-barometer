@@ -55,6 +55,8 @@ Si se ocultan todos los indicadores, queda un elemento neutro `AI …` para pode
 
 Al desactivar Claude o Codex, se detiene la actualización de datos de ese servicio. Los ajustes de 5h, 7d y porcentaje permanecen atenuados y bloqueados; al volver a activarlo se restauran sus valores anteriores.
 
+Si se desmarcan las ventanas de 5h y 7d de un servicio, el servicio y sus errores se ocultan por completo y no se consulta su fuente de datos.
+
 El complemento comprueba GitHub Releases como máximo una vez al día. Si hay una actualización del operador, el menú y los ajustes muestran el aviso, las notas y **Actualizar ahora**.
 
 ## Fuentes de datos

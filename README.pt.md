@@ -55,6 +55,8 @@ Quando todos os medidores estão ocultos, um item neutro `AI …` permanece para
 
 Ao desativar o Claude ou o Codex, a atualização de dados desse serviço é interrompida. As configurações de 5h, 7d e porcentagem permanecem esmaecidas e bloqueadas; ao reativar o serviço, os valores anteriores são restaurados.
 
+Se as janelas de 5h e 7d de um serviço estiverem desmarcadas, o serviço e seus erros ficam totalmente ocultos e sua fonte de dados não é consultada.
+
 O plugin verifica o GitHub Releases no máximo uma vez por dia. Se houver atualização do operador, o menu e as configurações mostram o aviso, as notas e **Atualizar agora**.
 
 ## Fontes de dados

@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.3.2</xbar.version>
+# <xbar.version>v0.3.3</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.3.2"
+VERSION="v0.3.3"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -78,6 +78,13 @@ if [ -n "${AUB_KEY:-}" ]; then
   case "$IV" in 1|3|5) ;; *) IV=3 ;; esac
 fi
 
+# A provider with no selected usage window is effectively hidden. Skipping its
+# data source also prevents stale/API errors from appearing for an unchecked AI.
+CL_ACTIVE=0
+[ "$CL_ON" = 1 ] && { [ "$C5" = 1 ] || [ "$C7" = 1 ]; } && CL_ACTIVE=1
+CX_ACTIVE=0
+[ "$CX_ON" = 1 ] && { [ "$CX5" = 1 ] || [ "$CX7" = 1 ]; } && CX_ACTIVE=1
+
 # ── 言語（設定 > 言語 で切替。既定は macOS の言語）──
 LANGF="$CFG/lang"
 LG=""; [ -f "$LANGF" ] && read -r LG < "$LANGF" 2>/dev/null
@@ -101,8 +108,6 @@ case "$LG" in
   *)  T_SET="Display settings"; T_SHOW="Show {v}"; T_PCTOF="{v} percentage"; T_IV="Refresh interval"; T_MIN=" min"; T_LANG="Language"; T_REFRESH="Refresh now"; T_UPDATED="Updated {v}"; T_LEFT="{v} left"; T_RESET="recovers in {v}"; T_SOON="soon"; T_NOCRED="Credentials not found"; T_BADFMT="Unexpected API format"; T_CXWAIT="Waiting for Codex data (run Codex CLI once)"; T_CXMISS="Codex helper not found" ;;
 esac
 # 両サービスがオフでも後段の「AI …」ヘッダーがクリック可能な項目を残す。
-# ここで片方を強制的にオンへ戻すと、無効化した子設定が通常表示へ戻ってしまう。
-[ "$CL_ON" = 1 ] && [ "$C5" = 0 ] && [ "$C7" = 0 ] && C5=1
 
 semver_is_newer() {
   local candidate="${1#v}" current="${2#v}"
@@ -192,10 +197,10 @@ aT=0; cU5=""; cU7=""; cR5=""; cR7=""
 [ -f "$CACHEF" ] && IFS=$'\t' read -r aT cU5 cU7 cR5 cR7 < "$CACHEF" 2>/dev/null
 case "$aT" in ''|*[!0-9]*) aT=0 ;; esac
 NOW=$(date +%s)
-if [ "$CL_ON" = 1 ] && [ $(( NOW - aT )) -lt $(( IV * 60 )) ] && [ -n "$cU5$cU7" ]; then
+if [ "$CL_ACTIVE" = 1 ] && [ $(( NOW - aT )) -lt $(( IV * 60 )) ] && [ -n "$cU5$cU7" ]; then
   U5="$cU5"; U7="$cU7"; R5="$cR5"; R7="$cR7"
   P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
-elif [ "$CL_ON" = 1 ]; then
+elif [ "$CL_ACTIVE" = 1 ]; then
   TOKEN=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null \
           | jq -r '.claudeAiOauth.accessToken // .accessToken // empty' 2>/dev/null)
   [ -z "$TOKEN" ] && TOKEN=$(jq -r '.claudeAiOauth.accessToken // .accessToken // empty' \
@@ -229,7 +234,7 @@ REM5=$(( P5<0 ? -1 : 100-P5 )); REM7=$(( P7<0 ? -1 : 100-P7 ))
 
 # ── Codex（既存ヘルパーの出力を解析）──
 CX_L1=""; CX_U1=-1; CX_T1=""; CX_L2=""; CX_U2=-1; CX_T2=""; CX_CREDITS=""; CX_ERR=""
-if [ "$CX_ON" = 1 ]; then
+if [ "$CX_ACTIVE" = 1 ]; then
   if [ -x "$CODEX_HELPER" ]; then
     CX_OUT=$("$CODEX_HELPER" 2>/dev/null || true)
     # 詳細部（最初の --- 以降）から「<label> … <n>% used」と「resets in …」を拾う
@@ -280,15 +285,15 @@ cx_window_percentage() {
 # 1項目=1色の制約があるため、Claude 表示中は Claude の色、
 # Claude 非表示のときだけ Codex の色を使う（各サービスの最悪値で段階が決まる）。
 CL_WORST=-1; CX_WORST=-1
-if [ "$CL_ON" = 1 ] && [ -z "$CL_ERR" ]; then
+if [ "$CL_ACTIVE" = 1 ] && [ -z "$CL_ERR" ]; then
   [ "$C5" = 1 ] && (( P5 > CL_WORST )) && CL_WORST=$P5
   [ "$C7" = 1 ] && (( P7 > CL_WORST )) && CL_WORST=$P7
 fi
-if [ "$CX_ON" = 1 ] && [ -z "$CX_ERR" ]; then
+if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
   cx_window_enabled "$CX_L1" && (( CX_U1 > CX_WORST )) && CX_WORST=$CX_U1
   cx_window_enabled "$CX_L2" && (( CX_U2 > CX_WORST )) && CX_WORST=$CX_U2
 fi
-if [ "$CL_ON" = 1 ]; then
+if [ "$CL_ACTIVE" = 1 ]; then
   (( CL_WORST<0 )) && CL_WORST=0
   MB_COLOR=$(clcol $CL_WORST)
 else
@@ -297,14 +302,14 @@ else
 fi
 
 MB=""
-if [ "$CL_ON" = 1 ]; then
+if [ "$CL_ACTIVE" = 1 ]; then
   if [ -n "$CL_ERR" ]; then MB="Claude ⚠"
   else
     [ "$C5" = 1 ] && MB="5h $(bar $REM5 $MBAR_W)$([ "$C5P" = 1 ] && printf ' %s' "$(fmt $REM5)")"
     [ "$C7" = 1 ] && MB="${MB:+$MB  }7d $(bar $REM7 $MBAR_W)$([ "$C7P" = 1 ] && printf ' %s' "$(fmt $REM7)")"
   fi
 fi
-if [ "$CX_ON" = 1 ] && [ -z "$CX_ERR" ] && [ -n "$CX_L1" ]; then
+if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ] && [ -n "$CX_L1" ]; then
   CXMB=""
   if cx_window_enabled "$CX_L1"; then
     CXMB="$CX_L1 $(bar $CX_R1 $MBAR_W)$([ "$(cx_window_percentage "$CX_L1")" = 1 ] && printf ' %s' "$(fmt $CX_R1)")"
@@ -318,11 +323,11 @@ fi
 
 # メニューバー: PDF なら Claude/Codex を別色で描ける（テキストは1項目1色まで）
 PDF_SPEC=""
-if [ "$CL_ON" = 1 ] && [ -z "$CL_ERR" ]; then
+if [ "$CL_ACTIVE" = 1 ] && [ -z "$CL_ERR" ]; then
   [ "$C5" = 1 ] && [ "$REM5" -ge 0 ] && PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}5h,$REM5,$(clcol $P5),$C5P"
   [ "$C7" = 1 ] && [ "$REM7" -ge 0 ] && PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}7d,$REM7,$(clcol $P7),$C7P"
 fi
-if [ "$CX_ON" = 1 ] && [ -z "$CX_ERR" ]; then
+if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
   CX_PDF=""
   if [ "$CX_R1" -ge 0 ] && cx_window_enabled "$CX_L1"; then
     CX_PDF="$CX_L1,$CX_R1,$(cxcol $CX_U1),$(cx_window_percentage "$CX_L1")"
@@ -401,7 +406,7 @@ fi
 echo "---"
 
 # ── ドロップダウン ──
-if [ "$CL_ON" = 1 ]; then
+if [ "$CL_ACTIVE" = 1 ]; then
   echo "Claude | size=11 color=$CL_OK"
   if [ -n "$CL_ERR" ]; then
     echo "⚠ $CL_ERR | $FONT color=#FF9F0A"
@@ -416,7 +421,7 @@ if [ "$CL_ON" = 1 ]; then
     fi
   fi
 fi
-if [ "$CX_ON" = 1 ]; then
+if [ "$CX_ACTIVE" = 1 ]; then
   echo "Codex | size=11 color=$CX_OK"
   if [ -n "$CX_ERR" ]; then
     echo "⚠ $CX_ERR | $FONT color=#FF9F0A"

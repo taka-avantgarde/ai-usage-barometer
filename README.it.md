@@ -55,6 +55,8 @@ Quando tutti gli indicatori sono nascosti, rimane una voce neutra `AI …` per a
 
 Disattivando Claude o Codex, l’aggiornamento dei dati di quel servizio viene sospeso. Le impostazioni 5h, 7d e percentuale restano attenuate e bloccate; i valori precedenti vengono ripristinati quando il servizio viene riattivato.
 
+Se le finestre 5h e 7d di un servizio sono entrambe deselezionate, il servizio e i relativi errori vengono nascosti completamente e la sua origine dati non viene interrogata.
+
 Il plugin controlla GitHub Releases al massimo una volta al giorno. Se è disponibile un aggiornamento dell’operatore, menu e impostazioni mostrano avviso, note e **Aggiorna ora**.
 
 ## Origini dei dati

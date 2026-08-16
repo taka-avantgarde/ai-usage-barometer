@@ -54,6 +54,8 @@ When every gauge is hidden, a neutral `AI …` item remains so settings stay cli
 
 Turning Claude or Codex off skips that service's data refresh. Its 5h, 7d, and percentage settings remain visible but are dimmed and locked; their previous values are restored when the service is turned on again.
 
+If both the 5h and 7d windows for a service are unchecked, that service and its errors are hidden completely, and its data source is not queried.
+
 The plugin checks GitHub Releases at most once a day. When an operator update is available, the dropdown and Display settings show a notice with release notes and an **Update now** button.
 
 ## Data sources

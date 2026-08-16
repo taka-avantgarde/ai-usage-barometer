@@ -55,6 +55,8 @@ Saat semua meter disembunyikan, item netral `AI …` tetap tersedia untuk membuk
 
 Saat Claude atau Codex dinonaktifkan, pembaruan data untuk layanan tersebut dihentikan. Pengaturan 5 jam, 7 hari, dan persentase tetap terlihat redup serta terkunci; nilai sebelumnya dipulihkan saat layanan diaktifkan kembali.
 
+Jika jendela 5 jam dan 7 hari suatu layanan sama-sama tidak dicentang, layanan beserta galatnya disembunyikan sepenuhnya dan sumber datanya tidak diakses.
+
 Plugin memeriksa GitHub Releases paling banyak sekali sehari. Jika ada pembaruan dari operator, menu dan pengaturan menampilkan pemberitahuan, catatan rilis, dan **Perbarui sekarang**.
 
 ## Sumber data

@@ -55,6 +55,8 @@ Si toutes les jauges sont masquées, un élément neutre `AI …` reste disponib
 
 Lorsque Claude ou Codex est désactivé, la mise à jour des données de ce service est arrêtée. Les réglages 5h, 7d et pourcentage restent grisés et verrouillés ; leurs valeurs précédentes sont restaurées lors de la réactivation.
 
+Si les fenêtres 5h et 7d d’un service sont toutes deux décochées, le service et ses erreurs sont entièrement masqués et sa source de données n’est pas interrogée.
+
 Le module vérifie GitHub Releases au plus une fois par jour. Une mise à jour de l’opérateur est signalée dans le menu et les réglages, avec les notes et **Mettre à jour**.
 
 ## Sources de données

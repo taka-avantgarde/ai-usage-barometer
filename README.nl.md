@@ -55,6 +55,8 @@ Wanneer alle meters verborgen zijn, blijft een neutraal item `AI …` beschikbaa
 
 Wanneer Claude of Codex wordt uitgeschakeld, stopt het vernieuwen van de gegevens voor die dienst. De instellingen voor 5h, 7d en percentages blijven gedimd en vergrendeld; bij opnieuw inschakelen worden de vorige waarden hersteld.
 
+Als voor een dienst zowel 5h als 7d is uitgeschakeld, worden de dienst en de bijbehorende fouten volledig verborgen en wordt de gegevensbron niet geraadpleegd.
+
 De plugin controleert GitHub Releases maximaal eenmaal per dag. Bij een update van de beheerder tonen menu en instellingen een melding, release-opmerkingen en **Nu bijwerken**.
 
 ## Gegevensbronnen

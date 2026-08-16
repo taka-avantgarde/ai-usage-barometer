@@ -54,6 +54,8 @@ Khi ẩn mọi đồng hồ, mục trung tính `AI …` vẫn còn để mở c�
 
 Khi tắt Claude hoặc Codex, việc cập nhật dữ liệu của dịch vụ đó sẽ dừng lại. Các cài đặt 5h, 7d và phần trăm vẫn hiển thị mờ và bị khóa; các giá trị trước đó sẽ được khôi phục khi bật lại dịch vụ.
 
+Nếu bỏ chọn cả khung 5h và 7d của một dịch vụ, dịch vụ cùng các lỗi của nó sẽ bị ẩn hoàn toàn và nguồn dữ liệu sẽ không được truy vấn.
+
 Tiện ích kiểm tra GitHub Releases nhiều nhất một lần mỗi ngày. Khi có bản cập nhật từ nhà vận hành, menu và cài đặt sẽ hiện thông báo, ghi chú và **Cập nhật ngay**.
 
 ## Nguồn dữ liệu
