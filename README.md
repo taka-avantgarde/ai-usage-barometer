@@ -35,6 +35,8 @@ less, critical shades mix in vivid red. Codex keeps blue in both blends:
 
 Open the dropdown and choose **⚙ Display settings**. It opens a persistent settings panel, so you can change several options without the panel closing after each click. Changes take effect immediately.
 
+The plugin interface is English-only. This GitHub documentation remains available in 14 languages.
+
 | Setting | Effect |
 |---|---|
 | Show Claude | Show or hide Claude entirely |
@@ -48,7 +50,6 @@ Open the dropdown and choose **⚙ Display settings**. It opens a persistent set
 | Show Codex 7d | Show or hide the 7-day window |
 | Codex 7d percentage | Show or hide the 7-day percentage |
 | Refresh interval | 1, 3, or 5 minutes |
-| Language | 14 languages; follows macOS by default |
 
 When every gauge is hidden, a neutral `AI …` item remains so settings stay clickable. Menu-bar colour is decided only by the gauges actually shown. Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
 

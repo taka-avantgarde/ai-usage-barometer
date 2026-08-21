@@ -34,7 +34,9 @@ mantiene una forte componente blu in entrambe le miscele:
 
 ## Impostazioni
 
-Apri il menu e scegli **⚙ Impostazioni di visualizzazione**. Il pannello resta aperto, così puoi modificare più opzioni di seguito senza riaprirlo dopo ogni clic. Le modifiche hanno effetto immediato.
+Apri il menu e scegli **⚙ Display settings**. Il pannello resta aperto, così puoi modificare più opzioni di seguito senza riaprirlo dopo ogni clic. Le modifiche hanno effetto immediato.
+
+L’interfaccia del plugin è disponibile solo in inglese. Questa documentazione GitHub resta disponibile in 14 lingue.
 
 | Impostazione | Effetto |
 |---|---|
@@ -49,7 +51,6 @@ Apri il menu e scegli **⚙ Impostazioni di visualizzazione**. Il pannello resta
 | Mostra Codex 7d | Mostra o nascondi la finestra di 7 giorni |
 | Percentuale di Codex 7d | Mostra o nascondi la percentuale di 7 giorni |
 | Intervallo di aggiornamento | 1, 3 o 5 minuti |
-| Lingua | 14 lingue; segue macOS per impostazione predefinita |
 
 Quando tutti gli indicatori sono nascosti, rimane una voce neutra `AI …` per aprire le impostazioni. Il colore dipende solo dalle barre visibili. Le impostazioni sono in `~/.cache/claude-codex-bar/` e sopravvivono agli aggiornamenti.
 

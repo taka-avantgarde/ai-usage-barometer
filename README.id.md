@@ -34,7 +34,9 @@ Codex mempertahankan unsur biru kuat pada kedua campuran:
 
 ## Pengaturan
 
-Klik bilah lalu pilih **⚙ Pengaturan tampilan**. Panel pengaturan tetap terbuka sehingga beberapa opsi dapat diubah berurutan tanpa membukanya lagi setelah setiap klik. Perubahan langsung berlaku.
+Klik bilah lalu pilih **⚙ Display settings**. Panel pengaturan tetap terbuka sehingga beberapa opsi dapat diubah berurutan tanpa membukanya lagi setelah setiap klik. Perubahan langsung berlaku.
+
+Antarmuka plugin hanya tersedia dalam bahasa Inggris. Dokumentasi GitHub ini tetap tersedia dalam 14 bahasa.
 
 | Pengaturan | Efek |
 |---|---|
@@ -49,7 +51,6 @@ Klik bilah lalu pilih **⚙ Pengaturan tampilan**. Panel pengaturan tetap terbuk
 | Tampilkan Codex 7d | Tampilkan atau sembunyikan jendela 7 hari |
 | Persentase Codex 7d | Tampilkan atau sembunyikan persentase 7 hari |
 | Interval penyegaran | 1, 3, atau 5 menit |
-| Bahasa | 14 bahasa; mengikuti macOS secara bawaan |
 
 Saat semua meter disembunyikan, item netral `AI …` tetap tersedia untuk membuka pengaturan. Warna hanya ditentukan oleh bilah yang tampil. Pengaturan tersimpan di `~/.cache/claude-codex-bar/` dan bertahan setelah pembaruan.
 

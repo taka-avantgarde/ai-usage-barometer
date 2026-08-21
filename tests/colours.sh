@@ -19,6 +19,7 @@ for doc in "$ROOT"/README*.md "$ROOT/DESIGN.md"; do
 done
 for doc in "$ROOT"/README*.md; do
   grep -Eqi 'persistent settings panel|開いたまま|permanece abierto|تبقى .*مفتوحة|reste ouvert|bleibt geöffnet|保持打开|열린 상태|permanece aberto|blijft open|resta aperto|vẫn mở|tetap terbuka|เปิดค้างไว้' "$doc"
+  grep -q '\*\*⚙ Display settings\*\*' "$doc"
   grep -q 'Codex 5h' "$doc"
   grep -q 'Codex 7d' "$doc"
   grep -q 'GitHub Releases' "$doc"
@@ -123,6 +124,18 @@ grep -q 'swiftbar.persistentWebView' "$ROOT/claude-codex.60s.sh"
 for key in cx5 cx5p cx7 cx7p; do
   grep -q "id=\"$key\"" "$ROOT/settings.html"
 done
+
+# The plugin UI is English-only. A legacy saved language must be ignored, the
+# settings page has no selector, and the settings URL carries no locale state.
+printf 'ja\n' > "$TMP/home/.cache/claude-codex-bar/lang"
+ENGLISH_ONLY="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" "$ROOT/claude-codex.60s.sh")"
+grep -q 'Display settings' <<< "$ENGLISH_ONLY"
+! grep -q '表示設定' <<< "$ENGLISH_ONLY"
+! grep -Eq '[?&]lang=' <<< "$ENGLISH_ONLY"
+! grep -q 'id="lang"' "$ROOT/settings.html"
+! grep -q 'data-i18n' "$ROOT/settings.html"
+! grep -q 'AppleLocale' "$ROOT/claude-codex.60s.sh"
+! grep -q 'CFG/lang' "$ROOT/claude-codex.60s.sh"
 
 # A provider with every usage window unchecked is fully hidden: do not query
 # it and do not leave a provider heading or a stale/API error in the dropdown.

@@ -34,7 +34,9 @@ mengkleuren duidelijk blauw:
 
 ## Instellingen
 
-Open het menu en kies **⚙ Weergave-instellingen**. Het instellingenpaneel blijft open, zodat je meerdere opties achter elkaar kunt wijzigen zonder het na elke klik opnieuw te openen. Wijzigingen werken direct.
+Open het menu en kies **⚙ Display settings**. Het instellingenpaneel blijft open, zodat je meerdere opties achter elkaar kunt wijzigen zonder het na elke klik opnieuw te openen. Wijzigingen werken direct.
+
+De plugininterface is uitsluitend in het Engels. Deze GitHub-documentatie blijft beschikbaar in 14 talen.
 
 | Instelling | Effect |
 |---|---|
@@ -49,7 +51,6 @@ Open het menu en kies **⚙ Weergave-instellingen**. Het instellingenpaneel blij
 | Codex 7d tonen | Het 7-daagse venster tonen of verbergen |
 | Percentage van Codex 7d | Het 7-daagse percentage tonen of verbergen |
 | Vernieuwingsinterval | 1, 3 of 5 minuten |
-| Taal | 14 talen; volgt standaard macOS |
 
 Wanneer alle meters verborgen zijn, blijft een neutraal item `AI …` beschikbaar om de instellingen te openen. De kleur volgt alleen zichtbare balken. Instellingen staan in `~/.cache/claude-codex-bar/` en blijven behouden.
 

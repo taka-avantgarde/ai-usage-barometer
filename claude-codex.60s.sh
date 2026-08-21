@@ -60,9 +60,6 @@ apply_web_setting() {
           ;;
       esac
       ;;
-    lang)
-      case "$value" in en|ja|es|ar|fr|de|zh|ko|pt|nl|it|vi|id|th) printf '%s\n' "$value" > "$CFG/lang" ;; esac
-      ;;
   esac
 }
 [ -n "${AUB_KEY:-}" ] && apply_web_setting
@@ -85,28 +82,13 @@ CL_ACTIVE=0
 CX_ACTIVE=0
 [ "$CX_ON" = 1 ] && { [ "$CX5" = 1 ] || [ "$CX7" = 1 ]; } && CX_ACTIVE=1
 
-# ── 言語（設定 > 言語 で切替。既定は macOS の言語）──
-LANGF="$CFG/lang"
-LG=""; [ -f "$LANGF" ] && read -r LG < "$LANGF" 2>/dev/null
-[ -z "$LG" ] && LG=$(defaults read -g AppleLocale 2>/dev/null | cut -d_ -f1 | cut -d- -f1)
-case "$LG" in en|ja|es|ar|fr|de|zh|ko|pt|nl|it|vi|id|th) ;; *) LG="en" ;; esac
+# The plugin interface is intentionally English-only. Documentation remains
+# available in multiple languages on GitHub.
 sub() { local s="$1"; printf '%s' "${s/\{v\}/$2}"; }
-case "$LG" in
-  ja) T_SET="表示設定"; T_SHOW="{v} を表示"; T_PCTOF="{v} の％"; T_IV="更新間隔"; T_MIN="分"; T_LANG="言語"; T_REFRESH="今すぐ再読み込み"; T_UPDATED="更新: {v}"; T_LEFT="残り{v}"; T_RESET="{v} に回復"; T_SOON="間もなく"; T_NOCRED="資格情報が見つかりません"; T_BADFMT="APIの形式が想定と違います"; T_CXWAIT="Codex のデータ待ち（Codex CLI を一度実行）"; T_CXMISS="Codex ヘルパーが見つかりません" ;;
-  es) T_SET="Ajustes de pantalla"; T_SHOW="Mostrar {v}"; T_PCTOF="Porcentaje de {v}"; T_IV="Intervalo de actualización"; T_MIN=" min"; T_LANG="Idioma"; T_REFRESH="Actualizar ahora"; T_UPDATED="Actualizado {v}"; T_LEFT="{v} restante"; T_RESET="se recupera en {v}"; T_SOON="pronto"; T_NOCRED="Credenciales no encontradas"; T_BADFMT="Formato de API inesperado"; T_CXWAIT="Esperando datos de Codex (ejecuta Codex CLI una vez)"; T_CXMISS="Asistente de Codex no encontrado" ;;
-  ar) T_SET="إعدادات العرض"; T_SHOW="إظهار {v}"; T_PCTOF="نسبة {v}"; T_IV="فاصل التحديث"; T_MIN=" دقيقة"; T_LANG="اللغة"; T_REFRESH="تحديث الآن"; T_UPDATED="تم التحديث {v}"; T_LEFT="متبقٍ {v}"; T_RESET="يتجدد خلال {v}"; T_SOON="قريبًا"; T_NOCRED="لم يتم العثور على بيانات الاعتماد"; T_BADFMT="تنسيق API غير متوقع"; T_CXWAIT="بانتظار بيانات Codex (شغّل Codex CLI مرة)"; T_CXMISS="لم يتم العثور على مساعد Codex" ;;
-  fr) T_SET="Réglages d’affichage"; T_SHOW="Afficher {v}"; T_PCTOF="Pourcentage de {v}"; T_IV="Intervalle d’actualisation"; T_MIN=" min"; T_LANG="Langue"; T_REFRESH="Actualiser"; T_UPDATED="Mis à jour {v}"; T_LEFT="{v} restant"; T_RESET="récupère dans {v}"; T_SOON="bientôt"; T_NOCRED="Identifiants introuvables"; T_BADFMT="Format d’API inattendu"; T_CXWAIT="En attente des données Codex (lancez Codex CLI une fois)"; T_CXMISS="Assistant Codex introuvable" ;;
-  de) T_SET="Anzeigeeinstellungen"; T_SHOW="{v} anzeigen"; T_PCTOF="Prozent von {v}"; T_IV="Aktualisierungsintervall"; T_MIN=" Min"; T_LANG="Sprache"; T_REFRESH="Jetzt aktualisieren"; T_UPDATED="Aktualisiert {v}"; T_LEFT="{v} übrig"; T_RESET="erholt sich in {v}"; T_SOON="bald"; T_NOCRED="Keine Anmeldedaten gefunden"; T_BADFMT="Unerwartetes API-Format"; T_CXWAIT="Warte auf Codex-Daten (Codex CLI einmal ausführen)"; T_CXMISS="Codex-Helfer nicht gefunden" ;;
-  zh) T_SET="显示设置"; T_SHOW="显示 {v}"; T_PCTOF="{v} 百分比"; T_IV="刷新间隔"; T_MIN="分钟"; T_LANG="语言"; T_REFRESH="立即刷新"; T_UPDATED="更新于 {v}"; T_LEFT="剩余{v}"; T_RESET="{v}后恢复"; T_SOON="即将"; T_NOCRED="未找到凭据"; T_BADFMT="API 格式与预期不符"; T_CXWAIT="等待 Codex 数据（请先运行一次 Codex CLI）"; T_CXMISS="未找到 Codex 助手" ;;
-  ko) T_SET="표시 설정"; T_SHOW="{v} 표시"; T_PCTOF="{v} 퍼센트"; T_IV="새로고침 간격"; T_MIN="분"; T_LANG="언어"; T_REFRESH="지금 새로고침"; T_UPDATED="업데이트 {v}"; T_LEFT="{v} 남음"; T_RESET="{v} 후 회복"; T_SOON="곧"; T_NOCRED="자격 증명을 찾을 수 없습니다"; T_BADFMT="예상과 다른 API 형식"; T_CXWAIT="Codex 데이터 대기 중 (Codex CLI를 한 번 실행)"; T_CXMISS="Codex 헬퍼를 찾을 수 없습니다" ;;
-  pt) T_SET="Configurações de exibição"; T_SHOW="Mostrar {v}"; T_PCTOF="Porcentagem de {v}"; T_IV="Intervalo de atualização"; T_MIN=" min"; T_LANG="Idioma"; T_REFRESH="Atualizar agora"; T_UPDATED="Atualizado {v}"; T_LEFT="{v} restante"; T_RESET="recupera em {v}"; T_SOON="em breve"; T_NOCRED="Credenciais não encontradas"; T_BADFMT="Formato de API inesperado"; T_CXWAIT="Aguardando dados do Codex (execute o Codex CLI uma vez)"; T_CXMISS="Auxiliar do Codex não encontrado" ;;
-  nl) T_SET="Weergave-instellingen"; T_SHOW="{v} tonen"; T_PCTOF="Percentage van {v}"; T_IV="Vernieuwingsinterval"; T_MIN=" min"; T_LANG="Taal"; T_REFRESH="Nu vernieuwen"; T_UPDATED="Bijgewerkt {v}"; T_LEFT="{v} over"; T_RESET="herstelt over {v}"; T_SOON="binnenkort"; T_NOCRED="Geen inloggegevens gevonden"; T_BADFMT="Onverwachte API-indeling"; T_CXWAIT="Wachten op Codex-gegevens (voer Codex CLI één keer uit)"; T_CXMISS="Codex-helper niet gevonden" ;;
-  it) T_SET="Impostazioni di visualizzazione"; T_SHOW="Mostra {v}"; T_PCTOF="Percentuale di {v}"; T_IV="Intervallo di aggiornamento"; T_MIN=" min"; T_LANG="Lingua"; T_REFRESH="Aggiorna ora"; T_UPDATED="Aggiornato {v}"; T_LEFT="{v} rimanente"; T_RESET="si ripristina tra {v}"; T_SOON="a breve"; T_NOCRED="Credenziali non trovate"; T_BADFMT="Formato API imprevisto"; T_CXWAIT="In attesa dei dati Codex (esegui Codex CLI una volta)"; T_CXMISS="Helper Codex non trovato" ;;
-  vi) T_SET="Cài đặt hiển thị"; T_SHOW="Hiện {v}"; T_PCTOF="Phần trăm {v}"; T_IV="Khoảng làm mới"; T_MIN=" phút"; T_LANG="Ngôn ngữ"; T_REFRESH="Làm mới ngay"; T_UPDATED="Cập nhật {v}"; T_LEFT="còn {v}"; T_RESET="hồi lại sau {v}"; T_SOON="sắp tới"; T_NOCRED="Không tìm thấy thông tin đăng nhập"; T_BADFMT="Định dạng API không như mong đợi"; T_CXWAIT="Đang chờ dữ liệu Codex (chạy Codex CLI một lần)"; T_CXMISS="Không tìm thấy trợ lý Codex" ;;
-  id) T_SET="Pengaturan tampilan"; T_SHOW="Tampilkan {v}"; T_PCTOF="Persentase {v}"; T_IV="Interval penyegaran"; T_MIN=" mnt"; T_LANG="Bahasa"; T_REFRESH="Segarkan sekarang"; T_UPDATED="Diperbarui {v}"; T_LEFT="sisa {v}"; T_RESET="pulih dalam {v}"; T_SOON="segera"; T_NOCRED="Kredensial tidak ditemukan"; T_BADFMT="Format API tidak sesuai"; T_CXWAIT="Menunggu data Codex (jalankan Codex CLI sekali)"; T_CXMISS="Pembantu Codex tidak ditemukan" ;;
-  th) T_SET="การตั้งค่าการแสดงผล"; T_SHOW="แสดง {v}"; T_PCTOF="เปอร์เซ็นต์ของ {v}"; T_IV="ช่วงการรีเฟรช"; T_MIN=" นาที"; T_LANG="ภาษา"; T_REFRESH="รีเฟรชเดี๋ยวนี้"; T_UPDATED="อัปเดตเมื่อ {v}"; T_LEFT="เหลือ {v}"; T_RESET="ฟื้นใน {v}"; T_SOON="เร็ว ๆ นี้"; T_NOCRED="ไม่พบข้อมูลรับรอง"; T_BADFMT="รูปแบบ API ไม่ตรงที่คาดไว้"; T_CXWAIT="กำลังรอข้อมูล Codex (รัน Codex CLI หนึ่งครั้ง)"; T_CXMISS="ไม่พบตัวช่วย Codex" ;;
-  *)  T_SET="Display settings"; T_SHOW="Show {v}"; T_PCTOF="{v} percentage"; T_IV="Refresh interval"; T_MIN=" min"; T_LANG="Language"; T_REFRESH="Refresh now"; T_UPDATED="Updated {v}"; T_LEFT="{v} left"; T_RESET="recovers in {v}"; T_SOON="soon"; T_NOCRED="Credentials not found"; T_BADFMT="Unexpected API format"; T_CXWAIT="Waiting for Codex data (run Codex CLI once)"; T_CXMISS="Codex helper not found" ;;
-esac
+T_SET="Display settings"; T_REFRESH="Refresh now"; T_UPDATED="Updated {v}"
+T_LEFT="{v} left"; T_RESET="recovers in {v}"; T_SOON="soon"
+T_NOCRED="Credentials not found"; T_BADFMT="Unexpected API format"
+T_CXWAIT="Waiting for Codex data (run Codex CLI once)"; T_CXMISS="Codex helper not found"
 # 両サービスがオフでも後段の「AI …」ヘッダーがクリック可能な項目を残す。
 
 semver_is_newer() {
@@ -157,7 +139,7 @@ PY
 settings_menu() {
   local page="$SETTINGS_PAGE"
   if [ -f "$page" ]; then
-    echo "⚙ $T_SET | size=12 href=$(uri "$page")?claude_on=$CL_ON&c5=$C5&c5p=$C5P&c7=$C7&c7p=$C7P&codex_on=$CX_ON&cx5=$CX5&cx5p=$CX5P&cx7=$CX7&cx7p=$CX7P&iv=$IV&lang=$LG&update=$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION") webview=true webvieww=430 webviewh=720"
+    echo "⚙ $T_SET | size=12 href=$(uri "$page")?claude_on=$CL_ON&c5=$C5&c5p=$C5P&c7=$C7&c7p=$C7P&codex_on=$CX_ON&cx5=$CX5&cx5p=$CX5P&cx7=$CX7&cx7p=$CX7P&iv=$IV&update=$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION") webview=true webvieww=430 webviewh=720"
   else
     echo "⚠ $T_SET | size=12 color=#FF9F0A tooltip=Settings helper missing; re-run the installer"
   fi

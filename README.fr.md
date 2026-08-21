@@ -34,7 +34,9 @@ conserve du bleu dans les deux mélanges :
 
 ## Réglages
 
-Ouvrez le menu et choisissez **⚙ Réglages d’affichage**. Le panneau reste ouvert afin de modifier plusieurs options à la suite sans qu’il se ferme après chaque clic. Les changements s’appliquent immédiatement.
+Ouvrez le menu et choisissez **⚙ Display settings**. Le panneau reste ouvert afin de modifier plusieurs options à la suite sans qu’il se ferme après chaque clic. Les changements s’appliquent immédiatement.
+
+L’interface du module est uniquement en anglais. Cette documentation GitHub reste disponible en 14 langues.
 
 | Réglage | Effet |
 |---|---|
@@ -49,7 +51,6 @@ Ouvrez le menu et choisissez **⚙ Réglages d’affichage**. Le panneau reste o
 | Afficher Codex 7d | Afficher ou masquer la fenêtre 7 jours |
 | Pourcentage de Codex 7d | Afficher ou masquer le pourcentage 7 jours |
 | Intervalle d’actualisation | 1, 3 ou 5 minutes |
-| Langue | 14 langues ; suit macOS par défaut |
 
 Si toutes les jauges sont masquées, un élément neutre `AI …` reste disponible pour ouvrir les réglages. La couleur ne dépend que des jauges affichées. Les réglages sont dans `~/.cache/claude-codex-bar/` et survivent aux mises à jour.
 

@@ -34,7 +34,9 @@ misturas:
 
 ## Configurações
 
-Abra o menu e escolha **⚙ Configurações de exibição**. O painel permanece aberto para alterar várias opções em sequência, sem fechar após cada clique. As mudanças entram em vigor imediatamente.
+Abra o menu e escolha **⚙ Display settings**. O painel permanece aberto para alterar várias opções em sequência, sem fechar após cada clique. As mudanças entram em vigor imediatamente.
+
+A interface do plugin está disponível somente em inglês. Esta documentação do GitHub continua disponível em 14 idiomas.
 
 | Ajuste | Efeito |
 |---|---|
@@ -49,7 +51,6 @@ Abra o menu e escolha **⚙ Configurações de exibição**. O painel permanece 
 | Mostrar Codex 7d | Mostrar ou ocultar a janela de 7 dias |
 | Porcentagem do Codex 7d | Mostrar ou ocultar a porcentagem de 7 dias |
 | Intervalo de atualização | 1, 3 ou 5 minutos |
-| Idioma | 14 idiomas; segue o macOS por padrão |
 
 Quando todos os medidores estão ocultos, um item neutro `AI …` permanece para abrir as configurações. A cor considera apenas as barras visíveis. As configurações ficam em `~/.cache/claude-codex-bar/` e sobrevivem a atualizações.
 

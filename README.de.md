@@ -34,7 +34,9 @@ beiden Mischungen einen starken Blauanteil:
 
 ## Einstellungen
 
-Öffne das Menü und wähle **⚙ Anzeigeeinstellungen**. Das Einstellungsfenster bleibt geöffnet, sodass mehrere Optionen nacheinander geändert werden können, ohne dass es sich nach jedem Klick schließt. Änderungen wirken sofort.
+Öffne das Menü und wähle **⚙ Display settings**. Das Einstellungsfenster bleibt geöffnet, sodass mehrere Optionen nacheinander geändert werden können, ohne dass es sich nach jedem Klick schließt. Änderungen wirken sofort.
+
+Die Plugin-Oberfläche ist ausschließlich auf Englisch. Diese GitHub-Dokumentation bleibt in 14 Sprachen verfügbar.
 
 | Einstellung | Wirkung |
 |---|---|
@@ -49,7 +51,6 @@ beiden Mischungen einen starken Blauanteil:
 | Codex 7d anzeigen | 7-Tage-Fenster ein-/ausblenden |
 | Prozent von Codex 7d | 7-Tage-Prozentwert ein-/ausblenden |
 | Aktualisierungsintervall | 1, 3 oder 5 Minuten |
-| Sprache | 14 Sprachen; folgt standardmäßig macOS |
 
 Sind alle Anzeigen ausgeblendet, bleibt ein neutraler Eintrag `AI …`, über den die Einstellungen erreichbar sind. Die Farbe richtet sich nur nach sichtbaren Balken. Einstellungen liegen in `~/.cache/claude-codex-bar/` und überstehen Updates.
 

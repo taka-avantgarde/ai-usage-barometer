@@ -33,7 +33,9 @@ cấp pha đỏ tươi. Codex giữ thành phần xanh lam mạnh trong cả hai
 
 ## Cài đặt
 
-Nhấp vào thanh và chọn **⚙ Cài đặt hiển thị**. Bảng cài đặt vẫn mở để bạn thay đổi nhiều tùy chọn liên tiếp mà không phải mở lại sau mỗi lần nhấp. Thay đổi có hiệu lực ngay.
+Nhấp vào thanh và chọn **⚙ Display settings**. Bảng cài đặt vẫn mở để bạn thay đổi nhiều tùy chọn liên tiếp mà không phải mở lại sau mỗi lần nhấp. Thay đổi có hiệu lực ngay.
+
+Giao diện plugin chỉ hiển thị bằng tiếng Anh. Tài liệu GitHub này vẫn được cung cấp bằng 14 ngôn ngữ.
 
 | Tùy chọn | Tác dụng |
 |---|---|
@@ -48,7 +50,6 @@ Nhấp vào thanh và chọn **⚙ Cài đặt hiển thị**. Bảng cài đặ
 | Hiện Codex 7d | Hiện hoặc ẩn khung 7 ngày |
 | Phần trăm Codex 7d | Hiện hoặc ẩn phần trăm 7 ngày |
 | Khoảng làm mới | 1, 3 hoặc 5 phút |
-| Ngôn ngữ | 14 ngôn ngữ; mặc định theo macOS |
 
 Khi ẩn mọi đồng hồ, mục trung tính `AI …` vẫn còn để mở cài đặt. Màu chỉ do các thanh đang hiển thị quyết định. Cài đặt nằm ở `~/.cache/claude-codex-bar/` và được giữ qua các bản cập nhật.
 
