@@ -19,6 +19,7 @@ for doc in "$ROOT"/README*.md "$ROOT/DESIGN.md"; do
 done
 for doc in "$ROOT"/README*.md; do
   grep -Eqi 'persistent settings panel|開いたまま|permanece abierto|تبقى .*مفتوحة|reste ouvert|bleibt geöffnet|保持打开|열린 상태|permanece aberto|blijft open|resta aperto|vẫn mở|tetap terbuka|เปิดค้างไว้' "$doc"
+  grep -q '\*\*⚙ Display settings\*\*' "$doc"
   grep -q 'Codex 5h' "$doc"
   grep -q 'Codex 7d' "$doc"
   grep -q 'GitHub Releases' "$doc"
@@ -99,14 +100,17 @@ grep -q '^7d  .*color=#783F78$' <<< "$CODEX_CRITICAL"
 printf '0\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
 cat > "$TMP/should-not-run.sh" <<'STOP'
 #!/usr/bin/env bash
+printf 'ran\n' > "$HOME/codex-helper-ran"
 echo "Codex helper must not run when Codex is disabled" >&2
 exit 99
 STOP
 chmod +x "$TMP/should-not-run.sh"
+rm -f "$TMP/home/codex-helper-ran"
 DISABLED_OUT="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
 grep -q 'webview=true' <<< "$DISABLED_OUT"
 grep -q 'codex_on=0' <<< "$DISABLED_OUT"
 ! grep -q 'must not run' <<< "$DISABLED_OUT"
+[[ ! -e "$TMP/home/codex-helper-ran" ]]
 printf '1\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
 
 # The web page provides visible gray locked rows for disabled services.
@@ -120,6 +124,41 @@ grep -q 'swiftbar.persistentWebView' "$ROOT/claude-codex.60s.sh"
 for key in cx5 cx5p cx7 cx7p; do
   grep -q "id=\"$key\"" "$ROOT/settings.html"
 done
+
+# The plugin UI is English-only. A legacy saved language must be ignored, the
+# settings page has no selector, and the settings URL carries no locale state.
+printf 'ja\n' > "$TMP/home/.cache/claude-codex-bar/lang"
+ENGLISH_ONLY="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" "$ROOT/claude-codex.60s.sh")"
+grep -q 'Display settings' <<< "$ENGLISH_ONLY"
+! grep -q '表示設定' <<< "$ENGLISH_ONLY"
+! grep -Eq '[?&]lang=' <<< "$ENGLISH_ONLY"
+! grep -q 'id="lang"' "$ROOT/settings.html"
+! grep -q 'data-i18n' "$ROOT/settings.html"
+! grep -q 'AppleLocale' "$ROOT/claude-codex.60s.sh"
+! grep -q 'CFG/lang' "$ROOT/claude-codex.60s.sh"
+
+# A provider with every usage window unchecked is fully hidden: do not query
+# it and do not leave a provider heading or a stale/API error in the dropdown.
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/claude_on"
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/c5"
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/c7"
+NO_CLAUDE_WINDOWS="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" "$ROOT/claude-codex.60s.sh")"
+! grep -q '^Claude |' <<< "$NO_CLAUDE_WINDOWS"
+! grep -q 'HTTP 429' <<< "$NO_CLAUDE_WINDOWS"
+! grep -q 'Credentials not found' <<< "$NO_CLAUDE_WINDOWS"
+
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/c5"
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/cx5"
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/cx7"
+rm -f "$TMP/home/codex-helper-ran"
+NO_CODEX_WINDOWS="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
+! grep -q '^Codex |' <<< "$NO_CODEX_WINDOWS"
+! grep -q 'must not run' <<< "$NO_CODEX_WINDOWS"
+[[ ! -e "$TMP/home/codex-helper-ran" ]]
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/c7"
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/cx5"
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/cx7"
 
 # Codex 5h/7d windows and their percentages are independently selectable.
 cat > "$TMP/codex-two-windows.sh" <<'CODEX'
@@ -154,6 +193,7 @@ grep -q 'AUB_ACTION=update' "$ROOT/settings.html"
 
 # Disabling both services must not silently re-enable Claude. The header remains
 # clickable through the neutral fallback while every child row stays muted.
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/claude_on"
 printf '0\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
 BOTH_DISABLED="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
 grep -q '^AI … |' <<< "$BOTH_DISABLED"

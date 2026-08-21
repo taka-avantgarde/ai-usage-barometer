@@ -61,16 +61,16 @@ a hidden gauge never tints the bar.
 All toggles live under **⚙ Display settings** and flip on a single click. State
 is in `~/.cache/claude-codex-bar/` and survives upgrades.
 
-`claude_on`, `c5`, `c5p`, `c7`, `c7p`, `codex_on`, `cxp`, `iv`, `lang`
+`claude_on`, `c5`, `c5p`, `c7`, `c7p`, `codex_on`, `cxp`, `iv`
 
 The settings menu is also emitted on the error paths, so a broken state can
 still be recovered from the dropdown.
 
 ## Language
 
-14 languages: en, ja, es, ar, fr, de, zh, ko, pt, nl, it, vi, id, th. The
-default follows `AppleLocale`; **Language** in the dropdown overrides it. No
-user-facing string is hard-coded — everything goes through `T_*` and `sub()`.
+The plugin interface is English-only, with no language selector or locale-based
+switching. GitHub documentation remains available in 14 languages: en, ja, es,
+ar, fr, de, zh, ko, pt, nl, it, vi, id, and th.
 
 ## Data
 

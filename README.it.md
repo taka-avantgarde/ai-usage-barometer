@@ -34,7 +34,9 @@ mantiene una forte componente blu in entrambe le miscele:
 
 ## Impostazioni
 
-Apri il menu e scegli **⚙ Impostazioni di visualizzazione**. Il pannello resta aperto, così puoi modificare più opzioni di seguito senza riaprirlo dopo ogni clic. Le modifiche hanno effetto immediato.
+Apri il menu e scegli **⚙ Display settings**. Il pannello resta aperto, così puoi modificare più opzioni di seguito senza riaprirlo dopo ogni clic. Le modifiche hanno effetto immediato.
+
+L’interfaccia del plugin è disponibile solo in inglese. Questa documentazione GitHub resta disponibile in 14 lingue.
 
 | Impostazione | Effetto |
 |---|---|
@@ -49,11 +51,12 @@ Apri il menu e scegli **⚙ Impostazioni di visualizzazione**. Il pannello resta
 | Mostra Codex 7d | Mostra o nascondi la finestra di 7 giorni |
 | Percentuale di Codex 7d | Mostra o nascondi la percentuale di 7 giorni |
 | Intervallo di aggiornamento | 1, 3 o 5 minuti |
-| Lingua | 14 lingue; segue macOS per impostazione predefinita |
 
 Quando tutti gli indicatori sono nascosti, rimane una voce neutra `AI …` per aprire le impostazioni. Il colore dipende solo dalle barre visibili. Le impostazioni sono in `~/.cache/claude-codex-bar/` e sopravvivono agli aggiornamenti.
 
 Disattivando Claude o Codex, l’aggiornamento dei dati di quel servizio viene sospeso. Le impostazioni 5h, 7d e percentuale restano attenuate e bloccate; i valori precedenti vengono ripristinati quando il servizio viene riattivato.
+
+Se le finestre 5h e 7d di un servizio sono entrambe deselezionate, il servizio e i relativi errori vengono nascosti completamente e la sua origine dati non viene interrogata.
 
 Il plugin controlla GitHub Releases al massimo una volta al giorno. Se è disponibile un aggiornamento dell’operatore, menu e impostazioni mostrano avviso, note e **Aggiorna ora**.
 

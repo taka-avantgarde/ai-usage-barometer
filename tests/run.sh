@@ -214,7 +214,8 @@ jq -e --arg original "$TMP/original-statusline.sh" '.theme == "dark" and .status
 grep -q 'https://chatgpt.com/backend-api/wham/usage' "$ROOT/codex-usage.sh"
 
 # Documentation: one-line installer first, both services named in every
-# supported language, and no claim that Warming up is fabricated as 100%.
+# README language, the English-only UI explained, and no claim that Warming up
+# is fabricated as 100%.
 READMES=(
   README.md README.ja.md README.es.md README.ar.md README.fr.md README.de.md
   README.zh.md README.ko.md README.pt.md README.nl.md README.it.md README.vi.md
@@ -225,6 +226,8 @@ for readme in "${READMES[@]}"; do
   grep -q 'raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh' "$ROOT/$readme"
   grep -q 'Claude' "$ROOT/$readme"
   grep -q 'Codex' "$ROOT/$readme"
+  grep -q '\*\*⚙ Display settings\*\*' "$ROOT/$readme"
+  grep -q '14' "$ROOT/$readme"
   ! grep -q 'Warming up.*100% left' "$ROOT/$readme"
 done
 

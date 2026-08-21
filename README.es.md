@@ -34,7 +34,9 @@ mezclas:
 
 ## Ajustes
 
-Abre el menú y elige **⚙ Ajustes de pantalla**. El panel permanece abierto para que puedas cambiar varias opciones seguidas sin que se cierre tras cada clic. Los cambios se aplican al instante.
+Abre el menú y elige **⚙ Display settings**. El panel permanece abierto para que puedas cambiar varias opciones seguidas sin que se cierre tras cada clic. Los cambios se aplican al instante.
+
+La interfaz del complemento está disponible solo en inglés. Esta documentación de GitHub sigue disponible en 14 idiomas.
 
 | Ajuste | Efecto |
 |---|---|
@@ -49,11 +51,12 @@ Abre el menú y elige **⚙ Ajustes de pantalla**. El panel permanece abierto pa
 | Mostrar Codex 7d | Mostrar u ocultar la ventana de 7 días |
 | Porcentaje de Codex 7d | Mostrar u ocultar el porcentaje de 7 días |
 | Intervalo de actualización | 1, 3 o 5 minutos |
-| Idioma | 14 idiomas; sigue a macOS por defecto |
 
 Si se ocultan todos los indicadores, queda un elemento neutro `AI …` para poder abrir los ajustes. El color depende solo de las barras visibles. Los ajustes están en `~/.cache/claude-codex-bar/` y se conservan al actualizar.
 
 Al desactivar Claude o Codex, se detiene la actualización de datos de ese servicio. Los ajustes de 5h, 7d y porcentaje permanecen atenuados y bloqueados; al volver a activarlo se restauran sus valores anteriores.
+
+Si se desmarcan las ventanas de 5h y 7d de un servicio, el servicio y sus errores se ocultan por completo y no se consulta su fuente de datos.
 
 El complemento comprueba GitHub Releases como máximo una vez al día. Si hay una actualización del operador, el menú y los ajustes muestran el aviso, las notas y **Actualizar ahora**.
 
