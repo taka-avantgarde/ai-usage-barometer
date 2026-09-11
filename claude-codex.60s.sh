@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.3.3</xbar.version>
+# <xbar.version>v0.4.0</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.3.3"
+VERSION="v0.4.0"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -89,6 +89,7 @@ T_SET="Display settings"; T_REFRESH="Refresh now"; T_UPDATED="Updated {v}"
 T_LEFT="{v} left"; T_RESET="recovers in {v}"; T_SOON="soon"
 T_NOCRED="Credentials not found"; T_BADFMT="Unexpected API format"
 T_CXWAIT="Waiting for Codex data (run Codex CLI once)"; T_CXMISS="Codex helper not found"
+T_REAUTH="Sign in to Claude Code again"; T_RATELIMIT="Rate limited — retrying soon"
 # 両サービスがオフでも後段の「AI …」ヘッダーがクリック可能な項目を残す。
 
 semver_is_newer() {
@@ -136,9 +137,22 @@ import urllib.parse
 print(pathlib.Path(sys.argv[1]).resolve().as_uri().replace("#", "%23"))
 PY
 }
+# 設定画面は persistentWebView で常駐するため、クエリ文字列だけに頼ると
+# 画面と実ファイルが食い違ったまま自己修復しない。毎回これを書き出して
+# 画面側から読み直させる。
+write_settings_state() {
+  local dir; dir="$(dirname "$SETTINGS_PAGE")"
+  [ -d "$dir" ] || return 0
+  printf '{"claude_on":"%s","c5":"%s","c5p":"%s","c7":"%s","c7p":"%s","codex_on":"%s","cx5":"%s","cx5p":"%s","cx7":"%s","cx7p":"%s","iv":"%s","update":"%s"}\n' \
+    "$CL_ON" "$C5" "$C5P" "$C7" "$C7P" "$CX_ON" "$CX5" "$CX5P" "$CX7" "$CX7P" "$IV" \
+    "$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION")" > "$dir/state.json.tmp" &&
+    mv -f "$dir/state.json.tmp" "$dir/state.json"
+}
+
 settings_menu() {
   local page="$SETTINGS_PAGE"
   if [ -f "$page" ]; then
+    write_settings_state
     echo "⚙ $T_SET | size=12 href=$(uri "$page")?claude_on=$CL_ON&c5=$C5&c5p=$C5P&c7=$C7&c7p=$C7P&codex_on=$CX_ON&cx5=$CX5&cx5p=$CX5P&cx7=$CX7&cx7p=$CX7P&iv=$IV&update=$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION") webview=true webvieww=430 webviewh=720"
   else
     echo "⚠ $T_SET | size=12 color=#FF9F0A tooltip=Settings helper missing; re-run the installer"
@@ -179,9 +193,21 @@ aT=0; cU5=""; cU7=""; cR5=""; cR7=""
 [ -f "$CACHEF" ] && IFS=$'\t' read -r aT cU5 cU7 cR5 cR7 < "$CACHEF" 2>/dev/null
 case "$aT" in ''|*[!0-9]*) aT=0 ;; esac
 NOW=$(date +%s)
+# 失敗しても次に試してよい時刻を記録する。成功時しかキャッシュを書かないと
+# 429 のあいだ毎分叩き続けてしまい、制限が永久に解けなくなるため。
+ATT="$CFG/claude.attempt"; RETRY_AT=0; LAST_ERR=""
+[ -f "$ATT" ] && IFS=$'\t' read -r RETRY_AT LAST_ERR < "$ATT" 2>/dev/null
+case "$RETRY_AT" in ''|*[!0-9]*) RETRY_AT=0 ;; esac
 if [ "$CL_ACTIVE" = 1 ] && [ $(( NOW - aT )) -lt $(( IV * 60 )) ] && [ -n "$cU5$cU7" ]; then
   U5="$cU5"; U7="$cU7"; R5="$cR5"; R7="$cR7"
   P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
+elif [ "$CL_ACTIVE" = 1 ] && [ "$NOW" -lt "$RETRY_AT" ]; then
+  if [ -n "$cU5$cU7" ]; then
+    U5="$cU5"; U7="$cU7"; R5="$cR5"; R7="$cR7"
+    P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
+  else
+    CL_ERR="${LAST_ERR:-Retrying soon} ($(( (RETRY_AT - NOW + 59) / 60 ))m)"
+  fi
 elif [ "$CL_ACTIVE" = 1 ]; then
   TOKEN=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null \
           | jq -r '.claudeAiOauth.accessToken // .accessToken // empty' 2>/dev/null)
@@ -193,7 +219,11 @@ elif [ "$CL_ACTIVE" = 1 ]; then
     RESP=$(curl -s -m 8 -w $'\n%{http_code}' "$ENDPOINT" \
             -H "Authorization: Bearer $TOKEN" -H "anthropic-beta: $BETA")
     CODE="${RESP##*$'\n'}"; BODY="${RESP%$'\n'*}"
-    if [ "$CODE" != "200" ]; then
+    if [ "$CODE" = "401" ]; then
+      CL_ERR="$T_REAUTH"
+    elif [ "$CODE" = "429" ]; then
+      CL_ERR="$T_RATELIMIT"
+    elif [ "$CODE" != "200" ]; then
       CL_ERR="HTTP $CODE"
     else
       U5=$(printf '%s' "$BODY" | jq -r '.five_hour.utilization // empty' 2>/dev/null)
@@ -204,6 +234,13 @@ elif [ "$CL_ACTIVE" = 1 ]; then
       P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
       [ -z "$CL_ERR" ] && printf '%s\t%s\t%s\t%s\t%s\n' "$NOW" "$U5" "$U7" "$R5" "$R7" > "$CACHEF"
     fi
+  fi
+  if [ -n "$CL_ERR" ]; then
+    BO=$(( IV * 60 ))
+    case "$CL_ERR" in *"$T_RATELIMIT"*) BO=900 ;; esac
+    printf '%s\t%s\n' "$(( NOW + BO ))" "$CL_ERR" > "$ATT"
+  else
+    rm -f "$ATT"
   fi
   # 取得に失敗してもキャッシュがあればそれを表示（エラーはキャッシュ無し時のみ）
   if [ -n "$CL_ERR" ] && [ -n "$cU5$cU7" ]; then
@@ -301,6 +338,7 @@ if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ] && [ -n "$CX_L1" ]; then
   fi
   [ -n "$CXMB" ] && MB="${MB:+$MB │ }$CXMB"
 fi
+[ "$CX_ACTIVE" = 1 ] && [ -n "$CX_ERR" ] && MB="${MB:+$MB │ }Codex ⚠"
 [ -z "$MB" ] && MB="AI …"
 
 # メニューバー: PDF なら Claude/Codex を別色で描ける（テキストは1項目1色まで）
@@ -323,7 +361,7 @@ if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
   fi
 fi
 B64=""
-if [ -n "$PDF_SPEC" ] && command -v python3 >/dev/null 2>&1; then
+if [ -n "$PDF_SPEC" ] && [ -z "$CL_ERR$CX_ERR" ] && command -v python3 >/dev/null 2>&1; then
   B64=$(python3 - "$PDF_SPEC" <<'PYEOF' 2>/dev/null
 import sys, base64
 spec=[x for x in sys.argv[1].split(";") if x]

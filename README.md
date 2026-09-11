@@ -69,7 +69,7 @@ Results are cached for the refresh interval, so the endpoint is polled at most o
 
 ## Troubleshooting
 
-**The bar shows a Claude warning.** The Keychain item was not found. Sign in with Claude Code on this Mac, then click **Refresh now**.
+**The bar shows `Claude ⚠`.** Open the dropdown for the reason. *Sign in to Claude Code again* means the OAuth token expired — re-authenticate with the Claude Code CLI or IDE extension. This is **not** the Claude desktop app: signing into Claude.app does not refresh this token. *Rate limited* clears on its own; the plugin backs off 15 minutes and shows the remaining wait. The Keychain item was not found. Sign in with Claude Code on this Mac, then click **Refresh now**.
 
 **Codex shows a warning.** The helper is missing or Codex has not produced data yet. Re-run the installer, then use Codex CLI once.
 

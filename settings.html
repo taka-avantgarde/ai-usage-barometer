@@ -74,12 +74,25 @@
     function save(key, value) {
       params.set(key, value);
       document.querySelector('#status').textContent = 'Saved';
+      setTimeout(resync, 400); setTimeout(resync, 1500);
       location.href = `swiftbar://refreshplugin?name=claude-codex.60s.sh&AUB_KEY=${encodeURIComponent(key)}&AUB_VALUE=${encodeURIComponent(value)}`;
+    }
+
+    function applyState(get) {
+      toggleIds.forEach(id => {
+        const input = document.querySelector(`#${id}`);
+        if (document.activeElement === input) return;
+        input.checked = get(id) !== '0';
+      });
+      document.querySelectorAll('input[name="iv"]').forEach(input => {
+        input.checked = input.value === (get('iv') || '3');
+      });
+      muteChildren('claude');
+      muteChildren('codex');
     }
 
     toggleIds.forEach(id => {
       const input = document.querySelector(`#${id}`);
-      input.checked = params.get(id) !== '0';
       input.addEventListener('change', () => {
         if (id === 'claude_on') muteChildren('claude');
         if (id === 'codex_on') muteChildren('codex');
@@ -87,9 +100,24 @@
       });
     });
     document.querySelectorAll('input[name="iv"]').forEach(input => {
-      input.checked = input.value === (params.get('iv') || '3');
       input.addEventListener('change', () => save('iv', input.value));
     });
+    applyState(k => params.get(k));
+
+    // persistentWebView はこのページを再読み込みせず生かし続けるため、
+    // クエリ文字列は最初の1回で固定される。プラグインが毎回書き出す
+    // state.json を読み直して、画面が実状態から乖離しないようにする。
+    async function resync() {
+      try {
+        const r = await fetch(`state.json?_=${Date.now()}`, { cache: 'no-store' });
+        if (!r.ok) return;
+        const st = await r.json();
+        applyState(k => (k in st ? String(st[k]) : null));
+      } catch (_) { /* 初回はまだ存在しない */ }
+    }
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) resync(); });
+    window.addEventListener('focus', resync);
+    resync();
     const updateVersion = params.get('update');
     document.querySelector('#update').classList.toggle('visible', Boolean(updateVersion));
     if (updateVersion) {

@@ -88,3 +88,42 @@ Its windows are dynamic: a 5-hour window appears only when Codex returns one.
 
 The helper output is the interchange format, so `█` and `░` must stay in the
 parser's character class if either helper's fill characters ever change.
+
+
+## Failure states must stay visible and must not amplify (v0.4.0)
+
+**A working service must never erase the other's error.** The menu bar switches
+to a vector PDF image whenever any window has bars to draw, and a plain-text
+menu item carries only one string. So when Claude errored while Codex rendered
+fine, the image drew only Codex and the `"Claude ⚠"` text was discarded. The
+image is now skipped whenever either service has an error, falling back to text
+that names both. Colour per service is worth less than knowing something broke.
+
+**A failed fetch must record that it happened.** The response cache was only
+written on success, so a 429 left the attempt time at 0 and every 60-second run
+hit the endpoint again — the rate limit could never expire. `claude.attempt`
+now stores the earliest time worth retrying, written on every failure. Rate
+limits back off 15 minutes; everything else waits one refresh interval. Success
+deletes the file so recovery is immediate.
+
+**An error message is a snapshot, not a state.** Reusing the stored message
+during backoff showed `Rate limited` long after the real problem had become an
+expired token, sending diagnosis down the wrong path. Backoff now appends the
+remaining wait so a stale message is visibly stale, and 401 uses the short
+interval so re-authentication is picked up within minutes.
+
+401 reads `Sign in to Claude Code again`, not `HTTP 401`. The account it needs
+is Claude Code's, which is **not** the Claude desktop app — signing into
+Claude.app does not refresh this token.
+
+## The settings view must not be able to lie (v0.4.0)
+
+`<swiftbar.persistentWebView>` keeps settings.html alive across refreshes rather
+than reloading it, so its checkboxes were seeded once from the query string and
+never re-read. During this bug hunt the panel showed *Show Claude* ticked while
+`claude_on` was `0`, which made the plugin look broken when it was faithfully
+doing what it was told.
+
+The plugin now writes `state.json` beside settings.html on every run, and the
+page re-fetches it on load, on focus, on visibility change, and shortly after
+each save. The query string remains only as the first paint.
