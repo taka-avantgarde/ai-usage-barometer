@@ -45,10 +45,10 @@ The plugin interface is English-only. This GitHub documentation remains availabl
 | Show Claude 7d | Show or hide the 7-day window |
 | Claude 7d percentage | Show or hide the 7-day percentage |
 | Show Codex | Show or hide Codex entirely |
-| Show Codex 5h | Show or hide the 5-hour window when Codex provides it |
-| Codex 5h percentage | Show or hide the 5-hour percentage |
-| Show Codex 7d | Show or hide the 7-day window |
-| Codex 7d percentage | Show or hide the 7-day percentage |
+| Show Codex window 1 | Show or hide whichever window Codex reports first |
+| Codex window 1 percentage | Show or hide its percentage |
+| Show Codex window 2 | Show or hide the second window, if Codex reports one |
+| Codex window 2 percentage | Show or hide its percentage |
 | Refresh interval | 1, 3, or 5 minutes |
 
 When every gauge is hidden, a neutral `AI …` item remains so settings stay clickable. Menu-bar colour is decided only by the gauges actually shown. Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
@@ -65,7 +65,7 @@ The plugin checks GitHub Releases at most once a day. When an operator update is
 
 Results are cached for the refresh interval, so the endpoint is polled at most once per interval. If a refresh fails, the last good reading stays on screen instead of blanking the bar.
 
-**Codex** is read from the local helper `codex-usage.sh` that the installer places in `~/SwiftBar/.ai-usage-barometer/`. Its windows are dynamic: a 5-hour bar appears only when Codex returns one.
+**Codex** is read from the local helper `codex-usage.sh` that the installer places in `~/SwiftBar/.ai-usage-barometer/`. Its windows are dynamic in both count and name — a plan change can turn `5h`/`7d` into something like `30d` — so the two toggles above track whichever windows Codex actually returns, first and second, and the settings panel relabels itself to match.
 
 ## Troubleshooting
 

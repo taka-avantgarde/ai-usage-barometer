@@ -46,10 +46,10 @@ L’interface du module est uniquement en anglais. Cette documentation GitHub re
 | Afficher Claude 7d | Afficher ou masquer la fenêtre 7 jours |
 | Pourcentage de Claude 7d | Afficher ou masquer son pourcentage |
 | Afficher Codex | Afficher ou masquer Codex |
-| Afficher Codex 5h | Afficher ou masquer la fenêtre 5 heures si disponible |
-| Pourcentage de Codex 5h | Afficher ou masquer le pourcentage 5 heures |
-| Afficher Codex 7d | Afficher ou masquer la fenêtre 7 jours |
-| Pourcentage de Codex 7d | Afficher ou masquer le pourcentage 7 jours |
+| Afficher fenêtre 1 de Codex | Afficher ou masquer la première fenêtre renvoyée par Codex |
+| Pourcentage fenêtre 1 de Codex | Afficher ou masquer son pourcentage |
+| Afficher fenêtre 2 de Codex | Afficher ou masquer la seconde, si elle existe |
+| Pourcentage fenêtre 2 de Codex | Afficher ou masquer son pourcentage |
 | Intervalle d’actualisation | 1, 3 ou 5 minutes |
 
 Si toutes les jauges sont masquées, un élément neutre `AI …` reste disponible pour ouvrir les réglages. La couleur ne dépend que des jauges affichées. Les réglages sont dans `~/.cache/claude-codex-bar/` et survivent aux mises à jour.
@@ -66,11 +66,11 @@ Le module vérifie GitHub Releases au plus une fois par jour. Une mise à jour d
 
 Les résultats sont mis en cache pendant l’intervalle : le point de terminaison n’est interrogé qu’une fois par intervalle. En cas d’échec, la dernière valeur valide reste affichée.
 
-**Codex** est lu depuis l’assistant local `codex-usage.sh` placé par l’installateur dans `~/SwiftBar/.ai-usage-barometer/`. Ses fenêtres sont dynamiques.
+**Codex** est lu depuis l’assistant local `codex-usage.sh` placé par l’installateur dans `~/SwiftBar/.ai-usage-barometer/`. Ses fenêtres sont dynamiques en nombre et en nom — un changement de forfait peut transformer `5h`/`7d` en quelque chose comme `30d` — donc les deux interrupteurs suivent la première et la seconde fenêtre réellement renvoyées par Codex, et le panneau de réglages se renomme en conséquence.
 
 ## Dépannage
 
-**Un avertissement Claude s’affiche.** L’élément du trousseau est introuvable. Connectez-vous à Claude Code puis cliquez sur **Actualiser**.
+**Un avertissement Claude s’affiche.** Ouvrez le menu déroulant pour connaître la raison. *Sign in to Claude Code again* signifie que le jeton OAuth a expiré — reconnectez-vous via la CLI Claude Code ou l’extension IDE. **Ce n’est pas l’application de bureau Claude** : se connecter à Claude.app ne renouvelle pas ce jeton. *Rate limited* se résout tout seul ; le plugin patiente 15 minutes et affiche le temps restant.
 
 **Un avertissement Codex s’affiche.** L’assistant manque ou Codex n’a pas encore produit de données. Relancez l’installateur puis utilisez Codex CLI une fois.
 

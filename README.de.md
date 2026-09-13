@@ -46,10 +46,10 @@ Die Plugin-Oberfläche ist ausschließlich auf Englisch. Diese GitHub-Dokumentat
 | Claude 7d anzeigen | 7-Tage-Fenster ein-/ausblenden |
 | Prozent von Claude 7d | Dessen Prozentwert ein-/ausblenden |
 | Codex anzeigen | Codex ein-/ausblenden |
-| Codex 5h anzeigen | 5-Stunden-Fenster ein-/ausblenden, wenn verfügbar |
-| Prozent von Codex 5h | 5-Stunden-Prozentwert ein-/ausblenden |
-| Codex 7d anzeigen | 7-Tage-Fenster ein-/ausblenden |
-| Prozent von Codex 7d | 7-Tage-Prozentwert ein-/ausblenden |
+| Codex-Fenster 1 anzeigen | Das erste von Codex gemeldete Fenster ein-/ausblenden |
+| Prozent von Codex-Fenster 1 | Dessen Prozentwert ein-/ausblenden |
+| Codex-Fenster 2 anzeigen | Das zweite Fenster ein-/ausblenden, falls vorhanden |
+| Prozent von Codex-Fenster 2 | Dessen Prozentwert ein-/ausblenden |
 | Aktualisierungsintervall | 1, 3 oder 5 Minuten |
 
 Sind alle Anzeigen ausgeblendet, bleibt ein neutraler Eintrag `AI …`, über den die Einstellungen erreichbar sind. Die Farbe richtet sich nur nach sichtbaren Balken. Einstellungen liegen in `~/.cache/claude-codex-bar/` und überstehen Updates.
@@ -66,11 +66,11 @@ Das Plugin prüft GitHub Releases höchstens einmal täglich. Ist ein Betreiber-
 
 Ergebnisse werden für das Intervall zwischengespeichert, der Endpunkt wird also höchstens einmal pro Intervall abgefragt. Schlägt eine Aktualisierung fehl, bleibt der letzte gültige Wert stehen.
 
-**Codex** wird aus dem lokalen Helfer `codex-usage.sh` gelesen, den der Installer nach `~/SwiftBar/.ai-usage-barometer/` legt. Seine Fenster sind dynamisch.
+**Codex** wird aus dem lokalen Helfer `codex-usage.sh` gelesen, den der Installer nach `~/SwiftBar/.ai-usage-barometer/` legt. Seine Fenster sind dynamisch in Anzahl und Name — ein Tarifwechsel kann `5h`/`7d` in etwas wie `30d` verwandeln —, daher folgen die beiden Schalter dem ersten und zweiten Fenster, das Codex tatsächlich liefert, und das Einstellungsfeld benennt sich entsprechend um.
 
 ## Fehlerbehebung
 
-**Eine Claude-Warnung erscheint.** Der Schlüsselbund-Eintrag fehlt. Melde dich in Claude Code an und klicke **Jetzt aktualisieren**.
+**Eine Claude-Warnung erscheint.** Öffne das Dropdown, um den Grund zu sehen. *Sign in to Claude Code again* bedeutet, dass das OAuth-Token abgelaufen ist — melde dich über die Claude-Code-CLI oder die IDE-Erweiterung neu an. **Das ist nicht die Claude-Desktop-App**: Ein Login in Claude.app erneuert dieses Token nicht. *Rate limited* löst sich von selbst; das Plugin wartet 15 Minuten und zeigt die verbleibende Zeit an.
 
 **Eine Codex-Warnung erscheint.** Der Helfer fehlt oder Codex hat noch keine Daten geliefert. Installer erneut ausführen und Codex CLI einmal nutzen.
 

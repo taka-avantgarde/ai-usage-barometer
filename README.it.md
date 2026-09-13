@@ -46,10 +46,10 @@ L’interfaccia del plugin è disponibile solo in inglese. Questa documentazione
 | Mostra Claude 7d | Mostra o nascondi la finestra di 7 giorni |
 | Percentuale di Claude 7d | Mostra o nascondi la relativa percentuale |
 | Mostra Codex | Mostra o nascondi Codex |
-| Mostra Codex 5h | Mostra o nascondi la finestra di 5 ore se disponibile |
-| Percentuale di Codex 5h | Mostra o nascondi la percentuale di 5 ore |
-| Mostra Codex 7d | Mostra o nascondi la finestra di 7 giorni |
-| Percentuale di Codex 7d | Mostra o nascondi la percentuale di 7 giorni |
+| Mostra finestra 1 di Codex | Mostra o nascondi la prima finestra restituita da Codex |
+| Percentuale finestra 1 di Codex | Mostra o nascondi la relativa percentuale |
+| Mostra finestra 2 di Codex | Mostra o nascondi la seconda, se presente |
+| Percentuale finestra 2 di Codex | Mostra o nascondi la relativa percentuale |
 | Intervallo di aggiornamento | 1, 3 o 5 minuti |
 
 Quando tutti gli indicatori sono nascosti, rimane una voce neutra `AI …` per aprire le impostazioni. Il colore dipende solo dalle barre visibili. Le impostazioni sono in `~/.cache/claude-codex-bar/` e sopravvivono agli aggiornamenti.
@@ -66,11 +66,11 @@ Il plugin controlla GitHub Releases al massimo una volta al giorno. Se è dispon
 
 I risultati sono memorizzati per la durata dell’intervallo, quindi l’endpoint viene interrogato al massimo una volta per intervallo. Se un aggiornamento fallisce, resta l’ultimo valore valido.
 
-**Codex** viene letto dall’helper locale `codex-usage.sh` che l’installer colloca in `~/SwiftBar/.ai-usage-barometer/`. Le sue finestre sono dinamiche.
+**Codex** viene letto dall’helper locale `codex-usage.sh` che l’installer colloca in `~/SwiftBar/.ai-usage-barometer/`. Le sue finestre sono dinamiche per numero e nome — un cambio di piano può trasformare `5h`/`7d` in qualcosa come `30d` — quindi i due interruttori sopra seguono la prima e la seconda finestra effettivamente restituite da Codex, e il pannello impostazioni si rinomina di conseguenza.
 
 ## Risoluzione dei problemi
 
-**Compare un avviso di Claude.** La voce del portachiavi non è stata trovata. Accedi a Claude Code su questo Mac e fai clic su **Aggiorna ora**.
+**Compare un avviso di Claude.** Apri il menu a tendina per vedere il motivo. *Sign in to Claude Code again* significa che il token OAuth è scaduto — accedi di nuovo tramite la CLI di Claude Code o l’estensione IDE. **Non è l’app desktop Claude**: accedere a Claude.app non rinnova questo token. *Rate limited* si risolve da solo; il plugin attende 15 minuti e mostra il tempo rimanente.
 
 **Compare un avviso di Codex.** L’helper manca o Codex non ha ancora prodotto dati. Riesegui l’installer e usa Codex CLI una volta.
 

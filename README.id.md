@@ -46,10 +46,10 @@ Antarmuka plugin hanya tersedia dalam bahasa Inggris. Dokumentasi GitHub ini tet
 | Tampilkan Claude 7d | Tampilkan atau sembunyikan jendela 7 hari |
 | Persentase Claude 7d | Tampilkan atau sembunyikan persentasenya |
 | Tampilkan Codex | Tampilkan atau sembunyikan Codex |
-| Tampilkan Codex 5h | Tampilkan atau sembunyikan jendela 5 jam bila tersedia |
-| Persentase Codex 5h | Tampilkan atau sembunyikan persentase 5 jam |
-| Tampilkan Codex 7d | Tampilkan atau sembunyikan jendela 7 hari |
-| Persentase Codex 7d | Tampilkan atau sembunyikan persentase 7 hari |
+| Tampilkan jendela Codex 1 | Tampilkan atau sembunyikan jendela pertama yang dilaporkan Codex |
+| Persentase jendela Codex 1 | Tampilkan atau sembunyikan persentasenya |
+| Tampilkan jendela Codex 2 | Tampilkan atau sembunyikan jendela kedua, jika ada |
+| Persentase jendela Codex 2 | Tampilkan atau sembunyikan persentasenya |
 | Interval penyegaran | 1, 3, atau 5 menit |
 
 Saat semua meter disembunyikan, item netral `AI …` tetap tersedia untuk membuka pengaturan. Warna hanya ditentukan oleh bilah yang tampil. Pengaturan tersimpan di `~/.cache/claude-codex-bar/` dan bertahan setelah pembaruan.
@@ -66,11 +66,11 @@ Plugin memeriksa GitHub Releases paling banyak sekali sehari. Jika ada pembaruan
 
 Hasil disimpan sementara selama interval, jadi endpoint dipanggil paling banyak sekali per interval. Jika gagal, nilai valid terakhir tetap ditampilkan.
 
-**Codex** dibaca dari pembantu lokal `codex-usage.sh` yang ditempatkan pemasang di `~/SwiftBar/.ai-usage-barometer/`. Jendelanya dinamis.
+**Codex** dibaca dari pembantu lokal `codex-usage.sh` yang ditempatkan pemasang di `~/SwiftBar/.ai-usage-barometer/`. Jendelanya dinamis baik jumlah maupun namanya — perubahan paket bisa mengubah `5h`/`7d` menjadi sesuatu seperti `30d` — jadi kedua sakelar di atas mengikuti jendela pertama dan kedua yang benar-benar dikembalikan Codex, dan panel pengaturan akan mengganti namanya agar sesuai.
 
 ## Pemecahan masalah
 
-**Muncul peringatan Claude.** Item Keychain tidak ditemukan. Masuk ke Claude Code di Mac ini lalu klik **Segarkan sekarang**.
+**Muncul peringatan Claude.** Buka menu dropdown untuk melihat alasannya. *Sign in to Claude Code again* berarti token OAuth kedaluwarsa — masuk ulang lewat CLI Claude Code atau ekstensi IDE. **Ini bukan aplikasi desktop Claude**: masuk ke Claude.app tidak memperbarui token ini. *Rate limited* akan hilang sendiri; plugin menunggu 15 menit dan menampilkan sisa waktu.
 
 **Muncul peringatan Codex.** Pembantu tidak ada atau Codex belum menghasilkan data. Jalankan ulang pemasang lalu gunakan Codex CLI sekali.
 

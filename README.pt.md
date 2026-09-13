@@ -46,10 +46,10 @@ A interface do plugin está disponível somente em inglês. Esta documentação 
 | Mostrar Claude 7d | Mostrar ou ocultar a janela de 7 dias |
 | Porcentagem de Claude 7d | Mostrar ou ocultar sua porcentagem |
 | Mostrar Codex | Mostrar ou ocultar o Codex |
-| Mostrar Codex 5h | Mostrar ou ocultar a janela de 5 horas quando disponível |
-| Porcentagem do Codex 5h | Mostrar ou ocultar a porcentagem de 5 horas |
-| Mostrar Codex 7d | Mostrar ou ocultar a janela de 7 dias |
-| Porcentagem do Codex 7d | Mostrar ou ocultar a porcentagem de 7 dias |
+| Mostrar janela 1 do Codex | Mostrar ou ocultar a primeira janela relatada pelo Codex |
+| Porcentagem da janela 1 do Codex | Mostrar ou ocultar sua porcentagem |
+| Mostrar janela 2 do Codex | Mostrar ou ocultar a segunda janela, se houver |
+| Porcentagem da janela 2 do Codex | Mostrar ou ocultar sua porcentagem |
 | Intervalo de atualização | 1, 3 ou 5 minutos |
 
 Quando todos os medidores estão ocultos, um item neutro `AI …` permanece para abrir as configurações. A cor considera apenas as barras visíveis. As configurações ficam em `~/.cache/claude-codex-bar/` e sobrevivem a atualizações.
@@ -66,11 +66,11 @@ O plugin verifica o GitHub Releases no máximo uma vez por dia. Se houver atuali
 
 Os resultados ficam em cache durante o intervalo, então o endpoint é consultado no máximo uma vez por intervalo. Se falhar, a última leitura válida permanece.
 
-**Codex** é lido do auxiliar local `codex-usage.sh` que o instalador coloca em `~/SwiftBar/.ai-usage-barometer/`. Suas janelas são dinâmicas.
+**Codex** é lido do auxiliar local `codex-usage.sh` que o instalador coloca em `~/SwiftBar/.ai-usage-barometer/`. Suas janelas são dinâmicas em número e nome — uma mudança de plano pode transformar `5h`/`7d` em algo como `30d` — então as duas chaves acima seguem a primeira e a segunda janela que o Codex realmente retornar, e o painel de configurações se renomeia de acordo.
 
 ## Solução de problemas
 
-**Aparece um aviso do Claude.** A entrada das Chaves não foi encontrada. Entre no Claude Code neste Mac e clique em **Atualizar agora**.
+**Aparece um aviso do Claude.** Abra o menu suspenso para ver o motivo. *Sign in to Claude Code again* significa que o token OAuth expirou — reautentique pela CLI do Claude Code ou pela extensão do IDE. **Não é o app de desktop Claude**: entrar no Claude.app não renova esse token. *Rate limited* se resolve sozinho; o plugin aguarda 15 minutos e mostra o tempo restante.
 
 **Aparece um aviso do Codex.** O auxiliar está ausente ou o Codex ainda não gerou dados. Reexecute o instalador e use o Codex CLI uma vez.
 

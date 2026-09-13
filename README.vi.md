@@ -45,10 +45,10 @@ Giao diện plugin chỉ hiển thị bằng tiếng Anh. Tài liệu GitHub nà
 | Hiện Claude 7d | Hiện hoặc ẩn khung 7 ngày |
 | Phần trăm Claude 7d | Hiện hoặc ẩn phần trăm tương ứng |
 | Hiện Codex | Hiện hoặc ẩn Codex |
-| Hiện Codex 5h | Hiện hoặc ẩn khung 5 giờ khi có dữ liệu |
-| Phần trăm Codex 5h | Hiện hoặc ẩn phần trăm 5 giờ |
-| Hiện Codex 7d | Hiện hoặc ẩn khung 7 ngày |
-| Phần trăm Codex 7d | Hiện hoặc ẩn phần trăm 7 ngày |
+| Hiện khung Codex 1 | Hiện hoặc ẩn khung đầu tiên mà Codex trả về |
+| Phần trăm khung Codex 1 | Hiện hoặc ẩn phần trăm tương ứng |
+| Hiện khung Codex 2 | Hiện hoặc ẩn khung thứ hai, nếu có |
+| Phần trăm khung Codex 2 | Hiện hoặc ẩn phần trăm tương ứng |
 | Khoảng làm mới | 1, 3 hoặc 5 phút |
 
 Khi ẩn mọi đồng hồ, mục trung tính `AI …` vẫn còn để mở cài đặt. Màu chỉ do các thanh đang hiển thị quyết định. Cài đặt nằm ở `~/.cache/claude-codex-bar/` và được giữ qua các bản cập nhật.
@@ -65,11 +65,11 @@ Tiện ích kiểm tra GitHub Releases nhiều nhất một lần mỗi ngày. K
 
 Kết quả được lưu đệm trong khoảng làm mới, nên mỗi khoảng chỉ gọi endpoint tối đa một lần. Nếu thất bại, giá trị hợp lệ gần nhất vẫn hiển thị.
 
-**Codex** được đọc từ trợ lý cục bộ `codex-usage.sh` mà trình cài đặt đặt tại `~/SwiftBar/.ai-usage-barometer/`. Các khung của nó là động.
+**Codex** được đọc từ trợ lý cục bộ `codex-usage.sh` mà trình cài đặt đặt tại `~/SwiftBar/.ai-usage-barometer/`. Các khung của nó động cả về số lượng lẫn tên gọi — khi đổi gói, `5h`/`7d` có thể trở thành thứ như `30d` — nên hai công tắc trên bám theo khung thứ nhất và thứ hai mà Codex thực sự trả về, và bảng cài đặt sẽ tự đổi tên cho khớp.
 
 ## Khắc phục sự cố
 
-**Hiện cảnh báo Claude.** Không tìm thấy mục Keychain. Hãy đăng nhập Claude Code trên máy này rồi nhấn **Làm mới ngay**.
+**Hiện cảnh báo Claude.** Mở menu thả xuống để xem lý do. *Sign in to Claude Code again* nghĩa là token OAuth đã hết hạn — hãy đăng nhập lại qua Claude Code CLI hoặc tiện ích IDE. **Đây không phải ứng dụng Claude trên desktop**: đăng nhập vào Claude.app không làm mới token này. *Rate limited* sẽ tự hết; plugin sẽ chờ 15 phút và hiển thị thời gian còn lại.
 
 **Hiện cảnh báo Codex.** Thiếu trợ lý hoặc Codex chưa tạo dữ liệu. Chạy lại trình cài đặt rồi dùng Codex CLI một lần.
 

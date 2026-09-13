@@ -46,10 +46,10 @@ De plugininterface is uitsluitend in het Engels. Deze GitHub-documentatie blijft
 | Claude 7d tonen | Venster van 7 dagen tonen of verbergen |
 | Percentage van Claude 7d | Bijbehorend percentage tonen of verbergen |
 | Codex tonen | Codex tonen of verbergen |
-| Codex 5h tonen | Het 5-uursvenster tonen of verbergen wanneer beschikbaar |
-| Percentage van Codex 5h | Het 5-uurspercentage tonen of verbergen |
-| Codex 7d tonen | Het 7-daagse venster tonen of verbergen |
-| Percentage van Codex 7d | Het 7-daagse percentage tonen of verbergen |
+| Codex venster 1 tonen | Het eerste venster dat Codex meldt tonen of verbergen |
+| Percentage van Codex venster 1 | Dat percentage tonen of verbergen |
+| Codex venster 2 tonen | Het tweede venster tonen of verbergen, indien aanwezig |
+| Percentage van Codex venster 2 | Dat percentage tonen of verbergen |
 | Vernieuwingsinterval | 1, 3 of 5 minuten |
 
 Wanneer alle meters verborgen zijn, blijft een neutraal item `AI …` beschikbaar om de instellingen te openen. De kleur volgt alleen zichtbare balken. Instellingen staan in `~/.cache/claude-codex-bar/` en blijven behouden.
@@ -66,11 +66,11 @@ De plugin controleert GitHub Releases maximaal eenmaal per dag. Bij een update v
 
 Resultaten worden gecachet gedurende het interval, dus het eindpunt wordt hoogstens één keer per interval bevraagd. Mislukt dat, dan blijft de laatste geldige waarde staan.
 
-**Codex** wordt gelezen uit de lokale helper `codex-usage.sh` die het installatieprogramma in `~/SwiftBar/.ai-usage-barometer/` plaatst. De vensters zijn dynamisch.
+**Codex** wordt gelezen uit de lokale helper `codex-usage.sh` die het installatieprogramma in `~/SwiftBar/.ai-usage-barometer/` plaatst. De vensters zijn dynamisch in aantal en naam — een planwijziging kan `5h`/`7d` veranderen in iets als `30d` — dus de twee schakelaars hierboven volgen het eerste en tweede venster dat Codex daadwerkelijk teruggeeft, en het instellingenpaneel hernoemt zichzelf om dit te weerspiegelen.
 
 ## Problemen oplossen
 
-**Er verschijnt een Claude-waarschuwing.** Het sleutelhangeritem is niet gevonden. Log in bij Claude Code en klik op **Nu vernieuwen**.
+**Er verschijnt een Claude-waarschuwing.** Open het dropdownmenu voor de reden. *Sign in to Claude Code again* betekent dat het OAuth-token is verlopen — meld je opnieuw aan via de Claude Code CLI of de IDE-extensie. **Dit is niet de Claude-desktopapp**: inloggen bij Claude.app vernieuwt dit token niet. *Rate limited* lost zichzelf op; de plugin wacht 15 minuten en toont de resterende tijd.
 
 **Er verschijnt een Codex-waarschuwing.** De helper ontbreekt of Codex heeft nog geen gegevens. Voer het installatieprogramma opnieuw uit en gebruik Codex CLI één keer.
 

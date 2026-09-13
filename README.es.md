@@ -46,10 +46,10 @@ La interfaz del complemento está disponible solo en inglés. Esta documentació
 | Mostrar Claude 7d | Mostrar u ocultar la ventana de 7 días |
 | Porcentaje de Claude 7d | Mostrar u ocultar su porcentaje |
 | Mostrar Codex | Mostrar u ocultar Codex |
-| Mostrar Codex 5h | Mostrar u ocultar la ventana de 5 horas cuando esté disponible |
-| Porcentaje de Codex 5h | Mostrar u ocultar el porcentaje de 5 horas |
-| Mostrar Codex 7d | Mostrar u ocultar la ventana de 7 días |
-| Porcentaje de Codex 7d | Mostrar u ocultar el porcentaje de 7 días |
+| Mostrar ventana 1 de Codex | Mostrar u ocultar la primera ventana que reporte Codex |
+| Porcentaje de ventana 1 de Codex | Mostrar u ocultar su porcentaje |
+| Mostrar ventana 2 de Codex | Mostrar u ocultar la segunda ventana, si existe |
+| Porcentaje de ventana 2 de Codex | Mostrar u ocultar su porcentaje |
 | Intervalo de actualización | 1, 3 o 5 minutos |
 
 Si se ocultan todos los indicadores, queda un elemento neutro `AI …` para poder abrir los ajustes. El color depende solo de las barras visibles. Los ajustes están en `~/.cache/claude-codex-bar/` y se conservan al actualizar.
@@ -66,11 +66,11 @@ El complemento comprueba GitHub Releases como máximo una vez al día. Si hay un
 
 Los resultados se guardan en caché durante el intervalo, así que solo se consulta una vez por intervalo. Si falla, se mantiene la última lectura válida.
 
-**Codex** se lee del asistente local `codex-usage.sh` que el instalador coloca en `~/SwiftBar/.ai-usage-barometer/`. Sus ventanas son dinámicas.
+**Codex** se lee del asistente local `codex-usage.sh` que el instalador coloca en `~/SwiftBar/.ai-usage-barometer/`. Sus ventanas son dinámicas en número y nombre — un cambio de plan puede convertir `5h`/`7d` en algo como `30d` — así que los dos interruptores siguen a la primera y segunda ventana que Codex realmente devuelva, y el panel de ajustes se renombra para coincidir.
 
 ## Solución de problemas
 
-**Aparece un aviso de Claude.** No se encontró el elemento del llavero. Inicia sesión con Claude Code y pulsa **Actualizar ahora**.
+**Aparece un aviso de Claude.** Abre el menú desplegable para ver el motivo. *Sign in to Claude Code again* significa que el token OAuth caducó — vuelve a autenticarte con la CLI de Claude Code o la extensión del IDE. **No es la app de escritorio Claude**: iniciar sesión en Claude.app no renueva este token. *Rate limited* se resuelve solo; el plugin espera 15 minutos y muestra el tiempo restante.
 
 **Aparece un aviso de Codex.** Falta el asistente o Codex aún no ha generado datos. Reinstala y usa Codex CLI una vez.
 
