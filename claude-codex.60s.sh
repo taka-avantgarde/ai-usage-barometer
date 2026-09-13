@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.4.0</xbar.version>
+# <xbar.version>v0.4.1</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.4.0"
+VERSION="v0.4.1"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -143,9 +143,9 @@ PY
 write_settings_state() {
   local dir; dir="$(dirname "$SETTINGS_PAGE")"
   [ -d "$dir" ] || return 0
-  printf '{"claude_on":"%s","c5":"%s","c5p":"%s","c7":"%s","c7p":"%s","codex_on":"%s","cx5":"%s","cx5p":"%s","cx7":"%s","cx7p":"%s","iv":"%s","update":"%s"}\n' \
+  printf '{"claude_on":"%s","c5":"%s","c5p":"%s","c7":"%s","c7p":"%s","codex_on":"%s","cx5":"%s","cx5p":"%s","cx7":"%s","cx7p":"%s","iv":"%s","update":"%s","cx_l1":"%s","cx_l2":"%s"}\n' \
     "$CL_ON" "$C5" "$C5P" "$C7" "$C7P" "$CX_ON" "$CX5" "$CX5P" "$CX7" "$CX7P" "$IV" \
-    "$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION")" > "$dir/state.json.tmp" &&
+    "$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION")" "$CX_L1" "$CX_L2" > "$dir/state.json.tmp" &&
     mv -f "$dir/state.json.tmp" "$dir/state.json"
 }
 
@@ -285,17 +285,20 @@ fi
 
 CX_R1=$(( CX_U1<0 ? -1 : 100-CX_U1 )); CX_R2=$(( CX_U2<0 ? -1 : 100-CX_U2 ))
 
+# Codex 側の枠の名前は固定ではない（例: プラン変更で 7d → 30d）。
+# ラベル文字列ではなく「1個目/2個目の枠」という順序で紐づけることで、
+# ラベルが何であっても cx5/cx7 のトグルが効くようにする。
 cx_window_enabled() {
   case "$1" in
-    5h) [ "$CX5" = 1 ] ;;
-    7d) [ "$CX7" = 1 ] ;;
+    1) [ "$CX5" = 1 ] ;;
+    2) [ "$CX7" = 1 ] ;;
     *) return 0 ;;
   esac
 }
 cx_window_percentage() {
   case "$1" in
-    5h) printf '%s' "$CX5P" ;;
-    7d) printf '%s' "$CX7P" ;;
+    1) printf '%s' "$CX5P" ;;
+    2) printf '%s' "$CX7P" ;;
     *) printf '1' ;;
   esac
 }
@@ -309,8 +312,8 @@ if [ "$CL_ACTIVE" = 1 ] && [ -z "$CL_ERR" ]; then
   [ "$C7" = 1 ] && (( P7 > CL_WORST )) && CL_WORST=$P7
 fi
 if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
-  cx_window_enabled "$CX_L1" && (( CX_U1 > CX_WORST )) && CX_WORST=$CX_U1
-  cx_window_enabled "$CX_L2" && (( CX_U2 > CX_WORST )) && CX_WORST=$CX_U2
+  cx_window_enabled 1 && (( CX_U1 > CX_WORST )) && CX_WORST=$CX_U1
+  cx_window_enabled 2 && (( CX_U2 > CX_WORST )) && CX_WORST=$CX_U2
 fi
 if [ "$CL_ACTIVE" = 1 ]; then
   (( CL_WORST<0 )) && CL_WORST=0
@@ -330,11 +333,11 @@ if [ "$CL_ACTIVE" = 1 ]; then
 fi
 if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ] && [ -n "$CX_L1" ]; then
   CXMB=""
-  if cx_window_enabled "$CX_L1"; then
-    CXMB="$CX_L1 $(bar $CX_R1 $MBAR_W)$([ "$(cx_window_percentage "$CX_L1")" = 1 ] && printf ' %s' "$(fmt $CX_R1)")"
+  if cx_window_enabled 1; then
+    CXMB="$CX_L1 $(bar $CX_R1 $MBAR_W)$([ "$(cx_window_percentage 1)" = 1 ] && printf ' %s' "$(fmt $CX_R1)")"
   fi
-  if [ -n "$CX_L2" ] && cx_window_enabled "$CX_L2"; then
-    CXMB="${CXMB:+$CXMB  }$CX_L2 $(bar $CX_R2 $MBAR_W)$([ "$(cx_window_percentage "$CX_L2")" = 1 ] && printf ' %s' "$(fmt $CX_R2)")"
+  if [ -n "$CX_L2" ] && cx_window_enabled 2; then
+    CXMB="${CXMB:+$CXMB  }$CX_L2 $(bar $CX_R2 $MBAR_W)$([ "$(cx_window_percentage 2)" = 1 ] && printf ' %s' "$(fmt $CX_R2)")"
   fi
   [ -n "$CXMB" ] && MB="${MB:+$MB │ }$CXMB"
 fi
@@ -349,11 +352,11 @@ if [ "$CL_ACTIVE" = 1 ] && [ -z "$CL_ERR" ]; then
 fi
 if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
   CX_PDF=""
-  if [ "$CX_R1" -ge 0 ] && cx_window_enabled "$CX_L1"; then
-    CX_PDF="$CX_L1,$CX_R1,$(cxcol $CX_U1),$(cx_window_percentage "$CX_L1")"
+  if [ "$CX_R1" -ge 0 ] && cx_window_enabled 1; then
+    CX_PDF="$CX_L1,$CX_R1,$(cxcol $CX_U1),$(cx_window_percentage 1)"
   fi
-  if [ -n "$CX_L2" ] && [ "$CX_R2" -ge 0 ] && cx_window_enabled "$CX_L2"; then
-    CX_PDF="${CX_PDF:+$CX_PDF;}$CX_L2,$CX_R2,$(cxcol $CX_U2),$(cx_window_percentage "$CX_L2")"
+  if [ -n "$CX_L2" ] && [ "$CX_R2" -ge 0 ] && cx_window_enabled 2; then
+    CX_PDF="${CX_PDF:+$CX_PDF;}$CX_L2,$CX_R2,$(cxcol $CX_U2),$(cx_window_percentage 2)"
   fi
   if [ -n "$CX_PDF" ]; then
     [ -n "$PDF_SPEC" ] && PDF_SPEC="$PDF_SPEC;|"
@@ -446,12 +449,12 @@ if [ "$CX_ACTIVE" = 1 ]; then
   if [ -n "$CX_ERR" ]; then
     echo "⚠ $CX_ERR | $FONT color=#FF9F0A"
   else
-    if [ -n "$CX_L1" ] && cx_window_enabled "$CX_L1"; then
-      echo "$CX_L1  $(bar $CX_R1 $DROP_W)$([ "$(cx_window_percentage "$CX_L1")" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $CX_R1)")") | $FONT color=$(cxcol $CX_U1)"
+    if [ -n "$CX_L1" ] && cx_window_enabled 1; then
+      echo "$CX_L1  $(bar $CX_R1 $DROP_W)$([ "$(cx_window_percentage 1)" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $CX_R1)")") | $FONT color=$(cxcol $CX_U1)"
       [ -n "$CX_T1" ] && echo "       $(sub "$T_RESET" "$CX_T1") | size=11 color=#888888"
     fi
-    if [ -n "$CX_L2" ] && cx_window_enabled "$CX_L2"; then
-      echo "$CX_L2  $(bar $CX_R2 $DROP_W)$([ "$(cx_window_percentage "$CX_L2")" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $CX_R2)")") | $FONT color=$(cxcol $CX_U2)"
+    if [ -n "$CX_L2" ] && cx_window_enabled 2; then
+      echo "$CX_L2  $(bar $CX_R2 $DROP_W)$([ "$(cx_window_percentage 2)" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $CX_R2)")") | $FONT color=$(cxcol $CX_U2)"
       [ -n "$CX_T2" ] && echo "       $(sub "$T_RESET" "$CX_T2") | size=11 color=#888888"
     fi
     [ -n "$CX_CREDITS" ] && echo "$CX_CREDITS | size=11 color=#888888"

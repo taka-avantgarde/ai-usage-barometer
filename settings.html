@@ -46,10 +46,10 @@
   <section>
     <h2>Codex</h2>
     <label><input id="codex_on" type="checkbox"> <span>Show Codex</span></label>
-    <label class="child codex-child"><input id="cx5" type="checkbox"> <span>Show Codex 5h</span></label>
-    <label class="child codex-child"><input id="cx5p" type="checkbox"> <span>Codex 5h percentage</span></label>
-    <label class="child codex-child"><input id="cx7" type="checkbox"> <span>Show Codex 7d</span></label>
-    <label class="child codex-child"><input id="cx7p" type="checkbox"> <span>Codex 7d percentage</span></label>
+    <label class="child codex-child"><input id="cx5" type="checkbox"> <span>Show Codex <span id="cx-l1-a">5h</span></span></label>
+    <label class="child codex-child"><input id="cx5p" type="checkbox"> <span>Codex <span id="cx-l1-b">5h</span> percentage</span></label>
+    <label class="child codex-child"><input id="cx7" type="checkbox"> <span>Show Codex <span id="cx-l2-a">7d</span></span></label>
+    <label class="child codex-child"><input id="cx7p" type="checkbox"> <span>Codex <span id="cx-l2-b">7d</span> percentage</span></label>
   </section>
   <section>
     <h2>Refresh interval (minutes)</h2>
@@ -79,6 +79,9 @@
     }
 
     function applyState(get) {
+      const l1 = get('cx_l1'), l2 = get('cx_l2');
+      if (l1) { document.getElementById('cx-l1-a').textContent = l1; document.getElementById('cx-l1-b').textContent = l1; }
+      if (l2) { document.getElementById('cx-l2-a').textContent = l2; document.getElementById('cx-l2-b').textContent = l2; }
       toggleIds.forEach(id => {
         const input = document.querySelector(`#${id}`);
         if (document.activeElement === input) return;

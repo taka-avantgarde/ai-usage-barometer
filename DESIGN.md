@@ -127,3 +127,21 @@ doing what it was told.
 The plugin now writes `state.json` beside settings.html on every run, and the
 page re-fetches it on load, on focus, on visibility change, and shortly after
 each save. The query string remains only as the first paint.
+
+
+## A Codex window label is not a stable identifier (v0.4.1)
+
+Per-window toggles (`cx5`/`cx7`) matched Codex's window by its literal label
+text, `"5h"` or `"7d"`. When a plan change made the Codex helper report a
+single `"30d"` window instead (observed on a free-tier/expired-contract
+account), the label matched neither case, fell through to the wildcard
+branch, and that branch means *always show* — so the per-window toggle
+silently stopped doing anything for that window, regardless of what the user
+had set.
+
+Toggle matching is now positional: whichever window the helper returns first
+is controlled by `cx5`/`cx5p`, the second by `cx7`/`cx7p`, no matter what
+either is labelled. `state.json` also carries the current labels (`cx_l1`,
+`cx_l2`) so the settings panel's "Show Codex 5h" text becomes "Show Codex
+30d" when that is what is actually being toggled, instead of naming a window
+that is not the one on screen.
