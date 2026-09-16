@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.4.3</xbar.version>
+# <xbar.version>v0.5.0</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.4.3"
+VERSION="v0.5.0"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -63,6 +63,12 @@ apply_web_setting() {
   esac
 }
 [ -n "${AUB_KEY:-}" ] && apply_web_setting
+# SwiftBar の URL スキーム経由が効かない環境があるため、メニュー項目から
+# 直接呼べる引数も用意する（Codex ヘルパーと同じ bash= 方式）。
+if [ "${1:-}" = "--set" ] && [ -n "${2:-}" ]; then
+  AUB_KEY="$2" AUB_VALUE="${3:-}" apply_web_setting
+  exit 0
+fi
 if [ "${AUB_ACTION:-}" = update ] && [ -x "$UPDATER" ]; then
   "$UPDATER" >/tmp/ai-usage-barometer-update.log 2>&1 &
 fi
@@ -147,6 +153,28 @@ write_settings_state() {
     "$CL_ON" "$C5" "$C5P" "$C7" "$C7P" "$CX_ON" "$CX5" "$CX5P" "$CX7" "$CX7P" "$IV" \
     "$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION")" "$CX_L1" "$CX_L2" > "$dir/state.json.tmp" &&
     mv -f "$dir/state.json.tmp" "$dir/state.json"
+}
+
+SELF_PATH="${SWIFTBAR_PLUGIN_PATH:-$0}"
+tg() { # tg <key> <現在値> <ラベル>
+  local nx; nx=$([ "$2" = 1 ] && echo 0 || echo 1)
+  echo "--$3$([ "$2" = 1 ] && echo '  ✓') | bash='$SELF_PATH' param1=--set param2=$1 param3=$nx terminal=false refresh=true"
+}
+toggle_menu() {
+  echo "⚙ Display settings | size=12"
+  tg claude_on "$CL_ON" "Show Claude"
+  [ "$CL_ON" = 1 ] && { tg c5 "$C5" "  5h"; tg c5p "$C5P" "  5h percentage"
+                        tg c7 "$C7" "  7d"; tg c7p "$C7P" "  7d percentage"; }
+  tg codex_on "$CX_ON" "Show Codex"
+  if [ "$CX_ON" = 1 ]; then
+    [ -n "$CX_L1" ] && { tg cx5 "$CX5" "  $CX_L1"; tg cx5p "$CX5P" "  $CX_L1 percentage"; }
+    [ -n "$CX_L2" ] && { tg cx7 "$CX7" "  $CX_L2"; tg cx7p "$CX7P" "  $CX_L2 percentage"; }
+  fi
+  echo "⏱ Refresh: ${IV} min | size=12"
+  local m
+  for m in 1 3 5; do
+    echo "--${m} min$([ "$IV" = "$m" ] && echo '  ✓') | bash='$SELF_PATH' param1=--set param2=iv param3=$m terminal=false refresh=true"
+  done
 }
 
 settings_menu() {
@@ -475,6 +503,7 @@ if [ "$CX_ACTIVE" = 1 ] && { [ -n "$CX_ERR" ] || [ "$CX_ROWS" = 1 ]; }; then
 fi
 echo "---"
 [ "$UPDATE_AVAILABLE" = 1 ] && echo "⬆ Update $LATEST_VERSION available | color=#FF9F0A href=https://github.com/taka-avantgarde/ai-usage-barometer/releases/latest"
+toggle_menu
 settings_menu
 echo "---"
 echo "$(sub "$T_UPDATED" "$(date '+%H:%M:%S')") | size=11 color=#888888"
