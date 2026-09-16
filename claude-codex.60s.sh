@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.4.1</xbar.version>
+# <xbar.version>v0.4.2</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.4.1"
+VERSION="v0.4.2"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -444,7 +444,13 @@ if [ "$CL_ACTIVE" = 1 ]; then
     fi
   fi
 fi
-if [ "$CX_ACTIVE" = 1 ]; then
+# 表示する枠が1つも無いなら見出しごと出さない（見出しだけ浮くのを防ぐ）
+CX_ROWS=0
+if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
+  [ -n "$CX_L1" ] && cx_window_enabled 1 && CX_ROWS=1
+  [ -n "$CX_L2" ] && cx_window_enabled 2 && CX_ROWS=1
+fi
+if [ "$CX_ACTIVE" = 1 ] && { [ -n "$CX_ERR" ] || [ "$CX_ROWS" = 1 ]; }; then
   echo "Codex | size=11 color=$CX_OK"
   if [ -n "$CX_ERR" ]; then
     echo "⚠ $CX_ERR | $FONT color=#FF9F0A"
