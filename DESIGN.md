@@ -145,3 +145,19 @@ either is labelled. `state.json` also carries the current labels (`cx_l1`,
 `cx_l2`) so the settings panel's "Show Codex 5h" text becomes "Show Codex
 30d" when that is what is actually being toggled, instead of naming a window
 that is not the one on screen.
+
+## An update nobody can see is not a release (v0.5.1)
+
+The plugin has always checked GitHub's `releases/latest` endpoint, but every
+version so far was published as a git tag only. A tag is not a release: the
+endpoint answers 404, the check yields nothing, and the notice never fires.
+No installed copy had ever been told an update existed.
+
+Publishing therefore means creating a GitHub Release, not pushing a tag.
+
+A notice that cannot be acted on is only half a notice. The dropdown now
+carries **Install now**, which re-runs the installer in place via
+`--update`, and the menu bar itself shows `⬆` so a pending update is visible
+without opening anything. While an update is pending the bar falls back to
+text: the embedded PDF uses base Helvetica, which has no glyph for `⬆`, so
+the image cannot carry the mark.

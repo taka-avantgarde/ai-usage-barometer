@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.5.0</xbar.version>
+# <xbar.version>v0.5.1</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.5.0"
+VERSION="v0.5.1"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -67,6 +67,13 @@ apply_web_setting() {
 # 直接呼べる引数も用意する（Codex ヘルパーと同じ bash= 方式）。
 if [ "${1:-}" = "--set" ] && [ -n "${2:-}" ]; then
   AUB_KEY="$2" AUB_VALUE="${3:-}" apply_web_setting
+  exit 0
+fi
+# 更新はメニューから1クリックで完了させる。通知だけ出して手順を読ませない。
+if [ "${1:-}" = "--update" ]; then
+  if [ -x "$UPDATER" ]; then "$UPDATER" >/tmp/ai-usage-barometer-update.log 2>&1
+  else /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)" \
+       >/tmp/ai-usage-barometer-update.log 2>&1; fi
   exit 0
 fi
 if [ "${AUB_ACTION:-}" = update ] && [ -x "$UPDATER" ]; then
@@ -392,7 +399,11 @@ if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
   fi
 fi
 B64=""
-if [ -n "$PDF_SPEC" ] && [ -z "$CL_ERR$CX_ERR" ] && command -v python3 >/dev/null 2>&1; then
+UPDATE_BADGE=""
+[ "$UPDATE_AVAILABLE" = 1 ] && UPDATE_BADGE="⬆ "
+# 更新がある間は画像をやめてテキストにする。埋め込みフォントは ⬆ を
+# 描けないので、画像のままでは印そのものが出せない。
+if [ -n "$PDF_SPEC" ] && [ -z "$CL_ERR$CX_ERR$UPDATE_BADGE" ] && command -v python3 >/dev/null 2>&1; then
   B64=$(python3 - "$PDF_SPEC" <<'PYEOF' 2>/dev/null
 import sys, base64
 spec=[x for x in sys.argv[1].split(";") if x]
@@ -452,7 +463,7 @@ fi
 if [ -n "$B64" ]; then
   echo "| image=$B64 dropdown=false"
 else
-  echo "$MB | $FONT color=$MB_COLOR"
+  echo "${UPDATE_BADGE}$MB | $FONT color=$MB_COLOR"
 fi
 echo "---"
 
@@ -502,7 +513,12 @@ if [ "$CX_ACTIVE" = 1 ] && { [ -n "$CX_ERR" ] || [ "$CX_ROWS" = 1 ]; }; then
   fi
 fi
 echo "---"
-[ "$UPDATE_AVAILABLE" = 1 ] && echo "⬆ Update $LATEST_VERSION available | color=#FF9F0A href=https://github.com/taka-avantgarde/ai-usage-barometer/releases/latest"
+if [ "$UPDATE_AVAILABLE" = 1 ]; then
+  echo "⬆ Update to $LATEST_VERSION | color=#FF9F0A size=13"
+  echo "--Install now | color=#FF9F0A bash='$SELF_PATH' param1=--update terminal=false refresh=true"
+  echo "--Release notes | href=https://github.com/taka-avantgarde/ai-usage-barometer/releases/latest"
+  echo "---"
+fi
 toggle_menu
 settings_menu
 echo "---"
