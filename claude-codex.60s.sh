@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.4.2</xbar.version>
+# <xbar.version>v0.4.3</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.4.2"
+VERSION="v0.4.3"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -429,16 +429,23 @@ fi
 echo "---"
 
 # ── ドロップダウン ──
-if [ "$CL_ACTIVE" = 1 ]; then
+# API が片方の枠しか返さないことがある（未使用・プラン差など）。データが無い枠に
+# 「-- left」の空行を出さないよう、残量が取れたものだけ描く。
+CL_ROWS=0
+if [ "$CL_ACTIVE" = 1 ] && [ -z "$CL_ERR" ]; then
+  [ "$C5" = 1 ] && [ "$REM5" -ge 0 ] && CL_ROWS=1
+  [ "$C7" = 1 ] && [ "$REM7" -ge 0 ] && CL_ROWS=1
+fi
+if [ "$CL_ACTIVE" = 1 ] && { [ -n "$CL_ERR" ] || [ "$CL_ROWS" = 1 ]; }; then
   echo "Claude | size=11 color=$CL_OK"
   if [ -n "$CL_ERR" ]; then
     echo "⚠ $CL_ERR | $FONT color=#FF9F0A"
   else
-    if [ "$C5" = 1 ]; then
+    if [ "$C5" = 1 ] && [ "$REM5" -ge 0 ]; then
       echo "5h  $(bar $REM5 $DROP_W)$([ "$C5P" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $REM5)")") | $FONT color=$(clcol $P5)"
       [ -n "$R5" ] && echo "       $(sub "$T_RESET" "$(remain "$R5")") | size=11 color=#888888"
     fi
-    if [ "$C7" = 1 ]; then
+    if [ "$C7" = 1 ] && [ "$REM7" -ge 0 ]; then
       echo "7d  $(bar $REM7 $DROP_W)$([ "$C7P" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $REM7)")") | $FONT color=$(clcol $P7)"
       [ -n "$R7" ] && echo "       $(sub "$T_RESET" "$(remain "$R7")") | size=11 color=#888888"
     fi
