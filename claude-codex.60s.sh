@@ -36,6 +36,7 @@ CFG="$HOME/.cache/claude-codex-bar"; mkdir -p "$CFG" 2>/dev/null
 rd() { local v=1; [ -f "$CFG/$1" ] && read -r v < "$CFG/$1" 2>/dev/null; case "$v" in 0|1) ;; *) v=1 ;; esac; printf '%s' "$v"; }
 CL_ON=$(rd claude_on); C5=$(rd c5); C5P=$(rd c5p); C7=$(rd c7); C7P=$(rd c7p)
 CX_ON=$(rd codex_on); CXP=$(rd cxp); CX5=$(rd cx5); CX7=$(rd cx7)
+CMP=$(rd cmp)
 # Preserve the legacy shared Codex percentage preference on first upgrade.
 if [ -f "$CFG/cx5p" ]; then CX5P=$(rd cx5p); else CX5P=$CXP; fi
 if [ -f "$CFG/cx7p" ]; then CX7P=$(rd cx7p); else CX7P=$CXP; fi
@@ -48,7 +49,7 @@ case "$IV" in 1|3|5) ;; *) IV=3 ;; esac
 apply_web_setting() {
   local key="${AUB_KEY:-}" value="${AUB_VALUE:-}"
   case "$key" in
-    claude_on|codex_on|c5|c5p|c7|c7p|cx5|cx5p|cx7|cx7p)
+    claude_on|codex_on|c5|c5p|c7|c7p|cx5|cx5p|cx7|cx7p|cmp)
       case "$value" in 0|1) printf '%s\n' "$value" > "$CFG/$key" ;; esac
       ;;
     iv)
@@ -84,6 +85,7 @@ fi
 if [ -n "${AUB_KEY:-}" ]; then
   CL_ON=$(rd claude_on); C5=$(rd c5); C5P=$(rd c5p); C7=$(rd c7); C7P=$(rd c7p)
   CX_ON=$(rd codex_on); CX5=$(rd cx5); CX5P=$(rd cx5p); CX7=$(rd cx7); CX7P=$(rd cx7p)
+  CMP=$(rd cmp)
   IV=3; [ -f "$CFG/iv" ] && read -r IV < "$CFG/iv" 2>/dev/null
   case "$IV" in 1|3|5) ;; *) IV=3 ;; esac
 fi
@@ -177,6 +179,7 @@ toggle_menu() {
     [ -n "$CX_L1" ] && { tg cx5 "$CX5" "  $CX_L1"; tg cx5p "$CX5P" "  $CX_L1 percentage"; }
     [ -n "$CX_L2" ] && { tg cx7 "$CX7" "  $CX_L2"; tg cx7p "$CX7P" "  $CX_L2 percentage"; }
   fi
+  tg cmp "$CMP" "Compact (fits beside the notch)"
   echo "⏱ Refresh: ${IV} min | size=12"
   local m
   for m in 1 3 5; do
@@ -401,6 +404,8 @@ fi
 B64=""
 # 更新の印は画像の中にベクタで描く。テキスト表示に落とすと、更新するまで
 # ずっと二色バーが失われる。表示品質を落としてまで報せる価値はない。
+# 更新の印は画像の中にベクタで描く。テキストに落とすと、更新するまで
+# 二色バーが失われる。
 if [ -n "$PDF_SPEC" ] && [ -z "$CL_ERR$CX_ERR" ] && command -v python3 >/dev/null 2>&1; then
   B64=$(python3 - "$PDF_SPEC" "$UPDATE_AVAILABLE" <<'PYEOF' 2>/dev/null
 import sys, base64
@@ -408,7 +413,18 @@ spec=[x for x in sys.argv[1].split(";") if x]
 def rgb(h):
     h=h.lstrip("#"); return tuple(int(h[i:i+2],16)/255 for i in (0,2,4))
 X=2.0; ops=[]; CW=6.2; BARW=30.0; BY=4.0; BH=10.0
+# ノッチ脇は幅が足りない。コンパクトでは枠名を落とし、バーと余白を詰める。
+# 枠の並び順は変わらないので、どちらがどの枠かは見失わない。
+CMP = len(sys.argv) > 3 and sys.argv[3] == "1"
+if CMP: CW=5.0; BARW=20.0
+GAP1 = 2.0 if CMP else 4.0
+GAP2 = 3.0 if CMP else 5.0
 TEXT_COL="0.92 0.94 0.96 rg"
+if len(sys.argv) > 2 and sys.argv[2] == "1":
+    ops.append("1 0.624 0.039 rg")
+    ops.append("%.1f 8.0 m %.1f 13.4 l %.1f 8.0 l f"%(X+0.2,X+4.0,X+7.8))
+    ops.append("%.1f 3.6 2.8 4.6 re f"%(X+2.6))
+    X += 11.0 if not CMP else 9.5
 if len(sys.argv) > 2 and sys.argv[2] == "1":
     ops.append("1 0.624 0.039 rg")
     ops.append("%.1f 8.0 m %.1f 13.4 l %.1f 8.0 l f"%(X+0.2,X+4.0,X+7.8))
@@ -416,12 +432,13 @@ if len(sys.argv) > 2 and sys.argv[2] == "1":
     X += 11.0
 for item in spec:
     if item=="|":
-        ops.append("0.55 0.55 0.55 RG 0.8 w %.1f 3 m %.1f 15 l S"%(X+3,X+3)); X+=10.0; continue
+        ops.append("0.55 0.55 0.55 RG 0.8 w %.1f 3 m %.1f 15 l S"%(X+3,X+3)); X+=(7.0 if CMP else 10.0); continue
     label,rem,hexc,showp=item.split(",")
     rem=max(0,min(100,int(rem))); r,g,b=rgb(hexc)
     col="%.4f %.4f %.4f"%(r,g,b)
-    ops.append(TEXT_COL)
-    ops.append("BT /F1 11 Tf %.1f 5 Td (%s) Tj ET"%(X,label)); X+=len(label)*CW+3
+    if not CMP:
+        ops.append(TEXT_COL)
+        ops.append("BT /F1 11 Tf %.1f 5 Td (%s) Tj ET"%(X,label)); X+=len(label)*CW+3
     ops.append("%s rg"%col)
     fw=BARW*rem/100.0
     if fw>=0.5: ops.append("%.1f %.1f %.1f %.1f re f"%(X,BY,fw,BH))
@@ -437,12 +454,12 @@ for item in spec:
                 ops.append("%.2f %.2f %.1f %.1f re f"%(xx,yy,DOT,DOT))
             yy+=PITCH; r+=1
         dx+=PITCH; c+=1
-    X+=BARW+4
+    X+=BARW+GAP1
     if showp=="1":
-        t="%d%%"%rem
+        t=("%d"%rem) if CMP else ("%d%%"%rem)
         ops.append(TEXT_COL)
-        ops.append("BT /F1 11 Tf %.1f 5 Td (%s) Tj ET"%(X,t)); X+=len(t)*CW+2
-    X+=5.0
+        ops.append("BT /F1 %d Tf %.1f %.1f Td (%s) Tj ET"%(9 if CMP else 11,X,5.5 if CMP else 5,t)); X+=len(t)*CW+2
+    X+=GAP2
 W=X+2
 BG_LEFT=0.5; BG_BOTTOM=1.0; BG_WIDTH=W-1.0; BG_HEIGHT=16.0
 ops.insert(0, "0.1255 0.1451 0.1686 rg %.1f %.1f %.1f %.1f re f"%(BG_LEFT,BG_BOTTOM,BG_WIDTH,BG_HEIGHT))
@@ -466,6 +483,8 @@ fi
 if [ -n "$B64" ]; then
   echo "| image=$B64 dropdown=false"
 else
+  UPDATE_BADGE=""
+  [ "$UPDATE_AVAILABLE" = 1 ] && UPDATE_BADGE="⬆ "
   UPDATE_BADGE=""
   [ "$UPDATE_AVAILABLE" = 1 ] && UPDATE_BADGE="⬆ "
   echo "${UPDATE_BADGE}$MB | $FONT color=$MB_COLOR"

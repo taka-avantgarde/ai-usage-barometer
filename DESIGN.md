@@ -148,21 +148,35 @@ that is not the one on screen.
 
 ## An update nobody can see is not a release (v0.5.1)
 
-The plugin has always checked GitHub's `releases/latest` endpoint, but every
-version so far was published as a git tag only. A tag is not a release: the
+The plugin has always checked GitHub's `releases/latest`, but every version
+before this was published as a git tag only. A tag is not a release: the
 endpoint answers 404, the check yields nothing, and the notice never fires.
-No installed copy had ever been told an update existed.
-
-Publishing therefore means creating a GitHub Release, not pushing a tag.
+No installed copy had ever been told an update existed. Publishing therefore
+means creating a GitHub Release, not pushing a tag.
 
 A notice that cannot be acted on is only half a notice. The dropdown carries
 **Install now**, which re-runs the installer in place via `--update`, and the
-menu bar itself shows an arrow so a pending update is visible without opening
+menu bar shows an arrow so a pending update is visible without opening
 anything.
 
-That arrow is a vector path drawn into the menu-bar image, not a character.
-v0.5.1 drew it as text and fell back to the text renderer for as long as an
-update was pending — so the two-colour bar vanished and stayed gone until the
-user updated. A notice may not degrade the thing it is attached to. The
-embedded PDF has no glyph for an arrow, so the arrow is built from `m`, `l`
-and `re`, and the bars beside it render exactly as before (v0.5.2).
+That arrow is a vector path drawn into the image, not a character. v0.5.1
+drew it as text and fell back to the text renderer for as long as an update
+was pending, so the two-colour bar vanished and stayed gone until the user
+updated. A notice may not degrade the thing it is attached to. The embedded
+PDF has no glyph for an arrow, so the arrow is built from `m`, `l` and `re`,
+and the bars beside it render exactly as before (v0.6.0).
+
+## The menu bar is not as wide as it looks (v0.6.0)
+
+On a notched Mac the usable strip left of the notch is short, and anything
+that does not fit is not clipped - it is simply never drawn. A plugin that
+renders 325pt of bars is therefore invisible, with no error and nothing to
+click. Width is a correctness constraint here, not a matter of taste.
+
+Compact is the default: window names are dropped, bars are 20pt instead of
+30, percentages lose their `%` sign and drop to 9pt, and the gaps tighten.
+Claude and Codex together come to about 168pt, half of what they were, and
+120pt with percentages off. Nothing is lost that the dropdown does not still
+spell out in full, and the windows keep their order, so the first bar is the
+first window whatever it is called. **Compact** in the settings menu turns
+the names back on.
