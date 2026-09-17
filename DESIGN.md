@@ -155,9 +155,14 @@ No installed copy had ever been told an update existed.
 
 Publishing therefore means creating a GitHub Release, not pushing a tag.
 
-A notice that cannot be acted on is only half a notice. The dropdown now
-carries **Install now**, which re-runs the installer in place via
-`--update`, and the menu bar itself shows `⬆` so a pending update is visible
-without opening anything. While an update is pending the bar falls back to
-text: the embedded PDF uses base Helvetica, which has no glyph for `⬆`, so
-the image cannot carry the mark.
+A notice that cannot be acted on is only half a notice. The dropdown carries
+**Install now**, which re-runs the installer in place via `--update`, and the
+menu bar itself shows an arrow so a pending update is visible without opening
+anything.
+
+That arrow is a vector path drawn into the menu-bar image, not a character.
+v0.5.1 drew it as text and fell back to the text renderer for as long as an
+update was pending — so the two-colour bar vanished and stayed gone until the
+user updated. A notice may not degrade the thing it is attached to. The
+embedded PDF has no glyph for an arrow, so the arrow is built from `m`, `l`
+and `re`, and the bars beside it render exactly as before (v0.5.2).

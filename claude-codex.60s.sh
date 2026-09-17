@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.5.1</xbar.version>
+# <xbar.version>v0.5.2</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.5.1"
+VERSION="v0.5.2"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -399,18 +399,21 @@ if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
   fi
 fi
 B64=""
-UPDATE_BADGE=""
-[ "$UPDATE_AVAILABLE" = 1 ] && UPDATE_BADGE="⬆ "
-# 更新がある間は画像をやめてテキストにする。埋め込みフォントは ⬆ を
-# 描けないので、画像のままでは印そのものが出せない。
-if [ -n "$PDF_SPEC" ] && [ -z "$CL_ERR$CX_ERR$UPDATE_BADGE" ] && command -v python3 >/dev/null 2>&1; then
-  B64=$(python3 - "$PDF_SPEC" <<'PYEOF' 2>/dev/null
+# 更新の印は画像の中にベクタで描く。テキスト表示に落とすと、更新するまで
+# ずっと二色バーが失われる。表示品質を落としてまで報せる価値はない。
+if [ -n "$PDF_SPEC" ] && [ -z "$CL_ERR$CX_ERR" ] && command -v python3 >/dev/null 2>&1; then
+  B64=$(python3 - "$PDF_SPEC" "$UPDATE_AVAILABLE" <<'PYEOF' 2>/dev/null
 import sys, base64
 spec=[x for x in sys.argv[1].split(";") if x]
 def rgb(h):
     h=h.lstrip("#"); return tuple(int(h[i:i+2],16)/255 for i in (0,2,4))
 X=2.0; ops=[]; CW=6.2; BARW=30.0; BY=4.0; BH=10.0
 TEXT_COL="0.92 0.94 0.96 rg"
+if len(sys.argv) > 2 and sys.argv[2] == "1":
+    ops.append("1 0.624 0.039 rg")
+    ops.append("%.1f 8.0 m %.1f 13.4 l %.1f 8.0 l f"%(X+0.2,X+4.0,X+7.8))
+    ops.append("%.1f 3.6 2.8 4.6 re f"%(X+2.6))
+    X += 11.0
 for item in spec:
     if item=="|":
         ops.append("0.55 0.55 0.55 RG 0.8 w %.1f 3 m %.1f 15 l S"%(X+3,X+3)); X+=10.0; continue
@@ -463,6 +466,8 @@ fi
 if [ -n "$B64" ]; then
   echo "| image=$B64 dropdown=false"
 else
+  UPDATE_BADGE=""
+  [ "$UPDATE_AVAILABLE" = 1 ] && UPDATE_BADGE="⬆ "
   echo "${UPDATE_BADGE}$MB | $FONT color=$MB_COLOR"
 fi
 echo "---"
