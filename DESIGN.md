@@ -231,3 +231,19 @@ the same reason the menu bar is drawn rather than described: three bars, two
 Claude-orange and one Codex-cyan, battery-style like everything else. It says
 what the app is before it is opened, and it cannot drift out of step with the
 palette, because it is generated from it.
+
+## jq is a convenience, not a requirement (v0.7.1)
+
+Shipping a `.app` and then needing Homebrew to read a number is not shipping an
+app. Every JSON read — the Keychain credentials, the usage response, the
+release check, and `--json` itself — went through `jq`, so anyone who installed
+only the app got `Cannot read …` and no way to tell why.
+
+`jq` is still used when it is there, because it is the robust reader. When it
+is not, three fixed shapes are picked apart with `sed` instead, and `--json` is
+assembled with `printf`. The fallback is deliberately not a JSON parser: it
+knows only the fields this plugin reads, which is why a hundred lines of
+parsing are not needed to remove the dependency.
+
+Both paths were compared field by field against the `jq` build on the same
+input and differ in nothing but the version string.

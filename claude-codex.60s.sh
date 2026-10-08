@@ -6,11 +6,11 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.7.0</xbar.version>
+# <xbar.version>v0.7.1</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
-# <xbar.dependencies>bash,jq,curl,python3</xbar.dependencies>
+# <xbar.dependencies>bash,curl</xbar.dependencies>
 # <xbar.abouturl>https://github.com/taka-avantgarde/ai-usage-barometer</xbar.abouturl>
 # <swiftbar.hideRunInTerminal>true</swiftbar.hideRunInTerminal>
 # <swiftbar.hideLastUpdated>true</swiftbar.hideLastUpdated>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.7.0"
+VERSION="v0.7.1"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -34,6 +34,26 @@ UPDATER="${AI_USAGE_UPDATER:-$SELF_DIR/.ai-usage-barometer/update.sh}"
 # ── 表示設定 ──
 CFG="$HOME/.cache/claude-codex-bar"; mkdir -p "$CFG" 2>/dev/null
 rd() { local v=1; [ -f "$CFG/$1" ] && read -r v < "$CFG/$1" 2>/dev/null; case "$v" in 0|1) ;; *) v=1 ;; esac; printf '%s' "$v"; }
+# jq があれば使う。無い環境でも動くよう、必要な取り出しだけ代替を用意する。
+# アプリ単体で入れた人に Homebrew を強いないため。読むのは3種類の決まった形
+# （鍵・使用量・リリース）だけなので、汎用パーサは要らない。
+HAVE_JQ=0; command -v jq >/dev/null 2>&1 && HAVE_JQ=1
+jpick() { # jpick <json> <field> [parent]
+  if [ "$HAVE_JQ" = 1 ]; then
+    if [ -n "${3:-}" ]; then printf '%s' "$1" | jq -r ".$3.$2 // empty" 2>/dev/null
+    else printf '%s' "$1" | jq -r ".$2 // empty" 2>/dev/null; fi
+    return
+  fi
+  local src v
+  src=$(printf '%s' "$1" | tr -d '\n\r')
+  if [ -n "${3:-}" ]; then
+    src=$(printf '%s' "$src" | sed -n "s/.*\"$3\"[[:space:]]*:[[:space:]]*{\([^{}]*\)}.*/\1/p")
+  fi
+  v=$(printf '%s' "$src" | sed -n "s/.*\"$2\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p")
+  [ -z "$v" ] && v=$(printf '%s' "$src" | sed -n "s/.*\"$2\"[[:space:]]*:[[:space:]]*\([0-9][0-9.]*\).*/\1/p")
+  printf '%s' "$v"
+}
+
 CL_ON=$(rd claude_on); C5=$(rd c5); C5P=$(rd c5p); C7=$(rd c7); C7P=$(rd c7p)
 CX_ON=$(rd codex_on); CXP=$(rd cxp); CX5=$(rd cx5); CX7=$(rd cx7)
 CMP=$(rd cmp)
@@ -131,10 +151,9 @@ latest_release_version() {
     if [ $((now-mtime)) -lt 86400 ]; then read -r latest < "$file" 2>/dev/null; fi
   fi
   if [ -z "$latest" ]; then
-    latest=$(curl -fsSL --connect-timeout 3 --max-time 6 \
+    latest=$(jpick "$(curl -fsSL --connect-timeout 3 --max-time 6 \
       -H 'Accept: application/vnd.github+json' \
-      https://api.github.com/repos/taka-avantgarde/ai-usage-barometer/releases/latest 2>/dev/null |
-      jq -r '.tag_name // empty' 2>/dev/null)
+      https://api.github.com/repos/taka-avantgarde/ai-usage-barometer/releases/latest 2>/dev/null)" tag_name)
     [ -n "$latest" ] && printf '%s\n' "$latest" > "$file"
   fi
   [ -n "$latest" ] && printf '%s\n' "$latest"
@@ -247,10 +266,10 @@ elif [ "$CL_ACTIVE" = 1 ] && [ "$NOW" -lt "$RETRY_AT" ]; then
     CL_ERR="${LAST_ERR:-Retrying soon} ($(( (RETRY_AT - NOW + 59) / 60 ))m)"
   fi
 elif [ "$CL_ACTIVE" = 1 ]; then
-  TOKEN=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null \
-          | jq -r '.claudeAiOauth.accessToken // .accessToken // empty' 2>/dev/null)
-  [ -z "$TOKEN" ] && TOKEN=$(jq -r '.claudeAiOauth.accessToken // .accessToken // empty' \
-          "$HOME/.claude/.credentials.json" 2>/dev/null)
+  CREDS=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null)
+  [ -z "$CREDS" ] && CREDS=$(cat "$HOME/.claude/.credentials.json" 2>/dev/null)
+  TOKEN=$(jpick "$CREDS" accessToken claudeAiOauth)
+  [ -z "$TOKEN" ] && TOKEN=$(jpick "$CREDS" accessToken)
   if [ -z "$TOKEN" ]; then
     CL_ERR="$T_NOCRED"
   else
@@ -264,10 +283,10 @@ elif [ "$CL_ACTIVE" = 1 ]; then
     elif [ "$CODE" != "200" ]; then
       CL_ERR="HTTP $CODE"
     else
-      U5=$(printf '%s' "$BODY" | jq -r '.five_hour.utilization // empty' 2>/dev/null)
-      U7=$(printf '%s' "$BODY" | jq -r '.seven_day.utilization // empty' 2>/dev/null)
-      R5=$(printf '%s' "$BODY" | jq -r '.five_hour.resets_at // empty' 2>/dev/null)
-      R7=$(printf '%s' "$BODY" | jq -r '.seven_day.resets_at // empty' 2>/dev/null)
+      U5=$(jpick "$BODY" utilization five_hour)
+      U7=$(jpick "$BODY" utilization seven_day)
+      R5=$(jpick "$BODY" resets_at five_hour)
+      R7=$(jpick "$BODY" resets_at seven_day)
       [ -z "$U5" ] && [ -z "$U7" ] && CL_ERR="$T_BADFMT"
       P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
       [ -z "$CL_ERR" ] && printf '%s\t%s\t%s\t%s\t%s\n' "$NOW" "$U5" "$U7" "$R5" "$R7" > "$CACHEF"
@@ -386,39 +405,42 @@ fi
 # ── --json：他のフロントエンド（フローティング版アプリ等）向けの機械可読出力 ──
 # 認証・バックオフ・設定・Codex解析はこのスクリプトが唯一の実装。
 # 描画側はここから先を読むだけで、判断を二重に持たない。
+#
+# jq は使わない。アプリ単体で入れた人の環境に Homebrew がある保証はなく、
+# 「Mac アプリです」と言って配る以上、別のパッケージマネージャを前提にできない。
 if [ "${1:-}" = "--json" ]; then
-  jq -n \
-    --arg version "$VERSION" --arg latest "$LATEST_VERSION" --argjson update "$UPDATE_AVAILABLE" \
-    --arg updated "$(date '+%H:%M:%S')" \
-    --argjson clon "$CL_ON" --argjson c5 "$C5" --argjson c5p "$C5P" --argjson c7 "$C7" --argjson c7p "$C7P" \
-    --argjson cxon "$CX_ON" --argjson cx5 "$CX5" --argjson cx5p "$CX5P" --argjson cx7 "$CX7" --argjson cx7p "$CX7P" \
-    --argjson iv "$IV" --argjson cmp "$CMP" \
-    --argjson clact "$CL_ACTIVE" --arg clerr "$CL_ERR" --arg clbase "$CL_OK" \
-    --argjson rem5 "$REM5" --arg col5 "$(clcol "$P5")" --arg rs5 "$(remain "$R5")" \
-    --argjson rem7 "$REM7" --arg col7 "$(clcol "$P7")" --arg rs7 "$(remain "$R7")" \
-    --argjson cxact "$CX_ACTIVE" --arg cxerr "$CX_ERR" --arg cxbase "$CX_OK" \
-    --arg l1 "$CX_L1" --argjson r1 "$CX_R1" --arg cc1 "$(cxcol "$CX_U1")" --arg t1 "$CX_T1" \
-    --arg l2 "$CX_L2" --argjson r2 "$CX_R2" --arg cc2 "$(cxcol "$CX_U2")" --arg t2 "$CX_T2" \
-    --arg credits "$CX_CREDITS" \
-    '{
-      version: $version,
-      update: {available: ($update == 1), latest: $latest},
-      updated: $updated,
-      settings: {claude_on: $clon, c5: $c5, c5p: $c5p, c7: $c7, c7p: $c7p,
-                 codex_on: $cxon, cx5: $cx5, cx5p: $cx5p, cx7: $cx7, cx7p: $cx7p, iv: $iv, cmp: $cmp},
-      services: [
-        {name: "Claude", on: ($clact == 1), error: $clerr, color: $clbase, credits: "",
-         windows: [
-           {label: "5h", left: $rem5, color: $col5, resets: $rs5, show: ($c5 == 1 and $rem5 >= 0), pct: ($c5p == 1)},
-           {label: "7d", left: $rem7, color: $col7, resets: $rs7, show: ($c7 == 1 and $rem7 >= 0), pct: ($c7p == 1)}
-         ]},
-        {name: "Codex", on: ($cxact == 1), error: $cxerr, color: $cxbase, credits: $credits,
-         windows: ([
-           {label: $l1, left: $r1, color: $cc1, resets: $t1, show: ($cx5 == 1 and $r1 >= 0), pct: ($cx5p == 1)},
-           {label: $l2, left: $r2, color: $cc2, resets: $t2, show: ($cx7 == 1 and $r2 >= 0), pct: ($cx7p == 1)}
-         ] | map(select(.label != "")))}
-      ]
-    }'
+  jesc() { local v=${1//\\/\\\\}; v=${v//\"/\\\"}; v=${v//$'\n'/ }; v=${v//$'\t'/ }; printf '%s' "$v"; }
+  jbool() { if [ "$1" = 1 ]; then printf 'true'; else printf 'false'; fi; }
+  jnum() { case "$1" in ''|*[!0-9-]*) printf '%s' "${2:-0}" ;; *) printf '%s' "$1" ;; esac; }
+  jwin() { # jwin <label> <left> <color> <resets> <show> <pct>
+    printf '{"label":"%s","left":%s,"color":"%s","resets":"%s","show":%s,"pct":%s}' \
+      "$(jesc "$1")" "$(jnum "$2" -1)" "$(jesc "$3")" "$(jesc "$4")" "$(jbool "$5")" "$(jbool "$6")"
+  }
+
+  S5=0; [ "$C5" = 1 ] && [ "$REM5" -ge 0 ] && S5=1
+  S7=0; [ "$C7" = 1 ] && [ "$REM7" -ge 0 ] && S7=1
+  X1=0; [ "$CX5" = 1 ] && [ "$CX_R1" -ge 0 ] && X1=1
+  X2=0; [ "$CX7" = 1 ] && [ "$CX_R2" -ge 0 ] && X2=1
+
+  CL_WINS="$(jwin "5h" "$REM5" "$(clcol "$P5")" "$(remain "$R5")" "$S5" "$C5P"),"
+  CL_WINS="$CL_WINS$(jwin "7d" "$REM7" "$(clcol "$P7")" "$(remain "$R7")" "$S7" "$C7P")"
+
+  # Codex の枠は 1 個のこともある（契約状態で変わる）。空の枠は出さない。
+  CX_WINS=""
+  [ -n "$CX_L1" ] && CX_WINS="$(jwin "$CX_L1" "$CX_R1" "$(cxcol "$CX_U1")" "$CX_T1" "$X1" "$CX5P")"
+  [ -n "$CX_L2" ] && CX_WINS="${CX_WINS:+$CX_WINS,}$(jwin "$CX_L2" "$CX_R2" "$(cxcol "$CX_U2")" "$CX_T2" "$X2" "$CX7P")"
+
+  printf '{"version":"%s","update":{"available":%s,"latest":"%s"},"updated":"%s",' \
+    "$(jesc "$VERSION")" "$(jbool "$UPDATE_AVAILABLE")" "$(jesc "$LATEST_VERSION")" "$(date '+%H:%M:%S')"
+  printf '"settings":{"claude_on":%s,"c5":%s,"c5p":%s,"c7":%s,"c7p":%s,' \
+    "$(jnum "$CL_ON")" "$(jnum "$C5")" "$(jnum "$C5P")" "$(jnum "$C7")" "$(jnum "$C7P")"
+  printf '"codex_on":%s,"cx5":%s,"cx5p":%s,"cx7":%s,"cx7p":%s,"iv":%s,"cmp":%s},' \
+    "$(jnum "$CX_ON")" "$(jnum "$CX5")" "$(jnum "$CX5P")" "$(jnum "$CX7")" "$(jnum "$CX7P")" \
+    "$(jnum "$IV" 3)" "$(jnum "$CMP")"
+  printf '"services":[{"name":"Claude","on":%s,"error":"%s","color":"%s","credits":"","windows":[%s]},' \
+    "$(jbool "$CL_ACTIVE")" "$(jesc "$CL_ERR")" "$(jesc "$CL_OK")" "$CL_WINS"
+  printf '{"name":"Codex","on":%s,"error":"%s","color":"%s","credits":"%s","windows":[%s]}]}\n' \
+    "$(jbool "$CX_ACTIVE")" "$(jesc "$CX_ERR")" "$(jesc "$CX_OK")" "$(jesc "$CX_CREDITS")" "$CX_WINS"
   exit 0
 fi
 
