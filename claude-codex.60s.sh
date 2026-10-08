@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.6.1</xbar.version>
+# <xbar.version>v0.7.0</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.6.1"
+VERSION="v0.7.0"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -383,6 +383,45 @@ fi
 [ -z "$MB" ] && MB="AI …"
 
 # メニューバー: PDF なら Claude/Codex を別色で描ける（テキストは1項目1色まで）
+# ── --json：他のフロントエンド（フローティング版アプリ等）向けの機械可読出力 ──
+# 認証・バックオフ・設定・Codex解析はこのスクリプトが唯一の実装。
+# 描画側はここから先を読むだけで、判断を二重に持たない。
+if [ "${1:-}" = "--json" ]; then
+  jq -n \
+    --arg version "$VERSION" --arg latest "$LATEST_VERSION" --argjson update "$UPDATE_AVAILABLE" \
+    --arg updated "$(date '+%H:%M:%S')" \
+    --argjson clon "$CL_ON" --argjson c5 "$C5" --argjson c5p "$C5P" --argjson c7 "$C7" --argjson c7p "$C7P" \
+    --argjson cxon "$CX_ON" --argjson cx5 "$CX5" --argjson cx5p "$CX5P" --argjson cx7 "$CX7" --argjson cx7p "$CX7P" \
+    --argjson iv "$IV" --argjson cmp "$CMP" \
+    --argjson clact "$CL_ACTIVE" --arg clerr "$CL_ERR" --arg clbase "$CL_OK" \
+    --argjson rem5 "$REM5" --arg col5 "$(clcol "$P5")" --arg rs5 "$(remain "$R5")" \
+    --argjson rem7 "$REM7" --arg col7 "$(clcol "$P7")" --arg rs7 "$(remain "$R7")" \
+    --argjson cxact "$CX_ACTIVE" --arg cxerr "$CX_ERR" --arg cxbase "$CX_OK" \
+    --arg l1 "$CX_L1" --argjson r1 "$CX_R1" --arg cc1 "$(cxcol "$CX_U1")" --arg t1 "$CX_T1" \
+    --arg l2 "$CX_L2" --argjson r2 "$CX_R2" --arg cc2 "$(cxcol "$CX_U2")" --arg t2 "$CX_T2" \
+    --arg credits "$CX_CREDITS" \
+    '{
+      version: $version,
+      update: {available: ($update == 1), latest: $latest},
+      updated: $updated,
+      settings: {claude_on: $clon, c5: $c5, c5p: $c5p, c7: $c7, c7p: $c7p,
+                 codex_on: $cxon, cx5: $cx5, cx5p: $cx5p, cx7: $cx7, cx7p: $cx7p, iv: $iv, cmp: $cmp},
+      services: [
+        {name: "Claude", on: ($clact == 1), error: $clerr, color: $clbase, credits: "",
+         windows: [
+           {label: "5h", left: $rem5, color: $col5, resets: $rs5, show: ($c5 == 1 and $rem5 >= 0), pct: ($c5p == 1)},
+           {label: "7d", left: $rem7, color: $col7, resets: $rs7, show: ($c7 == 1 and $rem7 >= 0), pct: ($c7p == 1)}
+         ]},
+        {name: "Codex", on: ($cxact == 1), error: $cxerr, color: $cxbase, credits: $credits,
+         windows: ([
+           {label: $l1, left: $r1, color: $cc1, resets: $t1, show: ($cx5 == 1 and $r1 >= 0), pct: ($cx5p == 1)},
+           {label: $l2, left: $r2, color: $cc2, resets: $t2, show: ($cx7 == 1 and $r2 >= 0), pct: ($cx7p == 1)}
+         ] | map(select(.label != "")))}
+      ]
+    }'
+  exit 0
+fi
+
 PDF_SPEC=""
 if [ "$CL_ACTIVE" = 1 ] && [ -z "$CL_ERR" ]; then
   [ "$C5" = 1 ] && [ "$REM5" -ge 0 ] && PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}5h,$REM5,$(clcol $P5),$C5P"
