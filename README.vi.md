@@ -5,10 +5,16 @@
 ## ⚡ Cài đặt — dán một dòng này vào Terminal
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-Cùng một lệnh hoạt động dù có hay không có Homebrew. Chỉ cài những gì còn thiếu: Homebrew, `jq`, SwiftBar, plugin và các trợ lý cục bộ. Chạy lại an toàn, dùng chính dòng này để cập nhật.
+Đó là ứng dụng. Không cần Homebrew, không cần Xcode, không cần SwiftBar. macOS 13 trở lên. Lần chạy đầu tiên nó sẽ hỏi bạn muốn đặt nó ở đâu — thanh menu, biểu tượng Dock hay thanh nổi — và bạn đổi ý lúc nào cũng được từ menu của nó.
+
+Đang dùng SwiftBar, hoặc muốn đặt ở đó? Dòng này cài bản plugin thay thế, chỉ thêm Homebrew và SwiftBar khi còn thiếu. Chạy lại vẫn an toàn, nên dùng chính dòng này để cập nhật.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+```
 
 ## Chỉ một mục trên thanh menu
 

@@ -5,10 +5,16 @@
 ## ⚡ インストール — この1行をターミナルに貼るだけ
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-Homebrew の有無にかかわらず同じ1行で動きます。足りないもの（Homebrew・`jq`・SwiftBar・プラグイン本体・ローカルヘルパー）だけを導入します。何度実行しても安全なので、更新にも同じ1行を使えます。
+これがアプリ版です。Homebrew も Xcode も SwiftBar も要りません。macOS 13 以降。初回起動時に置き場所（メニューバー・Dockアイコン・フローティングバー）を聞かれ、あとからメニューでいつでも変えられます。
+
+すでに SwiftBar を使っている、あるいは SwiftBar に出したい場合は、こちらの1行でプラグイン版が入ります（Homebrew と SwiftBar は無いときだけ導入）。何度実行しても安全なので、更新にも同じ1行を使えます。
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+```
 
 ## メニューバーは1項目
 

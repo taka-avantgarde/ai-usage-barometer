@@ -5,10 +5,16 @@
 ## ⚡ 설치 — 이 한 줄을 터미널에 붙여넣기
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-Homebrew 유무와 관계없이 같은 한 줄로 동작합니다. 없는 것만(Homebrew, `jq`, SwiftBar, 플러그인, 로컬 헬퍼) 설치합니다. 다시 실행해도 안전하며 업데이트에도 같은 줄을 씁니다.
+이것이 앱 버전입니다. Homebrew도 Xcode도 SwiftBar도 필요 없습니다. macOS 13 이상. 처음 실행하면 어디에 둘지(메뉴 막대, Dock 아이콘, 플로팅 바) 묻고, 이후에는 메뉴에서 언제든 바꿀 수 있습니다.
+
+이미 SwiftBar를 쓰고 있거나 거기에 두고 싶다면, 이 한 줄이 플러그인을 대신 설치합니다(Homebrew와 SwiftBar는 없을 때만 설치). 다시 실행해도 안전하므로 업데이트에도 같은 줄을 쓰세요.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+```
 
 ## 메뉴 막대 항목은 하나
 

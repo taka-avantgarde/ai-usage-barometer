@@ -276,3 +276,24 @@ anyone without a Developer ID. `install-app.sh` now asks `spctl` whether the
 copy it just placed is already accepted, and only clears the quarantine
 attribute when it is not. The day a signature exists, the workaround stops being
 used without anybody editing it out.
+
+## The app is the product; the script is the engine (v0.7.2)
+
+The README opened with "install SwiftBar", which described what this was a year
+ago rather than what it is. The app needs no Homebrew, no Xcode and no SwiftBar,
+it works where the menu bar does not, and it is what a new person should get.
+So the first line of every README installs the app, and the plugin follows as
+the alternative for people already on SwiftBar — who keep working, keep
+updating through the same line, and lose nothing.
+
+`claude-codex.60s.sh` is not demoted by this. It remains the only implementation
+of authentication, backoff, settings and Codex parsing, and the app carries a
+copy inside its bundle. SwiftBar compatibility is then free: the file is already
+in the format SwiftBar reads, and keeping it costs nothing because the app needs
+the file anyway. New behaviour goes to the app; the script changes when the data
+layer changes.
+
+The App Store is not a destination for this. A sandboxed app cannot read Claude
+Code's Keychain item or run the Codex helper, so there is no version of this
+that ships there — which also settles the question of rewriting the engine in
+Swift. One implementation, two front ends.

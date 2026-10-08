@@ -5,10 +5,16 @@
 ## ⚡ التثبيت — الصق هذا السطر في الطرفية
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-يعمل الأمر نفسه على أجهزة Mac مع Homebrew أو بدونه. يثبّت فقط ما هو مفقود: Homebrew و`jq` و SwiftBar والإضافة ومساعديها المحليين. إعادة التشغيل آمنة، واستخدم السطر نفسه للتحديث.
+هذا هو التطبيق. بلا Homebrew وبلا Xcode وبلا SwiftBar. يتطلب macOS 13 أو أحدث. في أول تشغيل يسألك أين يريد أن يستقر — شريط القوائم أو أيقونة Dock أو شريط عائم — ويمكنك تغيير ذلك من قائمته في أي وقت.
+
+تستخدم SwiftBar بالفعل أو تفضّله؟ يثبّت هذا السطر الإضافة بدلًا من ذلك، ويضيف Homebrew و SwiftBar فقط إن لم يكونا موجودين. إعادة التشغيل آمنة، فاستخدم السطر نفسه للتحديث.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+```
 
 ## عنصر واحد في شريط القوائم
 

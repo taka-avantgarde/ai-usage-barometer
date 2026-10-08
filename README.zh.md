@@ -5,10 +5,16 @@
 ## ⚡ 安装 — 把这一行粘贴到终端
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-无论是否已有 Homebrew，同一行都能用。只会安装缺少的部分：Homebrew、`jq`、SwiftBar、插件及本地助手。重复执行是安全的，更新也用同一行。
+这就是应用版。不需要 Homebrew，不需要 Xcode，也不需要 SwiftBar。macOS 13 及以上。首次运行时会问你希望它待在哪里——菜单栏、Dock 图标或浮动条——之后随时可以在它的菜单里改。
+
+已经在用 SwiftBar，或者就想放在那里？这一行改为安装插件版（仅在缺少时才安装 Homebrew 与 SwiftBar）。重复执行是安全的，更新也用同一行。
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+```
 
 ## 菜单栏只占一项
 

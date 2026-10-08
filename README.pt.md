@@ -5,10 +5,16 @@
 ## ⚡ Instalação — cole esta linha no Terminal
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-O mesmo comando funciona com ou sem Homebrew. Instala apenas o que falta: Homebrew, `jq`, SwiftBar, o plugin e seus auxiliares locais. Executar de novo é seguro e serve como atualização.
+Esse é o app. Sem Homebrew, sem Xcode, sem SwiftBar. macOS 13 ou posterior. Na primeira execução ele pergunta onde deve morar — barra de menus, ícone do Dock ou barra flutuante — e dá para mudar pelo menu dele a qualquer momento.
+
+Já usa o SwiftBar, ou prefere ali? Esta linha instala o plugin no lugar, trazendo Homebrew e SwiftBar só se estiverem faltando. Rodar de novo é seguro, então use a mesma linha para atualizar.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
+```
 
 ## Um único item na barra de menus
 
