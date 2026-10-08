@@ -2,6 +2,8 @@
 
 # 🎚️ AI Usage Barometer
 
+<img src="assets/hero.svg" alt="AI Usage Barometer في شريط القوائم وأيقونة Dock وشريط عائم" width="725">
+
 ## ⚡ التثبيت — الصق هذا السطر في الطرفية
 
 ```bash

@@ -2,6 +2,8 @@
 
 # 🎚️ AI Usage Barometer
 
+<img src="assets/hero.svg" alt="菜单栏、Dock 图标与浮动条上的 AI Usage Barometer" width="725">
+
 ## ⚡ 安装 — 把这一行粘贴到终端
 
 ```bash

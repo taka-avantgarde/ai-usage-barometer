@@ -2,6 +2,8 @@
 
 # 🎚️ AI Usage Barometer
 
+<img src="assets/hero.svg" alt="メニューバー・Dockアイコン・フローティングバーに表示した AI Usage Barometer" width="725">
+
 ## ⚡ インストール — この1行をターミナルに貼るだけ
 
 ```bash

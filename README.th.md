@@ -2,6 +2,8 @@
 
 # 🎚️ AI Usage Barometer
 
+<img src="assets/hero.svg" alt="AI Usage Barometer บนแถบเมนู ไอคอน Dock และแถบลอย" width="725">
+
 ## ⚡ การติดตั้ง — วางบรรทัดเดียวนี้ใน Terminal
 
 ```bash

@@ -2,6 +2,8 @@
 
 # 🎚️ AI Usage Barometer
 
+<img src="assets/hero.svg" alt="AI Usage Barometer trên thanh menu, biểu tượng Dock và thanh nổi" width="725">
+
 ## ⚡ Cài đặt — dán một dòng này vào Terminal
 
 ```bash

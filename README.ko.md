@@ -2,6 +2,8 @@
 
 # 🎚️ AI Usage Barometer
 
+<img src="assets/hero.svg" alt="메뉴 막대, Dock 아이콘, 플로팅 바에 표시된 AI Usage Barometer" width="725">
+
 ## ⚡ 설치 — 이 한 줄을 터미널에 붙여넣기
 
 ```bash

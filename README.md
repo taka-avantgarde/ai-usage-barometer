@@ -2,6 +2,8 @@
 
 # 🎚️ AI Usage Barometer
 
+<img src="assets/hero.svg" alt="AI Usage Barometer in the menu bar, the Dock icon and a floating bar" width="725">
+
 ## ⚡ Install — paste this one line into Terminal
 
 ```bash

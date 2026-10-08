@@ -2,6 +2,8 @@
 
 # 🎚️ AI Usage Barometer
 
+<img src="assets/hero.svg" alt="AI Usage Barometer in de menubalk, het Dock-icoon en een zwevende balk" width="725">
+
 ## ⚡ Installatie — plak deze ene regel in Terminal
 
 ```bash
