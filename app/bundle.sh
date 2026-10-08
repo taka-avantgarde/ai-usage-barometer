@@ -104,13 +104,16 @@ PLIST
 #   AIB_NOTARY_PROFILE=<xcrun notarytool store-credentials で作った名前>
 if [ -n "${AIB_SIGN_ID:-}" ]; then
   echo "── 署名 ──"
-  codesign --force --deep --options runtime --timestamp --sign "$AIB_SIGN_ID" "$APP"
+  # --deep は使わない。入れ子の実行ファイルは無く、Apple も推奨していない。
+  codesign --force --options runtime --timestamp --sign "$AIB_SIGN_ID" "$APP"
   codesign --verify --strict "$APP" && echo "✔ 署名"
   if [ -n "${AIB_NOTARY_PROFILE:-}" ]; then
     echo "── 公証（数分かかります）──"
     ditto -c -k --keepParent "$APP" "$OUT/notarize.zip"
     xcrun notarytool submit "$OUT/notarize.zip" --keychain-profile "$AIB_NOTARY_PROFILE" --wait
     xcrun stapler staple "$APP" && echo "✔ 公証"
+    # 配る前に、配られた側と同じ判定を自分で通しておく
+    spctl --assess --type execute -vv "$APP" || echo "⚠ spctl が通りません"
   fi
 fi
 
