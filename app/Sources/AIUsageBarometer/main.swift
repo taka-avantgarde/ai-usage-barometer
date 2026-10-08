@@ -1,4 +1,5 @@
 import AppKit
+import ServiceManagement
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     // NSWindow は NSApplication.shared が立ってから作る。格納プロパティで作ると
@@ -35,7 +36,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         applyPresence()
         refresh()
-        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
+        restartTimer()
+    }
+
+    // 更新間隔はプラグインと同じ iv（1/3/5分）に従う。ここだけ 60 秒固定にすると、
+    // 「設定は共有していて食い違わない」という前提がこの一点で崩れる。
+    var interval: Int {
+        let v = Int(Settings.read("iv", "3")) ?? 3
+        return [1, 3, 5].contains(v) ? v : 3
+    }
+
+    func restartTimer() {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: Double(interval) * 60, repeats: true) { [weak self] _ in
             self?.refresh()
         }
     }
@@ -165,6 +178,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         m.addItem(presenceItem("Floating bar", "p_float", p.float))
         m.addItem(NSMenuItem.separator())
 
+        let iv = NSMenuItem(title: "Refresh every", action: nil, keyEquivalent: "")
+        let ivMenu = NSMenu()
+        for minutes in [1, 3, 5] {
+            let item = NSMenuItem(title: "\(minutes) min", action: #selector(setInterval(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = minutes
+            item.state = interval == minutes ? .on : .off
+            ivMenu.addItem(item)
+        }
+        iv.submenu = ivMenu
+        m.addItem(iv)
+
+        let login = NSMenuItem(title: "Open at login", action: #selector(toggleLogin), keyEquivalent: "")
+        login.target = self
+        login.state = SMAppService.mainApp.status == .enabled ? .on : .off
+        m.addItem(login)
+        m.addItem(NSMenuItem.separator())
+
         let d = NSMenuItem(title: "Details…", action: #selector(showDetailAction), keyEquivalent: "")
         d.target = self
         m.addItem(d)
@@ -208,6 +239,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Settings.write(key, now ? "0" : "1")
         applyPresence()
         refresh()
+    }
+
+    @objc func setInterval(_ sender: NSMenuItem) {
+        guard let minutes = sender.representedObject as? Int else { return }
+        // 書くのは --set 経由。Codex ヘルパー側の間隔もプラグインが面倒を見る。
+        Plugin.set("iv", String(minutes))
+        restartTimer()
+        refresh()
+    }
+
+    // ログイン項目は .app として動いているときだけ登録できる。swift run では
+    // 失敗するが、それは異常ではないので黙って無視する。
+    @objc func toggleLogin() {
+        let service = SMAppService.mainApp
+        do {
+            if service.status == .enabled {
+                try service.unregister()
+            } else {
+                try service.register()
+            }
+        } catch {
+            NSSound.beep()
+        }
     }
 
     @objc func showDetailAction() {
