@@ -45,10 +45,20 @@ final class FirstRunWindow: NSWindow {
         let card = PickCard(frame: NSRect(x: 24, y: y, width: 372, height: 74))
         card.onClick = { [weak self] in self?.onPick(key) }
 
+        // プレビューは本物と同じ向き・同じ寸法で描く。選ぶ前に見えているものと
+        // 選んだあとに出るものが違えば、選ばせた意味がない。
         let preview = GaugeView(frame: NSRect(x: 14, y: 8, width: 210, height: 58))
-        preview.axis = key == "p_float" ? .grouped : .vertical
-        preview.metrics = key == "p_menu" ? Gauge.menubar : Gauge.dock
-        if key == "p_float" { preview.metrics = Gauge.float }
+        switch key {
+        case "p_menu":
+            preview.axis = .horizontal
+            preview.metrics = Gauge.menubar
+        case "p_dock":
+            preview.axis = .vertical
+            preview.metrics = Gauge.dock
+        default:
+            preview.axis = .grouped
+            preview.metrics = Gauge.float
+        }
         preview.rows = rows
         // プレビューの中のクリックも、カードのクリックとして扱う
         preview.onClick = { [weak self] in self?.onPick(key) }

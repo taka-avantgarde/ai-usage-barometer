@@ -13,7 +13,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var timer: Timer?
     // 一度鳴らしたら、回復するまで黙る。鳴り続ける通知は無視されるだけ。
     var warned: Set<String> = []
-    var lastRows: [Row] = []
 
     func applicationDidFinishLaunching(_ note: Notification) {
         floatPanel = FloatPanel()
@@ -182,7 +181,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         detail.fit()
         menuBar?.update()
         NSApp.dockTile.display()
-        lastRows = rows
+
         notifyIfLow(rows)
         showFirstRunIfNeeded(rows)
     }
