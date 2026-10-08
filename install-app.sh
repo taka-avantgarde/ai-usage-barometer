@@ -36,10 +36,15 @@ sleep 1
 rm -rf "$DEST"
 ditto "$SRC" "$DEST"
 
-# このアプリは署名も公証もしていないため、隔離属性が付いたままだと
-# Gatekeeper が起動を止める。自分で取ってきた自分のアプリなので外す。
-# 公証を入れたらこの行は不要になる。
-xattr -dr com.apple.quarantine "$DEST" 2>/dev/null || true
+# 公証済みなら隔離属性のままで起動できる。未署名のときだけ外す。
+# 自分で取ってきた自分のアプリなので外して差し支えないが、
+# 公証を入れた時点でこの迂回は自動的に使われなくなる。
+if spctl --assess --type execute "$DEST" >/dev/null 2>&1; then
+  echo "  （署名・公証済み）"
+else
+  xattr -dr com.apple.quarantine "$DEST" 2>/dev/null || true
+  echo "  （未署名のため隔離属性を外しました）"
+fi
 
 echo "✔ $DEST"
 open "$DEST"

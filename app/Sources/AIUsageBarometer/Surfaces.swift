@@ -16,8 +16,7 @@ final class FloatPanel: NSPanel {
         hasShadow = true
         isMovableByWindowBackground = true
         hidesOnDeactivate = false
-        // 全画面アプリの上には出さない。作業の邪魔をしない。
-        collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
+        collectionBehavior = [.canJoinAllSpaces, .stationary]
         gauge.axis = .grouped
         gauge.metrics = Gauge.float
         contentView = gauge
@@ -43,6 +42,26 @@ final class FloatPanel: NSPanel {
     @objc private func savePosition() {
         Settings.write("float_x", String(format: "%.0f", frame.origin.x))
         Settings.write("float_y", String(format: "%.0f", frame.origin.y))
+        // ドラッグ中に吸着させると引っぱり合いになる。手を止めてから寄せる。
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(snapToEdges), object: nil)
+        perform(#selector(snapToEdges), with: nil, afterDelay: 0.25)
+    }
+
+    // 画面の端に近ければ寄せる。置き場所を1pxずつ合わせる作業をさせない。
+    @objc private func snapToEdges() {
+        guard let v = (screen ?? NSScreen.main)?.visibleFrame else { return }
+        let margin: CGFloat = 12
+        let pull: CGFloat = 28
+        var f = frame
+        if abs(f.minX - v.minX) < pull { f.origin.x = v.minX + margin }
+        if abs(f.maxX - v.maxX) < pull { f.origin.x = v.maxX - f.width - margin }
+        if abs(f.minY - v.minY) < pull { f.origin.y = v.minY + margin }
+        if abs(f.maxY - v.maxY) < pull { f.origin.y = v.maxY - f.height - margin }
+        if f.origin != frame.origin {
+            setFrameOrigin(f.origin)
+            Settings.write("float_x", String(format: "%.0f", f.origin.x))
+            Settings.write("float_y", String(format: "%.0f", f.origin.y))
+        }
     }
 
     private func restorePosition() {

@@ -99,6 +99,21 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </plist>
 PLIST
 
+# 署名と公証。環境変数が無ければ何もしない（未署名のまま出る）。
+#   AIB_SIGN_ID='Developer ID Application: 名前 (TEAMID)'
+#   AIB_NOTARY_PROFILE=<xcrun notarytool store-credentials で作った名前>
+if [ -n "${AIB_SIGN_ID:-}" ]; then
+  echo "── 署名 ──"
+  codesign --force --deep --options runtime --timestamp --sign "$AIB_SIGN_ID" "$APP"
+  codesign --verify --strict "$APP" && echo "✔ 署名"
+  if [ -n "${AIB_NOTARY_PROFILE:-}" ]; then
+    echo "── 公証（数分かかります）──"
+    ditto -c -k --keepParent "$APP" "$OUT/notarize.zip"
+    xcrun notarytool submit "$OUT/notarize.zip" --keychain-profile "$AIB_NOTARY_PROFILE" --wait
+    xcrun stapler staple "$APP" && echo "✔ 公証"
+  fi
+fi
+
 ZIP="$OUT/AIUsageBarometer-v$SHORT.zip"
 ditto -c -k --keepParent "$APP" "$ZIP"
 echo "✔ $APP"

@@ -247,3 +247,32 @@ parsing are not needed to remove the dependency.
 
 Both paths were compared field by field against the `jq` build on the same
 input and differ in nothing but the version string.
+
+## A first run that asks one question (v0.7.2)
+
+The settings are behind a right-click, and a right-click is not discoverable on
+a bar nobody told you was clickable. The first launch therefore shows the three
+places side by side, drawn with the user's own real numbers by the same
+renderer, and clicking one is the answer — no explanation, no OK button. It
+waits for real data before appearing, because three empty frames are not a
+choice. It never appears again, and the menu can change the answer forever
+after.
+
+The floating bar stays out of the way on its own. It is no longer
+`fullScreenAuxiliary`, and it hides while a full-screen app is frontmost,
+detected by the menu bar's absence from `visibleFrame`. It also snaps to a
+screen edge when dropped near one, a quarter-second after the hand stops, since
+snapping during the drag fights the hand that is dragging.
+
+Low-usage alerts fire once at 10% and rearm at 20%. A notification that repeats
+every poll is a notification that gets switched off, and one that fires again
+the moment a bar wobbles across the line is the same thing more slowly.
+
+## The quarantine workaround should delete itself (v0.7.2)
+
+`bundle.sh` signs and notarises when `AIB_SIGN_ID` and `AIB_NOTARY_PROFILE` are
+set, and does neither when they are not, so an unsigned build stays possible for
+anyone without a Developer ID. `install-app.sh` now asks `spctl` whether the
+copy it just placed is already accepted, and only clears the quarantine
+attribute when it is not. The day a signature exists, the workaround stops being
+used without anybody editing it out.

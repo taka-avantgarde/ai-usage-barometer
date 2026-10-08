@@ -1,5 +1,6 @@
 import AppKit
 import ServiceManagement
+import UserNotifications
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     // NSWindow は NSApplication.shared が立ってから作る。格納プロパティで作ると
@@ -7,8 +8,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var floatPanel: FloatPanel!
     var detail: DetailWindow!
     var menuBar: MenuBarSurface?
+    var firstRun: FirstRunWindow?
     let dockGauge = GaugeView()
     var timer: Timer?
+    // 一度鳴らしたら、回復するまで黙る。鳴り続ける通知は無視されるだけ。
+    var warned: Set<String> = []
+    var lastRows: [Row] = []
 
     func applicationDidFinishLaunching(_ note: Notification) {
         floatPanel = FloatPanel()
@@ -37,6 +42,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         applyPresence()
         refresh()
         restartTimer()
+
+        // 全画面に入った／出たを拾う
+        let wc = NSWorkspace.shared.notificationCenter
+        wc.addObserver(self, selector: #selector(updateFloatVisibility),
+                       name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
+        wc.addObserver(self, selector: #selector(updateFloatVisibility),
+                       name: NSWorkspace.didActivateApplicationNotification, object: nil)
     }
 
     // 更新間隔はプラグインと同じ iv（1/3/5分）に従う。ここだけ 60 秒固定にすると、
@@ -81,9 +93,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    // 全画面アプリが前面のときはメニューバーの分だけ visibleFrame が縮まない。
+    // これを目印に、作業中のアプリの上へ割り込まないようにする。
+    var fullScreenActive: Bool {
+        guard let s = NSScreen.main else { return false }
+        return s.visibleFrame.height >= s.frame.height - 1
+    }
+
+    @objc func updateFloatVisibility() {
+        guard floatPanel != nil else { return }
+        let wanted = Presence.load().float && !fullScreenActive
+        if wanted {
+            if !floatPanel.isVisible { floatPanel.orderFrontRegardless() }
+        } else if floatPanel.isVisible {
+            floatPanel.orderOut(nil)
+        }
+    }
+
     func applyPresence() {
         let p = Presence.load()
-        if p.float {
+        if p.float && !fullScreenActive {
             floatPanel.orderFrontRegardless()
         } else {
             floatPanel.orderOut(nil)
@@ -153,6 +182,57 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         detail.fit()
         menuBar?.update()
         NSApp.dockTile.display()
+        lastRows = rows
+        notifyIfLow(rows)
+        showFirstRunIfNeeded(rows)
+    }
+
+    // 残りが少なくなったら一度だけ報せる。10% を割ったら鳴らし、20% まで戻ったら
+    // また鳴らせるようにする。境目で往復しても連打にならない。
+    func notifyIfLow(_ rows: [Row]) {
+        guard Settings.read("notify", "1") == "1" else { return }
+        guard Bundle.main.bundleIdentifier != nil else { return }   // swift run では通知は使えない
+        for r in rows {
+            let key = r.service + "/" + r.label
+            if r.left >= 0 && r.left <= 10 {
+                if warned.contains(key) { continue }
+                warned.insert(key)
+                post(title: r.service + " " + r.label + " — " + String(r.left) + "% left",
+                     body: r.resets.isEmpty ? "" : "recovers in " + r.resets)
+            } else if r.left >= 20 {
+                warned.remove(key)
+            }
+        }
+    }
+
+    private func post(title: String, body: String) {
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert]) { granted, _ in
+            guard granted else { return }
+            let content = UNMutableNotificationContent()
+            content.title = title
+            if !body.isEmpty { content.body = body }
+            let request = UNNotificationRequest(identifier: UUID().uuidString,
+                                                content: content,
+                                                trigger: nil)
+            center.add(request, withCompletionHandler: nil)
+        }
+    }
+
+    // 初回だけ。実データが1行でも取れてから出す（空の枠を見せても選べない）。
+    func showFirstRunIfNeeded(_ rows: [Row]) {
+        guard firstRun == nil, FirstRunWindow.needed, !rows.isEmpty else { return }
+        let w = FirstRunWindow(rows: Array(rows.prefix(2))) { [weak self] key in
+            for k in ["p_menu", "p_dock", "p_float"] { Settings.write(k, k == key ? "1" : "0") }
+            self?.firstRun?.close()
+            self?.firstRun = nil
+            self?.applyPresence()
+            self?.refresh()
+        }
+        firstRun = w
+        w.center()
+        w.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     func showDetail() {
@@ -189,6 +269,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         iv.submenu = ivMenu
         m.addItem(iv)
+
+        m.addItem(check("Low-usage alerts", ["notify"]))
 
         let login = NSMenuItem(title: "Open at login", action: #selector(toggleLogin), keyEquivalent: "")
         login.target = self
