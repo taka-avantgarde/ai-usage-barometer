@@ -40,6 +40,15 @@ enum Gauge {
                 showService: true, showResets: false, pctSuffix: true, fitWidth: false)
     }
 
+    // メニューバーは高さ22ptしかない。背景の暗い下地は DESIGN.md の通り残す
+    // （半透明の明るいメニューバー上で、サービス色を読める状態に保つため）。
+    static var menubar: Metrics {
+        Metrics(barW: 30, barH: 8, rowH: 14, pad: 4, gap: 8, corner: 5,
+                font: NSFont.systemFont(ofSize: 10, weight: .medium),
+                small: NSFont.systemFont(ofSize: 8),
+                showService: false, showResets: false, pctSuffix: false, fitWidth: false)
+    }
+
     static var dock: Metrics {
         Metrics(barW: 54, barH: 13, rowH: 27, pad: 9, gap: 6, corner: 22,
                 font: NSFont.monospacedDigitSystemFont(ofSize: 13, weight: .semibold),

@@ -5,6 +5,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // デリゲート生成時＝NSApp より前になり、起動時に落ちる。
     var floatPanel: FloatPanel!
     var detail: DetailWindow!
+    var menuBar: MenuBarSurface?
     let dockGauge = GaugeView()
     var timer: Timer?
 
@@ -50,14 +51,48 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
 
-    func applyPresence() {
-        let p = Settings.read("presence", "both")
-        if p == "dock" {
-            floatPanel.orderOut(nil)
-        } else {
-            floatPanel.orderFrontRegardless()
+    // 居場所は3つ独立。全部消すと戻す手段まで消えるので、その時はバーを残す。
+    struct Presence {
+        var menubar: Bool
+        var dock: Bool
+        var float: Bool
+
+        static func load() -> Presence {
+            // 旧 presence キー（dock/float/both）からの引き継ぎ
+            let legacy = Settings.read("presence", "both")
+            var p = Presence(menubar: Settings.read("p_menu", "0") == "1",
+                             dock: Settings.read("p_dock", legacy == "float" ? "0" : "1") == "1",
+                             float: Settings.read("p_float", legacy == "dock" ? "0" : "1") == "1")
+            if !p.menubar && !p.dock && !p.float { p.float = true }
+            return p
         }
-        NSApp.setActivationPolicy(p == "float" ? .accessory : .regular)
+    }
+
+    func applyPresence() {
+        let p = Presence.load()
+        if p.float {
+            floatPanel.orderFrontRegardless()
+        } else {
+            floatPanel.orderOut(nil)
+        }
+        if p.menubar {
+            if menuBar == nil {
+                menuBar = MenuBarSurface()
+                menuBar?.item.button?.target = self
+                menuBar?.item.button?.action = #selector(statusClicked)
+            }
+        } else {
+            menuBar?.remove()
+            menuBar = nil
+        }
+        NSApp.setActivationPolicy(p.dock ? .regular : .accessory)
+    }
+
+    @objc func statusClicked() {
+        guard let button = menuBar?.item.button else { return }
+        menu().popUp(positioning: nil,
+                     at: NSPoint(x: 0, y: button.bounds.height + 4),
+                     in: button)
     }
 
     func refresh() {
@@ -94,13 +129,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             errors.append("Cannot read " + Plugin.path)
         }
-        for g in [floatPanel.gauge, detail.gauge, dockGauge] {
+        var gauges = [floatPanel.gauge, detail.gauge, dockGauge]
+        if let mb = menuBar { gauges.append(mb.gauge) }
+        for g in gauges {
             g.rows = rows
             g.errors = errors
             g.updateAvailable = update
         }
         floatPanel.fit()
         detail.fit()
+        menuBar?.update()
         NSApp.dockTile.display()
     }
 
@@ -121,15 +159,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         m.addItem(check("Percentages", ["c5p", "c7p", "cx5p", "cx7p"]))
         m.addItem(NSMenuItem.separator())
 
-        let presence = Settings.read("presence", "both")
-        for (title, value) in [("Dock only", "dock"), ("Floating bar", "float"), ("Both", "both")] {
-            let item = NSMenuItem(title: title, action: #selector(setPresence(_:)), keyEquivalent: "")
-            item.target = self
-            item.representedObject = value
-            item.state = presence == value ? .on : .off
-            m.addItem(item)
-        }
+        let p = Presence.load()
+        m.addItem(presenceItem("Menu bar", "p_menu", p.menubar))
+        m.addItem(presenceItem("Dock icon", "p_dock", p.dock))
+        m.addItem(presenceItem("Floating bar", "p_float", p.float))
         m.addItem(NSMenuItem.separator())
+
+        let d = NSMenuItem(title: "Details…", action: #selector(showDetailAction), keyEquivalent: "")
+        d.target = self
+        m.addItem(d)
 
         let r = NSMenuItem(title: "Refresh now", action: #selector(refreshNow), keyEquivalent: "")
         r.target = self
@@ -156,10 +194,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         refresh()
     }
 
-    @objc func setPresence(_ sender: NSMenuItem) {
-        guard let v = sender.representedObject as? String else { return }
-        Settings.write("presence", v)
+    private func presenceItem(_ title: String, _ key: String, _ on: Bool) -> NSMenuItem {
+        let item = NSMenuItem(title: title, action: #selector(togglePresence(_:)), keyEquivalent: "")
+        item.target = self
+        item.representedObject = key
+        item.state = on ? .on : .off
+        return item
+    }
+
+    @objc func togglePresence(_ sender: NSMenuItem) {
+        guard let key = sender.representedObject as? String else { return }
+        let now = sender.state == .on
+        Settings.write(key, now ? "0" : "1")
         applyPresence()
+        refresh()
+    }
+
+    @objc func showDetailAction() {
+        showDetail()
     }
 
     @objc func refreshNow() {

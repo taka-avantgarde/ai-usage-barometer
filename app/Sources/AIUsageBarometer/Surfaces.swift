@@ -81,3 +81,33 @@ final class DetailWindow: NSWindow {
         setContentSize(gauge.desiredSize)
     }
 }
+
+// メニューバーに格納する形。SwiftBar のプラグインと違い、項目を作るのは自分自身。
+final class MenuBarSurface {
+    let item: NSStatusItem
+    let gauge = GaugeView()
+
+    init() {
+        item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        // 高さ22ptに2段は入らない。ここだけは1行。
+        gauge.axis = .horizontal
+        gauge.metrics = Gauge.menubar
+    }
+
+    // メニューバーはビューを直接は置けないので、同じレンダラーの描画を画像に焼く。
+    func update() {
+        let size = gauge.desiredSize
+        gauge.frame = NSRect(origin: .zero, size: size)
+        guard let rep = gauge.bitmapImageRepForCachingDisplay(in: gauge.bounds) else { return }
+        gauge.cacheDisplay(in: gauge.bounds, to: rep)
+        let image = NSImage(size: size)
+        image.addRepresentation(rep)
+        image.isTemplate = false
+        item.button?.image = image
+        item.button?.imagePosition = .imageOnly
+    }
+
+    func remove() {
+        NSStatusBar.system.removeStatusItem(item)
+    }
+}
