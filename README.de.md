@@ -78,7 +78,15 @@ die Leiste, das Dock-Symbol oder das Menüleistenobjekt öffnet die
 Einstellungen: jeder Dienst an oder aus, Prozentwerte, der Ort und
 **Details…** für das Fenster mit den Erholungszeiten.
 
-Erfordert Xcode (oder die Swift-Toolchain). macOS 13 oder neuer.
+Eine Zeile, kein Xcode nötig. macOS 13 oder neuer.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
+```
+
+Die App ist noch nicht signiert, daher entfernt der Installer nach dem Download das Quarantäne-Attribut.
+
+Oder aus dem Quellcode starten — dafür wird Xcode gebraucht:
 
 ```bash
 git clone https://github.com/taka-avantgarde/ai-usage-barometer.git

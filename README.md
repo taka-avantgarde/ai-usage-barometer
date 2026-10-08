@@ -75,7 +75,15 @@ All three are independent — turn on any combination. Right-click the bar, the
 Dock icon or the menu-bar item for the settings: each service on or off,
 percentages, where it lives, and **Details…** for the panel with reset times.
 
-Requires Xcode (or the Swift toolchain). macOS 13 or later.
+One line, no Xcode. macOS 13 or later.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
+```
+
+The app is not signed yet, so the installer clears its quarantine flag after downloading it.
+
+Or run it from source, which does need Xcode:
 
 ```bash
 git clone https://github.com/taka-avantgarde/ai-usage-barometer.git

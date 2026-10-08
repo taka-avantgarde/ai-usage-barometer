@@ -77,7 +77,15 @@ ikon Dock, atau item bilah menu untuk membuka pengaturan: tiap layanan nyala
 atau mati, persentase, tempatnya, dan **Details…** untuk panel berisi waktu
 pemulihan.
 
-Perlu Xcode (atau toolchain Swift). macOS 13 atau lebih baru.
+Satu baris saja, tanpa Xcode. macOS 13 atau lebih baru.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
+```
+
+Aplikasi ini belum ditandatangani, jadi pemasangnya melepas atribut karantina setelah diunduh.
+
+Atau jalankan dari kode sumber, dan untuk itu Xcode memang diperlukan:
 
 ```bash
 git clone https://github.com/taka-avantgarde/ai-usage-barometer.git

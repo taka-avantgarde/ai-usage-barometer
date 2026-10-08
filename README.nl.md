@@ -77,7 +77,15 @@ balk, het Dock-icoon of het menubalkitem voor de instellingen: elke dienst aan
 of uit, percentages, waar hij woont, en **Details…** voor het paneel met
 hersteltijden.
 
-Vereist Xcode (of de Swift-toolchain). macOS 13 of nieuwer.
+Eén regel, geen Xcode nodig. macOS 13 of nieuwer.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
+```
+
+De app is nog niet ondertekend, dus het installatiescript haalt na het downloaden het quarantainekenmerk weg.
+
+Of draai hem vanaf de broncode; daarvoor is Xcode wel nodig:
 
 ```bash
 git clone https://github.com/taka-avantgarde/ai-usage-barometer.git

@@ -74,7 +74,15 @@ Claude และ Codex ใช้รายการเดียวร่วมก
 หรือที่รายการบนแถบเมนู เพื่อเปิดการตั้งค่า ได้แก่ เปิดปิดแต่ละบริการ เปอร์เซ็นต์
 ตำแหน่งที่แสดง และ **Details…** สำหรับแผงที่มีเวลาคืนสภาพ
 
-ต้องมี Xcode (หรือชุดเครื่องมือ Swift) และ macOS 13 ขึ้นไป
+บรรทัดเดียวจบ ไม่ต้องมี Xcode ใช้ได้กับ macOS 13 ขึ้นไป
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
+```
+
+แอปยังไม่ได้เซ็นรับรอง ตัวติดตั้งจึงลบแอตทริบิวต์กักกันให้หลังดาวน์โหลด
+
+หรือจะรันจากซอร์สก็ได้ วิธีนี้ต้องมี Xcode:
 
 ```bash
 git clone https://github.com/taka-avantgarde/ai-usage-barometer.git

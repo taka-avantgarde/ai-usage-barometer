@@ -209,3 +209,25 @@ what is read is the colour and the proportion left, not the length.
 authentication, no backoff, no settings and no Codex parsing, and writes its
 settings back through `--set` into the same `~/.cache/claude-codex-bar/`. The
 plugin and the app therefore cannot disagree about what is on.
+
+## An unsigned app still has to be installable (v0.7.0)
+
+Asking people to install Xcode before they can see a usage bar is not an
+install step, it is a refusal. `app/bundle.sh` therefore produces a real
+`.app` — binary, `Info.plist`, a generated icon, and the plugin carried inside
+`Resources` so the app works on a machine that never had SwiftBar — and
+`install-app.sh` fetches that from the latest Release in one line.
+
+The app is not signed or notarised, so macOS quarantines the download and
+Gatekeeper refuses it. The installer clears the quarantine attribute on the
+copy it just placed, and both the script and every README say so plainly:
+it is the publisher's own build, fetched over HTTPS from the publisher's own
+release, and the alternative is a right-click-Open dance that most people read
+as the app being broken. A Developer ID signature removes the need for that
+line entirely, and when one exists the line should go.
+
+The icon is drawn by the build script rather than committed as a binary, for
+the same reason the menu bar is drawn rather than described: three bars, two
+Claude-orange and one Codex-cyan, battery-style like everything else. It says
+what the app is before it is opened, and it cannot drift out of step with the
+palette, because it is generated from it.

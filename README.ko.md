@@ -76,7 +76,15 @@ Claude 또는 Codex를 끄면 해당 서비스의 데이터 갱신이 중지됩�
 메뉴 막대 항목을 오른쪽 클릭하면 설정이 열립니다. 서비스별 표시 여부,
 퍼센트, 표시 위치, 그리고 **Details…** 로 회복 시간이 있는 패널을 엽니다.
 
-Xcode(또는 Swift 툴체인)가 필요합니다. macOS 13 이상.
+한 줄이면 됩니다. Xcode는 필요 없습니다. macOS 13 이상.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
+```
+
+앱은 아직 서명되지 않았으므로, 설치 스크립트가 내려받은 뒤 격리 속성을 제거합니다.
+
+소스에서 실행할 수도 있습니다. 이쪽은 Xcode가 필요합니다:
 
 ```bash
 git clone https://github.com/taka-avantgarde/ai-usage-barometer.git

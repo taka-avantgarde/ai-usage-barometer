@@ -73,7 +73,15 @@ Claude 与 Codex 共用一项，中间以细线分隔。进度条为电量式：
 设置：各服务的显示开关、百分比、显示位置，以及 **Details…** 打开带恢复时间
 的面板。
 
-需要 Xcode（或 Swift 工具链）。macOS 13 及以上。
+一行安装，无需 Xcode。macOS 13 及以上。
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
+```
+
+应用尚未签名，安装脚本会在下载后移除隔离属性。
+
+也可以从源码运行，这需要 Xcode：
 
 ```bash
 git clone https://github.com/taka-avantgarde/ai-usage-barometer.git

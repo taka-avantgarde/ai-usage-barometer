@@ -75,7 +75,15 @@ Cả ba độc lập với nhau — bật tổ hợp nào cũng được. Nhấp
 vào biểu tượng Dock hoặc vào mục trên thanh menu để mở cài đặt: bật tắt từng
 dịch vụ, phần trăm, nơi hiển thị, và **Details…** để mở bảng có thời gian hồi.
 
-Cần Xcode (hoặc bộ công cụ Swift). macOS 13 trở lên.
+Một dòng là xong, không cần Xcode. macOS 13 trở lên.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
+```
+
+Ứng dụng chưa được ký, nên trình cài đặt sẽ gỡ thuộc tính cách ly sau khi tải về.
+
+Hoặc chạy từ mã nguồn, cách này thì cần Xcode:
 
 ```bash
 git clone https://github.com/taka-avantgarde/ai-usage-barometer.git

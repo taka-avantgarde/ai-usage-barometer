@@ -78,7 +78,15 @@ clic droit sur la barre, sur l'icône du Dock ou sur l'élément de la barre de
 menus ouvre les réglages : chaque service activé ou non, les pourcentages,
 l'emplacement, et **Details…** pour le panneau avec les temps de récupération.
 
-Nécessite Xcode (ou la chaîne d'outils Swift). macOS 13 ou ultérieur.
+Une seule ligne, sans Xcode. macOS 13 ou ultérieur.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
+```
+
+L'application n'est pas encore signée : l'installeur retire l'attribut de quarantaine après le téléchargement.
+
+Ou lancez-la depuis les sources, ce qui demande Xcode :
 
 ```bash
 git clone https://github.com/taka-avantgarde/ai-usage-barometer.git

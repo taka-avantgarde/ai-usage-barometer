@@ -74,7 +74,15 @@ GitHub Releasesを1日1回まで確認します。運営からのアップデー
 メニューバー項目のいずれかを右クリックすると設定が出ます。サービスごとの
 表示切替、％の有無、置き場所、そして **Details…** で回復時間つきのパネル。
 
-Xcode（またはSwiftツールチェーン）が必要です。macOS 13以降。
+1行で入ります。Xcodeは不要です。macOS 13以降。
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
+```
+
+アプリはまだ署名していないため、インストーラーがダウンロード後に隔離属性を外します。
+
+ソースから動かす場合はXcodeが必要です。
 
 ```bash
 git clone https://github.com/taka-avantgarde/ai-usage-barometer.git

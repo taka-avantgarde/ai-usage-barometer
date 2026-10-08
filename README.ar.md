@@ -75,7 +75,15 @@ Codex السماوي. عند بقاء 11–30% يمتزج لون التحذير 
 Dock أو على عنصر شريط القوائم لفتح الإعدادات: تشغيل كل خدمة أو إيقافها،
 النِّسب المئوية، مكان العرض، و **Details…** للوحة التي تعرض أوقات التجديد.
 
-يتطلب Xcode (أو أدوات Swift). نظام macOS 13 أو أحدث.
+سطر واحد، ودون حاجة إلى Xcode. نظام macOS 13 أو أحدث.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
+```
+
+التطبيق غير موقَّع بعد، لذلك يزيل المثبِّت سمة الحجر الصحي بعد التنزيل.
+
+أو شغّله من المصدر، وهذا يتطلب Xcode:
 
 ```bash
 git clone https://github.com/taka-avantgarde/ai-usage-barometer.git

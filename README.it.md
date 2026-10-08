@@ -78,7 +78,15 @@ sulla barra, sull'icona del Dock o sull'elemento della barra dei menu per le
 impostazioni: ogni servizio attivo o no, le percentuali, dove abita e
 **Details…** per il pannello con i tempi di recupero.
 
-Richiede Xcode (o la toolchain Swift). macOS 13 o successivo.
+Una riga sola, senza Xcode. macOS 13 o successivo.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
+```
+
+L'app non è ancora firmata, quindi l'installer toglie l'attributo di quarantena dopo averla scaricata.
+
+Oppure eseguila dai sorgenti, e in quel caso serve Xcode:
 
 ```bash
 git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
