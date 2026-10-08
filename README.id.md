@@ -60,6 +60,32 @@ Jika jendela 5 jam dan 7 hari suatu layanan sama-sama tidak dicentang, layanan b
 
 Plugin memeriksa GitHub Releases paling banyak sekali sehari. Jika ada pembaruan dari operator, menu dan pengaturan menampilkan pemberitahuan, catatan rilis, dan **Perbarui sekarang**.
 
+## Aplikasinya — pilih tempatnya
+
+Bilah menu tidak selalu tersedia. Di sebagian Mac, item status ditaruh di luar
+layar dan tidak pernah digambar, dan di samping poni bisa jadi memang tidak ada
+ruang. Aplikasi menaruh pengukur yang sama di tempat yang Anda pilih.
+
+| Tempat | Keterangan |
+|---|---|
+| **Bilah menu** | Item status milik aplikasi sendiri, satu baris |
+| **Ikon Dock** | Ikon Dock itu sendiri menjadi pengukurnya. Tidak memakan layar |
+| **Bilah mengambang** | Bilah kecil yang selalu di depan. Seret ke mana saja |
+
+Ketiganya berdiri sendiri — nyalakan kombinasi apa pun. Klik kanan pada bilah,
+ikon Dock, atau item bilah menu untuk membuka pengaturan: tiap layanan nyala
+atau mati, persentase, tempatnya, dan **Details…** untuk panel berisi waktu
+pemulihan.
+
+Perlu Xcode (atau toolchain Swift). macOS 13 atau lebih baru.
+
+```bash
+git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
+cd ai-usage-barometer/app && swift run
+```
+
+Pengaturan dipakai bersama plugin SwiftBar, jadi keduanya tidak pernah berbeda.
+
 ## Sumber data
 
 **Claude** dibaca dari endpoint OAuth `api.anthropic.com/api/oauth/usage`, memakai token yang sudah disimpan Claude Code di Keychain macOS (`Claude Code-credentials`, atau `~/.claude/.credentials.json`). Tidak ada penulisan ke keduanya, dan token hanya meninggalkan Mac dalam permintaan ke Anthropic. Saat pertama kali, pilih **Selalu Izinkan**.

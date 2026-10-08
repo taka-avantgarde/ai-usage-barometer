@@ -60,6 +60,33 @@ Se as janelas de 5h e 7d de um serviço estiverem desmarcadas, o serviço e seus
 
 O plugin verifica o GitHub Releases no máximo uma vez por dia. Se houver atualização do operador, o menu e as configurações mostram o aviso, as notas e **Atualizar agora**.
 
+## O app — escolha onde ele mora
+
+A barra de menus nem sempre está disponível. Em alguns Macs o item de status é
+colocado fora da tela e nunca é desenhado, e ao lado do notch pode simplesmente
+não haver espaço. O app coloca os mesmos medidores onde você escolher.
+
+| Lugar | O que é |
+|---|---|
+| **Barra de menus** | O item de status do próprio app, em uma linha |
+| **Ícone do Dock** | O ícone do Dock vira o medidor. Não ocupa nada da tela |
+| **Barra flutuante** | Uma barra pequena sempre à frente. Arraste para onde quiser |
+
+Os três são independentes — ligue a combinação que preferir. Clique com o botão
+direito na barra, no ícone do Dock ou no item da barra de menus para abrir as
+configurações: cada serviço ligado ou não, porcentagens, onde ele mora e
+**Details…** para o painel com os tempos de recuperação.
+
+Requer Xcode (ou o toolchain do Swift). macOS 13 ou posterior.
+
+```bash
+git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
+cd ai-usage-barometer/app && swift run
+```
+
+As configurações são compartilhadas com o plugin do SwiftBar, então os dois
+nunca divergem.
+
 ## Fontes de dados
 
 **Claude** é lido do endpoint OAuth `api.anthropic.com/api/oauth/usage`, com o token que o Claude Code já guarda nas Chaves do macOS (`Claude Code-credentials`, ou `~/.claude/.credentials.json`). Nada é escrito nesses locais e o token só sai do Mac na requisição à Anthropic. Na primeira execução, escolha **Sempre permitir**.

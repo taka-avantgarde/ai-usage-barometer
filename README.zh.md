@@ -58,6 +58,30 @@ Claude 与 Codex 共用一项，中间以细线分隔。进度条为电量式：
 
 插件每天最多检查一次 GitHub Releases。运营方有更新时，菜单和显示设置会显示通知、更新说明及 **立即更新** 按钮。
 
+## 应用版 —— 自己选择它待在哪里
+
+菜单栏并非总是可用。在某些 Mac 上状态项会被放到屏幕之外、根本不会绘制，而在
+刘海旁边可能压根没有空间。应用版把同样的仪表放到你选择的位置。
+
+| 位置 | 说明 |
+|---|---|
+| **菜单栏** | 应用自己的状态项，单行显示 |
+| **Dock 图标** | Dock 图标本身就是仪表。不占用任何屏幕空间 |
+| **浮动条** | 始终置顶的小条。可拖到任意位置 |
+
+三者相互独立，任意组合都可以。右键点击浮动条、Dock 图标或菜单栏项即可打开
+设置：各服务的显示开关、百分比、显示位置，以及 **Details…** 打开带恢复时间
+的面板。
+
+需要 Xcode（或 Swift 工具链）。macOS 13 及以上。
+
+```bash
+git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
+cd ai-usage-barometer/app && swift run
+```
+
+设置与 SwiftBar 插件共享，两者永远不会出现分歧。
+
 ## 数据来源
 
 **Claude** 读取 OAuth 用量端点 `api.anthropic.com/api/oauth/usage`，使用 Claude Code 已保存在 macOS 钥匙串 `Claude Code-credentials`（或 `~/.claude/.credentials.json`）中的令牌。不会写入这两处，令牌除发往 Anthropic 的请求外不会离开本机。首次运行请选择 **始终允许**。

@@ -59,6 +59,31 @@ If both the 5h and 7d windows for a service are unchecked, that service and its 
 
 The plugin checks GitHub Releases at most once a day. When an operator update is available, the dropdown and Display settings show a notice with release notes and an **Update now** button.
 
+## The app — pick where it lives
+
+The menu bar is not always available. On some Macs a status item is placed
+off-screen and never drawn, and beside a notch there may simply be no room.
+The app puts the same gauges somewhere you choose instead.
+
+| Place | What it is |
+|---|---|
+| **Menu bar** | The app's own status item, one line |
+| **Dock icon** | The Dock icon itself becomes the gauge. Costs no screen space |
+| **Floating bar** | A small always-on-top bar. Drag it anywhere; it stays put |
+
+All three are independent — turn on any combination. Right-click the bar, the
+Dock icon or the menu-bar item for the settings: each service on or off,
+percentages, where it lives, and **Details…** for the panel with reset times.
+
+Requires Xcode (or the Swift toolchain). macOS 13 or later.
+
+```bash
+git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
+cd ai-usage-barometer/app && swift run
+```
+
+Settings are shared with the SwiftBar plugin, so the two never disagree.
+
 ## Data sources
 
 **Claude** is read from the OAuth usage endpoint `api.anthropic.com/api/oauth/usage`, using the access token Claude Code already stores in the macOS Keychain item `Claude Code-credentials` (falling back to `~/.claude/.credentials.json`). Nothing is written to either location, and the token never leaves your Mac except in the request to Anthropic. macOS may ask you to allow Keychain access on first run — choose **Always Allow**.

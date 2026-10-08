@@ -180,3 +180,32 @@ Claude and Codex together come to about 168pt, half of what they were, and
 spell out in full, and the windows keep their order, so the first bar is the
 first window whatever it is called. **Compact** in the settings menu turns
 the names back on.
+
+## Where the gauge lives is the user's choice (v0.7.0)
+
+The menu bar was treated as the only possible home, and it turned out not to be
+a home at all on some machines: on macOS 26 the status items were created,
+reported a real size, and were parked off-screen at `x=-1`, where nothing draws
+them. Resetting the host app's preferences did not bring them back. Beside a
+notch there may also simply be no room, and an item that does not fit is not
+clipped — it is never drawn, with no error and nothing to click.
+
+So the app owns its own surfaces and offers three, as independent switches
+rather than a three-way choice, because wanting the menu bar and a floating bar
+at once is an ordinary wish: its own status item, the Dock tile (which costs no
+screen space at all), and a floating bar that can be dragged anywhere and stays
+where it is put. Turning all three off would leave nothing to turn one back on
+from, so the floating bar survives that.
+
+One renderer draws all of them. The Dock tile, the floating bar, the detail
+panel and the menu-bar image choose metrics and nothing else, so the surfaces
+cannot drift apart. Each has one constraint of its own: the Dock tile is a fixed
+128pt and lays its rows out in columns so percentages sit flush right instead of
+being clipped; the menu bar has 22pt of height and so stays on one line; the
+floating bar groups by service, Claude above Codex, with bars at 40pt because
+what is read is the colour and the proportion left, not the length.
+
+`claude-codex.60s.sh --json` is the only data layer. The app re-implements no
+authentication, no backoff, no settings and no Codex parsing, and writes its
+settings back through `--set` into the same `~/.cache/claude-codex-bar/`. The
+plugin and the app therefore cannot disagree about what is on.

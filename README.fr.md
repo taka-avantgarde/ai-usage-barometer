@@ -60,6 +60,33 @@ Si les fenêtres 5h et 7d d’un service sont toutes deux décochées, le servic
 
 Le module vérifie GitHub Releases au plus une fois par jour. Une mise à jour de l’opérateur est signalée dans le menu et les réglages, avec les notes et **Mettre à jour**.
 
+## L'application — choisissez où elle vit
+
+La barre de menus n'est pas toujours disponible. Sur certains Mac l'élément
+d'état est placé hors de l'écran et n'est jamais dessiné, et à côté de
+l'encoche il n'y a parfois tout simplement plus de place. L'application place
+les mêmes jauges là où vous le décidez.
+
+| Emplacement | Description |
+|---|---|
+| **Barre de menus** | L'élément d'état de l'application elle-même, sur une ligne |
+| **Icône du Dock** | L'icône du Dock devient la jauge. N'occupe aucun espace écran |
+| **Barre flottante** | Une petite barre toujours au premier plan. Déplacez-la où vous voulez |
+
+Les trois sont indépendants : activez la combinaison qui vous convient. Un
+clic droit sur la barre, sur l'icône du Dock ou sur l'élément de la barre de
+menus ouvre les réglages : chaque service activé ou non, les pourcentages,
+l'emplacement, et **Details…** pour le panneau avec les temps de récupération.
+
+Nécessite Xcode (ou la chaîne d'outils Swift). macOS 13 ou ultérieur.
+
+```bash
+git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
+cd ai-usage-barometer/app && swift run
+```
+
+Les réglages sont partagés avec le plugin SwiftBar : les deux ne divergent jamais.
+
 ## Sources de données
 
 **Claude** provient du point de terminaison OAuth `api.anthropic.com/api/oauth/usage`, avec le jeton que Claude Code stocke déjà dans le trousseau macOS (`Claude Code-credentials`, sinon `~/.claude/.credentials.json`). Rien n’y est écrit et le jeton ne quitte le Mac que dans la requête vers Anthropic. Au premier lancement, choisissez **Toujours autoriser**.

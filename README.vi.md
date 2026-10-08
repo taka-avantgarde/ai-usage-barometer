@@ -59,6 +59,31 @@ Nếu bỏ chọn cả khung 5h và 7d của một dịch vụ, dịch vụ cùn
 
 Tiện ích kiểm tra GitHub Releases nhiều nhất một lần mỗi ngày. Khi có bản cập nhật từ nhà vận hành, menu và cài đặt sẽ hiện thông báo, ghi chú và **Cập nhật ngay**.
 
+## Ứng dụng — chọn nơi nó ở
+
+Thanh menu không phải lúc nào cũng dùng được. Trên một số máy Mac, mục trạng
+thái bị đặt ra ngoài màn hình và không bao giờ được vẽ, còn cạnh phần khuyết
+thì có khi chẳng còn chỗ. Ứng dụng đặt đúng những thanh đo ấy vào nơi bạn chọn.
+
+| Nơi đặt | Nội dung |
+|---|---|
+| **Thanh menu** | Mục trạng thái của chính ứng dụng, hiển thị một dòng |
+| **Biểu tượng Dock** | Chính biểu tượng Dock trở thành thanh đo. Không tốn chỗ màn hình |
+| **Thanh nổi** | Một thanh nhỏ luôn nằm trên cùng. Kéo tới đâu tuỳ bạn |
+
+Cả ba độc lập với nhau — bật tổ hợp nào cũng được. Nhấp chuột phải vào thanh,
+vào biểu tượng Dock hoặc vào mục trên thanh menu để mở cài đặt: bật tắt từng
+dịch vụ, phần trăm, nơi hiển thị, và **Details…** để mở bảng có thời gian hồi.
+
+Cần Xcode (hoặc bộ công cụ Swift). macOS 13 trở lên.
+
+```bash
+git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
+cd ai-usage-barometer/app && swift run
+```
+
+Cài đặt dùng chung với plugin SwiftBar nên hai bên không bao giờ lệch nhau.
+
 ## Nguồn dữ liệu
 
 **Claude** được đọc từ endpoint OAuth `api.anthropic.com/api/oauth/usage`, dùng token mà Claude Code đã lưu trong Keychain của macOS (`Claude Code-credentials`, hoặc `~/.claude/.credentials.json`). Không ghi vào hai nơi đó, và token chỉ rời máy trong yêu cầu gửi tới Anthropic. Lần đầu chạy hãy chọn **Luôn cho phép**.

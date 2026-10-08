@@ -60,6 +60,31 @@ Claude 또는 Codex를 끄면 해당 서비스의 데이터 갱신이 중지됩�
 
 플러그인은 GitHub Releases를 하루에 최대 한 번 확인합니다. 운영자 업데이트가 있으면 메뉴와 표시 설정에 릴리스 정보 및 **지금 업데이트** 알림이 나타납니다.
 
+## 앱 버전 — 어디에 둘지 고르세요
+
+메뉴 막대를 늘 쓸 수 있는 것은 아닙니다. 어떤 Mac에서는 상태 항목이 화면 밖에
+놓여 전혀 그려지지 않고, 노치 옆에는 아예 자리가 없을 수도 있습니다. 앱은 같은
+게이지를 원하는 곳에 둡니다.
+
+| 위치 | 설명 |
+|---|---|
+| **메뉴 막대** | 앱 자체의 상태 항목. 한 줄 표시 |
+| **Dock 아이콘** | Dock 아이콘 자체가 게이지가 됩니다. 화면을 전혀 쓰지 않습니다 |
+| **플로팅 바** | 항상 맨 앞에 있는 작은 바. 원하는 곳으로 끌어다 놓으세요 |
+
+세 가지는 서로 독립적이라 어떤 조합이든 켤 수 있습니다. 바나 Dock 아이콘,
+메뉴 막대 항목을 오른쪽 클릭하면 설정이 열립니다. 서비스별 표시 여부,
+퍼센트, 표시 위치, 그리고 **Details…** 로 회복 시간이 있는 패널을 엽니다.
+
+Xcode(또는 Swift 툴체인)가 필요합니다. macOS 13 이상.
+
+```bash
+git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
+cd ai-usage-barometer/app && swift run
+```
+
+설정은 SwiftBar 플러그인과 공유하므로 둘의 표시가 어긋나지 않습니다.
+
 ## 데이터 출처
 
 **Claude**는 OAuth 사용량 엔드포인트 `api.anthropic.com/api/oauth/usage`에서 읽습니다. 인증에는 Claude Code가 macOS 키체인 `Claude Code-credentials`(없으면 `~/.claude/.credentials.json`)에 저장해 둔 토큰을 사용합니다. 두 위치에 쓰지 않으며, 토큰은 Anthropic 요청 외에는 Mac을 벗어나지 않습니다. 첫 실행 시 **항상 허용**을 선택하세요.

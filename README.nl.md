@@ -60,6 +60,33 @@ Als voor een dienst zowel 5h als 7d is uitgeschakeld, worden de dienst en de bij
 
 De plugin controleert GitHub Releases maximaal eenmaal per dag. Bij een update van de beheerder tonen menu en instellingen een melding, release-opmerkingen en **Nu bijwerken**.
 
+## De app — kies waar hij woont
+
+De menubalk is niet altijd beschikbaar. Op sommige Macs wordt het statusitem
+buiten het scherm geplaatst en nooit getekend, en naast een notch is er soms
+simpelweg geen ruimte. De app zet dezelfde meters op de plek die jij kiest.
+
+| Plek | Wat het is |
+|---|---|
+| **Menubalk** | Het eigen statusitem van de app, op één regel |
+| **Dock-icoon** | Het Dock-icoon zelf wordt de meter. Kost geen schermruimte |
+| **Zwevende balk** | Een kleine balk altijd vooraan. Sleep hem waarheen je wilt |
+
+Alle drie staan los van elkaar — zet elke combinatie aan. Klik met rechts op de
+balk, het Dock-icoon of het menubalkitem voor de instellingen: elke dienst aan
+of uit, percentages, waar hij woont, en **Details…** voor het paneel met
+hersteltijden.
+
+Vereist Xcode (of de Swift-toolchain). macOS 13 of nieuwer.
+
+```bash
+git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
+cd ai-usage-barometer/app && swift run
+```
+
+De instellingen worden gedeeld met de SwiftBar-plugin, dus de twee spreken
+elkaar nooit tegen.
+
 ## Gegevensbronnen
 
 **Claude** wordt gelezen van het OAuth-eindpunt `api.anthropic.com/api/oauth/usage`, met het token dat Claude Code al bewaart in de macOS-sleutelhanger (`Claude Code-credentials`, anders `~/.claude/.credentials.json`). Er wordt niets naar geschreven en het token verlaat je Mac alleen in het verzoek aan Anthropic. Kies bij de eerste keer **Altijd toestaan**.
