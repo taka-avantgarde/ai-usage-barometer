@@ -89,7 +89,7 @@ Satu baris saja, tanpa Xcode. macOS 13 atau lebih baru.
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-Aplikasi ini belum ditandatangani, jadi pemasangnya melepas atribut karantina setelah diunduh.
+Aplikasi ini sudah ditandatangani dan dinotarisasi Apple, jadi langsung bisa dibuka setelah diunduh — tanpa peringatan, tanpa klik kanan.
 
 Atau jalankan dari kode sumber, dan untuk itu Xcode memang diperlukan:
 

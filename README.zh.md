@@ -85,7 +85,7 @@ Claude 与 Codex 共用一项，中间以细线分隔。进度条为电量式：
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-应用尚未签名，安装脚本会在下载后移除隔离属性。
+应用已通过 Apple 的签名与公证，下载后可直接打开，不会有警告，也不需要右键。
 
 也可以从源码运行，这需要 Xcode：
 

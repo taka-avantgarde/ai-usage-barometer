@@ -87,7 +87,7 @@ Dock أو على عنصر شريط القوائم لفتح الإعدادات: �
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-التطبيق غير موقَّع بعد، لذلك يزيل المثبِّت سمة الحجر الصحي بعد التنزيل.
+التطبيق موقَّع ومُوثَّق من Apple، لذا يفتح مباشرة بعد التنزيل، بلا تحذير وبلا نقر بالزر الأيمن.
 
 أو شغّله من المصدر، وهذا يتطلب Xcode:
 

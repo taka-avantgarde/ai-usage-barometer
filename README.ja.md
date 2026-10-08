@@ -86,7 +86,7 @@ GitHub Releasesを1日1回まで確認します。運営からのアップデー
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-アプリはまだ署名していないため、インストーラーがダウンロード後に隔離属性を外します。
+アプリは Apple の署名と公証を通しているので、ダウンロードしてそのまま開けます。警告も右クリックも要りません。
 
 ソースから動かす場合はXcodeが必要です。
 

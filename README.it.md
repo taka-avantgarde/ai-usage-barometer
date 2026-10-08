@@ -90,7 +90,7 @@ Una riga sola, senza Xcode. macOS 13 o successivo.
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-L'app non è ancora firmata, quindi l'installer toglie l'attributo di quarantena dopo averla scaricata.
+L'app è firmata e autenticata da Apple, quindi si apre subito dopo il download: nessun avviso, nessun clic destro.
 
 Oppure eseguila dai sorgenti, e in quel caso serve Xcode:
 

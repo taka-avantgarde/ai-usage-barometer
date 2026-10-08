@@ -272,10 +272,14 @@ the moment a bar wobbles across the line is the same thing more slowly.
 
 `bundle.sh` signs and notarises when `AIB_SIGN_ID` and `AIB_NOTARY_PROFILE` are
 set, and does neither when they are not, so an unsigned build stays possible for
-anyone without a Developer ID. `install-app.sh` now asks `spctl` whether the
-copy it just placed is already accepted, and only clears the quarantine
-attribute when it is not. The day a signature exists, the workaround stops being
-used without anybody editing it out.
+anyone without a Developer ID. `install-app.sh` asks `spctl` whether the copy it
+just placed is already accepted, and only clears the quarantine attribute when
+it is not.
+
+That day arrived with v0.7.2, which ships signed by Developer ID and notarised,
+stapled, and checked with the same `spctl` assessment a downloaded copy faces.
+The workaround is still in the installer and is now never reached — which is the
+point of having written it that way.
 
 ## The app is the product; the script is the engine (v0.7.2)
 

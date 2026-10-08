@@ -87,7 +87,7 @@ One line, no Xcode. macOS 13 or later.
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-The app is not signed yet, so the installer clears its quarantine flag after downloading it.
+The app is signed and notarised by Apple, so it opens straight from the download — no warning, no right-click.
 
 Or run it from source, which does need Xcode:
 

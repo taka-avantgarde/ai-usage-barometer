@@ -90,7 +90,7 @@ Une seule ligne, sans Xcode. macOS 13 ou ultérieur.
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-L'application n'est pas encore signée : l'installeur retire l'attribut de quarantaine après le téléchargement.
+L'application est signée et notarisée par Apple : elle s'ouvre directement après le téléchargement, sans avertissement ni clic droit.
 
 Ou lancez-la depuis les sources, ce qui demande Xcode :
 

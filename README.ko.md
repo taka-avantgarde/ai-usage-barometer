@@ -88,7 +88,7 @@ Claude 또는 Codex를 끄면 해당 서비스의 데이터 갱신이 중지됩�
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-앱은 아직 서명되지 않았으므로, 설치 스크립트가 내려받은 뒤 격리 속성을 제거합니다.
+앱은 Apple의 서명과 공증을 거쳤으므로, 내려받아 그대로 열 수 있습니다. 경고도 오른쪽 클릭도 필요 없습니다.
 
 소스에서 실행할 수도 있습니다. 이쪽은 Xcode가 필요합니다:
 

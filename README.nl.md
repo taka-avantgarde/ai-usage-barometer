@@ -89,7 +89,7 @@ Eén regel, geen Xcode nodig. macOS 13 of nieuwer.
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-De app is nog niet ondertekend, dus het installatiescript haalt na het downloaden het quarantainekenmerk weg.
+De app is door Apple ondertekend en genotariseerd en gaat na het downloaden gewoon open — geen waarschuwing, geen rechtermuisknop.
 
 Of draai hem vanaf de broncode; daarvoor is Xcode wel nodig:
 

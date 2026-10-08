@@ -86,7 +86,7 @@ Claude และ Codex ใช้รายการเดียวร่วมก
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-แอปยังไม่ได้เซ็นรับรอง ตัวติดตั้งจึงลบแอตทริบิวต์กักกันให้หลังดาวน์โหลด
+แอปผ่านการเซ็นรับรองและ notarize จาก Apple แล้ว จึงดาวน์โหลดมาเปิดได้ทันที ไม่มีคำเตือนและไม่ต้องคลิกขวา
 
 หรือจะรันจากซอร์สก็ได้ วิธีนี้ต้องมี Xcode:
 

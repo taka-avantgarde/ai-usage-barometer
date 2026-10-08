@@ -87,7 +87,7 @@ Một dòng là xong, không cần Xcode. macOS 13 trở lên.
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-Ứng dụng chưa được ký, nên trình cài đặt sẽ gỡ thuộc tính cách ly sau khi tải về.
+Ứng dụng đã được Apple ký và công chứng, nên tải về là mở được ngay — không cảnh báo, không cần nhấp chuột phải.
 
 Hoặc chạy từ mã nguồn, cách này thì cần Xcode:
 
