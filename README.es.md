@@ -86,6 +86,10 @@ derecho en la barra, en el icono del Dock o en el elemento de la barra de
 menús para los ajustes: cada servicio activado o no, porcentajes, dónde vive
 y **Details…** para el panel con los tiempos de recuperación.
 
+Apagar un medidor devuelve el ancho: el elemento se encoge hasta ajustarse a lo que queda, y la barra de menús se queda con la diferencia.
+
+Una flecha naranja indica que hay una actualización esperando. **Update to vX.Y.Z**, en el mismo menú, la instala sin más pasos.
+
 Una sola línea, sin Xcode. macOS 13 o posterior.
 
 ```bash

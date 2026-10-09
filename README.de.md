@@ -86,6 +86,10 @@ die Leiste, das Dock-Symbol oder das Menüleistenobjekt öffnet die
 Einstellungen: jeder Dienst an oder aus, Prozentwerte, der Ort und
 **Details…** für das Fenster mit den Erholungszeiten.
 
+Eine Anzeige abzuschalten gibt die Breite zurück: das Element schrumpft auf das, was übrig bleibt, und die Menüleiste behält die Differenz.
+
+Ein oranger Pfeil heißt, dass ein Update wartet. **Update to vX.Y.Z** im selben Menü installiert es an Ort und Stelle.
+
 Eine Zeile, kein Xcode nötig. macOS 13 oder neuer.
 
 ```bash

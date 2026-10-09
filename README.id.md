@@ -85,6 +85,10 @@ ikon Dock, atau item bilah menu untuk membuka pengaturan: tiap layanan nyala
 atau mati, persentase, tempatnya, dan **Details…** untuk panel berisi waktu
 pemulihan.
 
+Mematikan satu pengukur mengembalikan lebarnya: itemnya menyusut pas dengan sisa isinya, dan bilah menu mendapat selisihnya.
+
+Panah oranye berarti ada pembaruan yang menunggu. **Update to vX.Y.Z** di menu yang sama memasangnya di tempat.
+
 Satu baris saja, tanpa Xcode. macOS 13 atau lebih baru.
 
 ```bash

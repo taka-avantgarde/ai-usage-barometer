@@ -83,6 +83,10 @@ Cả ba độc lập với nhau — bật tổ hợp nào cũng được. Nhấp
 vào biểu tượng Dock hoặc vào mục trên thanh menu để mở cài đặt: bật tắt từng
 dịch vụ, phần trăm, nơi hiển thị, và **Details…** để mở bảng có thời gian hồi.
 
+Tắt bớt một thanh đo là trả lại chỗ: mục sẽ co vừa đúng phần còn lại, và thanh menu được hưởng phần dôi ra.
+
+Mũi tên màu cam nghĩa là có bản cập nhật đang chờ. **Update to vX.Y.Z** ngay trong menu đó sẽ cài tại chỗ.
+
 Một dòng là xong, không cần Xcode. macOS 13 trở lên.
 
 ```bash

@@ -86,6 +86,10 @@ clic droit sur la barre, sur l'icône du Dock ou sur l'élément de la barre de
 menus ouvre les réglages : chaque service activé ou non, les pourcentages,
 l'emplacement, et **Details…** pour le panneau avec les temps de récupération.
 
+Désactiver une jauge rend la largeur : l'élément se réduit à ce qui reste, et la barre de menus récupère la différence.
+
+Une flèche orange signale une mise à jour en attente. **Update to vX.Y.Z**, dans le même menu, l'installe sur place.
+
 Une seule ligne, sans Xcode. macOS 13 ou ultérieur.
 
 ```bash

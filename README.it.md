@@ -86,6 +86,10 @@ sulla barra, sull'icona del Dock o sull'elemento della barra dei menu per le
 impostazioni: ogni servizio attivo o no, le percentuali, dove abita e
 **Details…** per il pannello con i tempi di recupero.
 
+Spegnere un indicatore restituisce la larghezza: l'elemento si stringe su quel che resta, e la barra dei menu si tiene la differenza.
+
+Una freccia arancione segnala un aggiornamento in attesa. **Update to vX.Y.Z**, nello stesso menu, lo installa sul posto.
+
 Una riga sola, senza Xcode. macOS 13 o successivo.
 
 ```bash

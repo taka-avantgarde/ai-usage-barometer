@@ -85,6 +85,10 @@ balk, het Dock-icoon of het menubalkitem voor de instellingen: elke dienst aan
 of uit, percentages, waar hij woont, en **Details…** voor het paneel met
 hersteltijden.
 
+Een meter uitzetten geeft de breedte terug: het item krimpt tot precies wat overblijft, en de menubalk houdt het verschil over.
+
+Een oranje pijl betekent dat er een update klaarstaat. **Update to vX.Y.Z** in hetzelfde menu installeert hem ter plekke.
+
 Eén regel, geen Xcode nodig. macOS 13 of nieuwer.
 
 ```bash

@@ -83,6 +83,10 @@ All three are independent — turn on any combination. Right-click the bar, the
 Dock icon or the menu-bar item for the settings: each service on or off,
 percentages, where it lives, and **Details…** for the panel with reset times.
 
+Switching a gauge off gives the width back — the item shrinks to fit whatever is left, so the menu bar keeps the difference.
+
+An orange arrow means an update is waiting. **Update to vX.Y.Z** in the same menu installs it in place.
+
 One line, no Xcode. macOS 13 or later.
 
 ```bash

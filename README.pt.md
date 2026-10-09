@@ -85,6 +85,10 @@ direito na barra, no ícone do Dock ou no item da barra de menus para abrir as
 configurações: cada serviço ligado ou não, porcentagens, onde ele mora e
 **Details…** para o painel com os tempos de recuperação.
 
+Desligar um medidor devolve a largura: o item encolhe até caber no que sobrou, e a barra de menus fica com a diferença.
+
+Uma seta laranja indica que há uma atualização esperando. **Update to vX.Y.Z**, no mesmo menu, instala na hora.
+
 Uma linha, sem Xcode. macOS 13 ou posterior.
 
 ```bash
