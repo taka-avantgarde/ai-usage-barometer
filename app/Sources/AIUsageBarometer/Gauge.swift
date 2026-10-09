@@ -209,7 +209,10 @@ final class GaugeView: NSView {
             var w = m.pad * 2 + serviceCol + 8 + widest
             if updateAvailable { w += 14 }
             let h = m.pad * 2 + CGFloat(gs.count + errors.count) * m.rowH
-            return NSSize(width: max(w, 140), height: max(h, 36))
+            // 中身のぶんだけの幅にする。枠を消したら、その分だけ必ず縮む。
+            // 最低幅は「描くものが何も無いとき」にだけ要る。
+            let empty = rows.isEmpty && errors.isEmpty
+            return NSSize(width: empty ? 140 : w, height: max(h, 36))
         }
         if axis == .horizontal {
             var w = m.pad * 2
@@ -226,14 +229,16 @@ final class GaugeView: NSView {
                 w += Gauge.width(e, m.font)
                 first = false
             }
-            return NSSize(width: max(w, 140), height: m.rowH + m.pad * 2)
+            let empty = rows.isEmpty && errors.isEmpty
+            return NSSize(width: empty ? 140 : w, height: m.rowH + m.pad * 2)
         }
         let h = max(m.pad * 2 + CGFloat(rows.count + errors.count) * m.rowH, 60)
         var w = labelColumn + 8 + m.barW
         let p = pctColumn
         if p > 0 { w += 8 + p }
         for e in errors { w = max(w, Gauge.width(e, m.font)) }
-        return NSSize(width: max(w + m.pad * 2, 240), height: h)
+        let empty = rows.isEmpty && errors.isEmpty
+        return NSSize(width: empty ? 240 : w + m.pad * 2, height: h)
     }
 
     override func draw(_ dirtyRect: NSRect) {

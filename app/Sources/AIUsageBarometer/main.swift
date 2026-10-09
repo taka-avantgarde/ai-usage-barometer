@@ -13,6 +13,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var timer: Timer?
     // 一度鳴らしたら、回復するまで黙る。鳴り続ける通知は無視されるだけ。
     var warned: Set<String> = []
+    var latestVersion = ""
 
     func applicationDidFinishLaunching(_ note: Notification) {
         floatPanel = FloatPanel()
@@ -149,6 +150,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         var update = false
         if let u = u {
             update = u.update.available
+            latestVersion = u.update.latest
             for s in u.services {
                 if !s.on { continue }
                 if !s.error.isEmpty {
@@ -277,6 +279,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         m.addItem(login)
         m.addItem(NSMenuItem.separator())
 
+        // バーに矢印が出ているなら、ここから1クリックで終わらせられること。
+        // 印だけ出して手順を読ませるのは、報せていないのと同じ。
+        if floatPanel.gauge.updateAvailable && !latestVersion.isEmpty {
+            let up = NSMenuItem(title: "Update to " + latestVersion,
+                                action: #selector(installUpdate), keyEquivalent: "")
+            up.target = self
+            m.addItem(up)
+            m.addItem(NSMenuItem.separator())
+        }
+
         let d = NSMenuItem(title: "Details…", action: #selector(showDetailAction), keyEquivalent: "")
         d.target = self
         m.addItem(d)
@@ -342,6 +354,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         } catch {
             NSSound.beep()
+        }
+    }
+
+    @objc func installUpdate() {
+        DispatchQueue.global(qos: .utility).async {
+            Plugin.run(["--update"])
+            DispatchQueue.main.async { self.refresh() }
         }
     }
 

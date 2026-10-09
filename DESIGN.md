@@ -301,3 +301,18 @@ The App Store is not a destination for this. A sandboxed app cannot read Claude
 Code's Keychain item or run the Codex helper, so there is no version of this
 that ships there — which also settles the question of rewriting the engine in
 Swift. One implementation, two front ends.
+
+## A minimum width is for emptiness, not for content (v0.7.3)
+
+Turning a window off freed nothing: every surface carried a 140pt floor, so
+hiding two of three gauges left the item exactly as wide as before and the
+menu bar no roomier for anything else. The floor exists for the case where
+there is nothing to draw at all and an item of zero width cannot be clicked.
+It now applies only to that case, and anything with content measures exactly
+what it draws. One Claude window alone comes to about 60pt instead of 140.
+
+The update arrow became actionable in the same pass. It was painted on all
+three surfaces while the menu offered no way to act on it, which is the same
+failure the plugin had before `Install now` existed: a notice that cannot be
+acted on is half a notice. The menu now carries **Update to vX.Y.Z** while one
+is pending, and it runs the installer in place through the plugin's `--update`.
