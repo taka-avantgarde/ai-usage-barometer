@@ -23,8 +23,8 @@ Déjà sur SwiftBar, ou vous le préférez ? Cette ligne installe le plugin à l
 Claude et Codex partagent un élément, séparés par un trait fin. Les barres sont de type batterie : **la partie pleine est la capacité restante**, la traîne pointillée est ce qui a été consommé. Les pourcentages indiquent aussi le restant.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 La barre de menus est dessinée en vectoriel afin que chaque service garde sa couleur dans un même élément. Un repli en texte simple est utilisé automatiquement si nécessaire.
@@ -34,11 +34,11 @@ utilise l’orange et Codex le cyan. Entre 11 et 30% restants, l’alerte incorp
 de l’orange ; à 10% ou moins, l’état critique incorpore un rouge vif. Codex
 conserve du bleu dans les deux mélanges :
 
-| Étape | Usage | Claude | Codex |
-|---|---:|---|---|
-| normal | 0–69% utilisé | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| alerte | 70–89% utilisé | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| critique | 90–100% utilisé | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| Étape | Usage | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| normal | 0–69% utilisé | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| alerte | 70–89% utilisé | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| critique | 90–100% utilisé | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## Réglages
 
@@ -54,9 +54,9 @@ L’interface du module est uniquement en anglais. Cette documentation GitHub re
 | Afficher Claude 7d | Afficher ou masquer la fenêtre 7 jours |
 | Pourcentage de Claude 7d | Afficher ou masquer son pourcentage |
 | Afficher Codex | Afficher ou masquer Codex |
-| Afficher fenêtre 1 de Codex | Afficher ou masquer la première fenêtre renvoyée par Codex |
+| Afficher fenêtre 1 de Codex | Afficher ou masquer la première fenêtre renvoyée par Codex (e.g. Codex 5h) |
 | Pourcentage fenêtre 1 de Codex | Afficher ou masquer son pourcentage |
-| Afficher fenêtre 2 de Codex | Afficher ou masquer la seconde, si elle existe |
+| Afficher fenêtre 2 de Codex | Afficher ou masquer la seconde, si elle existe (e.g. Codex 7d) |
 | Pourcentage fenêtre 2 de Codex | Afficher ou masquer son pourcentage |
 | Intervalle d’actualisation | 1, 3 ou 5 minutes |
 

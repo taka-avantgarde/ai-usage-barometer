@@ -23,8 +23,8 @@
 يتشارك Claude و Codex عنصرًا واحدًا يفصل بينهما خط رفيع. الأشرطة على نمط البطارية: **الجزء الممتلئ هو السعة المتبقية**، والذيل المنقّط هو ما استُهلك. النسب المئوية تمثل المتبقي أيضًا.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 يُرسم شريط القوائم كصورة متجهية ليحتفظ كل خدمة بلونها داخل عنصر واحد. وإن تعذّر ذلك يُستخدم نص عادي تلقائيًا.
@@ -33,11 +33,11 @@
 Codex السماوي. عند بقاء 11–30% يمتزج لون التحذير بالبرتقالي، وعند بقاء 10% أو
 أقل يمتزج اللون الحرج بالأحمر الزاهي. يحتفظ Codex بالأزرق في كلا المزيجين:
 
-| المرحلة | الاستهلاك | Claude | Codex |
-|---|---:|---|---|
-| عادي | 0–69% مستهلك | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| تحذير | 70–89% مستهلك | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| حرج | 90–100% مستهلك | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| المرحلة | الاستهلاك | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| عادي | 0–69% مستهلك | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| تحذير | 70–89% مستهلك | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| حرج | 90–100% مستهلك | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## الإعدادات
 
@@ -53,9 +53,9 @@ Codex السماوي. عند بقاء 11–30% يمتزج لون التحذير 
 | إظهار Claude 7d | إظهار نافذة السبعة أيام أو إخفاؤها |
 | نسبة Claude 7d | إظهار نسبتها أو إخفاؤها |
 | إظهار Codex | إظهار Codex أو إخفاؤه |
-| إظهار نافذة Codex الأولى | إظهار أو إخفاء أول نافذة يُبلغ عنها Codex |
+| إظهار نافذة Codex الأولى | إظهار أو إخفاء أول نافذة يُبلغ عنها Codex (e.g. Codex 5h) |
 | نسبة نافذة Codex الأولى | إظهار أو إخفاء نسبتها |
-| إظهار نافذة Codex الثانية | إظهار أو إخفاء الثانية إن وُجدت |
+| إظهار نافذة Codex الثانية | إظهار أو إخفاء الثانية إن وُجدت (e.g. Codex 7d) |
 | نسبة نافذة Codex الثانية | إظهار أو إخفاء نسبتها |
 | فاصل التحديث | ١ أو ٣ أو ٥ دقائق |
 

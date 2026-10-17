@@ -25,7 +25,7 @@ run_plugin() {
 }
 
 for script in \
-  ai-usage.60s.sh claude-codex.60s.sh install.sh uninstall.sh claude-usage.sh codex-usage.sh \
+  ai-usage.60s.sh claude-codex.60s.sh install.sh uninstall.sh claude-usage.sh codex-usage.sh gemini-usage.sh \
   claude-statusline-capture.sh configure-claude-statusline.sh update.sh tests/colours.sh tests/run.sh; do
   bash -n "$ROOT/$script"
 done
@@ -200,10 +200,12 @@ SWIFTBAR_PLUGIN_DIR="$INSTALL_HOME/SwiftBar" \
 [[ -x "$INSTALL_HOME/SwiftBar/claude-codex.60s.sh" ]]
 [[ -x "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/claude-usage.sh" ]]
 [[ -x "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/codex-usage.sh" ]]
+[[ -x "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/gemini-usage.sh" ]]
 [[ -r "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/settings.html" ]]
 [[ -x "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/update.sh" ]]
 [[ -x "$INSTALL_HOME/.claude/ai-usage-barometer-statusline.sh" ]]
 ! grep -q ';;&' "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/codex-usage.sh"
+! grep -q ';;&' "$INSTALL_HOME/SwiftBar/.ai-usage-barometer/gemini-usage.sh"
 jq -e --arg wrapper "$INSTALL_HOME/.claude/ai-usage-barometer-statusline.sh" '.theme == "dark" and .statusLine.command == $wrapper and .statusLine.padding == 3' "$INSTALL_HOME/.claude/settings.json" >/dev/null
 HOME="$INSTALL_HOME" AI_USAGE_TEST_MODE=1 SWIFTBAR_PLUGIN_DIR="$INSTALL_HOME/SwiftBar" "$ROOT/uninstall.sh" >/dev/null
 jq -e --arg original "$TMP/original-statusline.sh" '.theme == "dark" and .statusLine.command == $original and .statusLine.padding == 3' "$INSTALL_HOME/.claude/settings.json" >/dev/null
@@ -213,7 +215,41 @@ jq -e --arg original "$TMP/original-statusline.sh" '.theme == "dark" and .status
 ! grep -q ';&' "$ROOT/codex-usage.sh"
 grep -q 'https://chatgpt.com/backend-api/wham/usage' "$ROOT/codex-usage.sh"
 
-# Documentation: one-line installer first, both services named in every
+# Bundled Gemini helper must remain compatible with macOS system Bash 3.2.
+! grep -q ';;&' "$ROOT/gemini-usage.sh"
+! grep -q ';&' "$ROOT/gemini-usage.sh"
+
+# Gemini mock JSON test
+cat > "$TMP/gemini-mock.json" <<'JSON'
+{
+  "userStatus": {
+    "userTier": {"name": "Google AI Ultra"},
+    "cascadeModelConfigData": {
+      "clientModelConfigs": [
+        {
+          "modelId": "gemini-2.5-flash",
+          "label": "Gemini 2.5 Flash",
+          "quotaInfo": {
+            "remainingFraction": 0.85,
+            "resetTime": "2026-10-17T20:00:00Z"
+          }
+        }
+      ]
+    }
+  }
+}
+JSON
+GEMINI_MOCK_OUT="$(HOME="$TMP/home" GEMINI_USAGE_TEST_JSON="$TMP/gemini-mock.json" "$ROOT/gemini-usage.sh")"
+grep -q '^Gemini 5h' <<< "$GEMINI_MOCK_OUT"
+grep -q '15% used' <<< "$GEMINI_MOCK_OUT"
+grep -q '85% left' <<< "$GEMINI_MOCK_OUT"
+
+# Verify claude-codex.60s.sh --json includes Claude, Codex, Gemini
+JSON_OUT="$(HOME="$TMP/home" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" GEMINI_HELPER="$ROOT/tests/fixtures/gemini-helper.sh" "$ROOT/claude-codex.60s.sh" --json)"
+jq -e '.services | map(.name) == ["Claude", "Codex", "Gemini"]' <<< "$JSON_OUT" >/dev/null
+jq -e '.services[] | select(.name == "Gemini") | .windows[0].label == "5h" and .windows[0].color == "#158F6A"' <<< "$JSON_OUT" >/dev/null
+
+# Documentation: one-line installer first, all services named in every
 # README language, the English-only UI explained, and no claim that Warming up
 # is fabricated as 100%.
 READMES=(
@@ -226,6 +262,7 @@ for readme in "${READMES[@]}"; do
   grep -q 'raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh' "$ROOT/$readme"
   grep -q 'Claude' "$ROOT/$readme"
   grep -q 'Codex' "$ROOT/$readme"
+  grep -q 'Gemini' "$ROOT/$readme"
   grep -q '\*\*⚙ Display settings\*\*' "$ROOT/$readme"
   grep -q '14' "$ROOT/$readme"
   ! grep -q 'Warming up.*100% left' "$ROOT/$readme"

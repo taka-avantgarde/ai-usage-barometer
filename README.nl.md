@@ -23,8 +23,8 @@ Zit je al op SwiftBar, of wil je hem daar? Deze regel installeert in plaats daar
 Claude en Codex delen één item, gescheiden door een dunne streep. De balken zijn batterij-stijl: **het gevulde deel is de resterende capaciteit**, de gestippelde staart is verbruikt. Percentages tonen eveneens het restant.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 De menubalk wordt als vectorafbeelding getekend zodat elke dienst binnen één item zijn eigen kleur houdt. Anders wordt automatisch platte tekst gebruikt.
@@ -34,11 +34,11 @@ oranje en Codex cyaan. Bij 11–30% resterend mengt de waarschuwing oranje bij;
 bij 10% of minder bevat de kritieke kleur helder rood. Codex houdt in beide
 mengkleuren duidelijk blauw:
 
-| Fase | Verbruik | Claude | Codex |
-|---|---:|---|---|
-| normaal | 0–69% gebruikt | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| waarschuwing | 70–89% gebruikt | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| kritiek | 90–100% gebruikt | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| Fase | Verbruik | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| normaal | 0–69% gebruikt | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| waarschuwing | 70–89% gebruikt | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| kritiek | 90–100% gebruikt | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## Instellingen
 
@@ -54,9 +54,9 @@ De plugininterface is uitsluitend in het Engels. Deze GitHub-documentatie blijft
 | Claude 7d tonen | Venster van 7 dagen tonen of verbergen |
 | Percentage van Claude 7d | Bijbehorend percentage tonen of verbergen |
 | Codex tonen | Codex tonen of verbergen |
-| Codex venster 1 tonen | Het eerste venster dat Codex meldt tonen of verbergen |
+| Codex venster 1 tonen | Het eerste venster dat Codex meldt tonen of verbergen (e.g. Codex 5h) |
 | Percentage van Codex venster 1 | Dat percentage tonen of verbergen |
-| Codex venster 2 tonen | Het tweede venster tonen of verbergen, indien aanwezig |
+| Codex venster 2 tonen | Het tweede venster tonen of verbergen, indien aanwezig (e.g. Codex 7d) |
 | Percentage van Codex venster 2 | Dat percentage tonen of verbergen |
 | Vernieuwingsinterval | 1, 3 of 5 minuten |
 

@@ -26,12 +26,12 @@ echo "── アイコン ──"
 rm -rf "$OUT"; mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$OUT/icon.iconset"
 python3 - "$OUT/icon.iconset" <<'PY'
 # 外部ライブラリ無しで PNG を書く。ダークな角丸に、バッテリー式のバーを3本。
-# Claude のオレンジ2本と Codex のシアン1本で、中身が何かひと目で分かるようにする。
+# Claude のオレンジ、Codex のシアン、Gemini のエメラルドグリーンで、中身が何かひと目で分かるようにする。
 import struct, sys, zlib, pathlib
 
 BG    = (0x20, 0x25, 0x2B)
 BARBG = (0x33, 0x3A, 0x42)
-BARS  = [((0xC6, 0x6D, 0x28), 0.88), ((0xC6, 0x6D, 0x28), 0.43), ((0x1A, 0x8B, 0xA6), 0.99)]
+BARS  = [((0xC6, 0x6D, 0x28), 0.88), ((0x1A, 0x8B, 0xA6), 0.43), ((0x15, 0x8F, 0x6A), 0.99)]
 
 def png(path, n):
     r = n * 0.22                      # 角丸半径
@@ -80,6 +80,13 @@ cp "$BINPATH" "$APP/Contents/MacOS/$BIN"
 # データ層を同梱する。~/SwiftBar に無い環境でも単体で動くように。
 cp ../claude-codex.60s.sh "$APP/Contents/Resources/claude-codex.60s.sh"
 chmod +x "$APP/Contents/Resources/claude-codex.60s.sh"
+mkdir -p "$APP/Contents/Resources/.ai-usage-barometer"
+for f in codex-usage.sh gemini-usage.sh settings.html update.sh; do
+  if [ -f "../$f" ]; then
+    cp "../$f" "$APP/Contents/Resources/.ai-usage-barometer/$f"
+    [ -x "../$f" ] && chmod +x "$APP/Contents/Resources/.ai-usage-barometer/$f"
+  fi
+done
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

@@ -24,16 +24,16 @@ Each service keeps its own hue. Stages darken within that hue instead of
 switching to a traffic-light green/amber/red — the point is to see at a glance
 which service a bar belongs to.
 
-| Stage | Usage | Claude | Codex |
-|---|---:|---|---|
-| healthy | 0–69% | `#C66D28` | `#1A8BA6` |
-| warning | 70–89% | `#B65A1E` | `#52768A` |
-| critical | 90–100% | `#C52E22` | `#783F78` |
+| Stage | Usage | Claude | Codex | Gemini (Antigravity) |
+|---|---:|---|---|---|
+| healthy | 0–69% | `#C66D28` | `#1A8BA6` | `#158F6A` |
+| warning | 70–89% | `#B65A1E` | `#52768A` | `#5E7B3A` |
+| critical | 90–100% | `#C52E22` | `#783F78` | `#8C3B5A` |
 
-Healthy bars keep their service identity: orange for Claude and cyan for Codex.
-Warning bars mix in orange when 11–30% remains; Codex retains a blue majority.
+Healthy bars keep their service identity: orange for Claude, cyan for Codex, and emerald green for Gemini.
+Warning bars mix in orange when 11–30% remains; Codex retains a blue majority; Gemini deepens to olive-moss green (`#5E7B3A`).
 Critical bars mix in vivid red when 10% or less remains; Codex combines it with
-blue as violet-red. Every stage targets at least about 3:1 contrast against a
+blue as violet-red; Gemini transitions to deep plum-ruby (`#8C3B5A`). Every stage targets at least about 3:1 contrast against a
 light gray (`#E6E6E6`) macOS menu-bar background.
 
 **Do not use `light,dark` colour pairs.** macOS can treat a translucent menu bar
@@ -85,6 +85,12 @@ rather than blanking the bar.
 
 **Codex** — parsed from the local helper `.ai-usage-barometer/codex-usage.sh`.
 Its windows are dynamic: a 5-hour window appears only when Codex returns one.
+
+**Gemini (Antigravity)** — parsed from the local helper `.ai-usage-barometer/gemini-usage.sh`.
+It supports both Antigravity Desktop App 2.0 and Antigravity IDE without network calls or credential modifications via 3 tiers:
+1. Live language_server Connect RPC (`GetUserStatus`)
+2. Read-only SQLite query (`antigravityUnifiedStateSync.userStatus` in `state.vscdb`)
+3. Cached usage (`~/.cache/gemini-usage-barometer/usage.json`)
 
 The helper output is the interchange format, so `█` and `░` must stay in the
 parser's character class if either helper's fill characters ever change.

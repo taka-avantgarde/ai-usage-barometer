@@ -52,6 +52,14 @@
     <label class="child codex-child"><input id="cx7p" type="checkbox"> <span>Codex <span id="cx-l2-b">7d</span> percentage</span></label>
   </section>
   <section>
+    <h2>Gemini</h2>
+    <label><input id="gemini_on" type="checkbox"> <span>Show Gemini</span></label>
+    <label class="child gemini-child"><input id="gm5" type="checkbox"> <span>Show Gemini <span id="gm-l1-a">5h</span></span></label>
+    <label class="child gemini-child"><input id="gm5p" type="checkbox"> <span>Gemini <span id="gm-l1-b">5h</span> percentage</span></label>
+    <label class="child gemini-child"><input id="gm7" type="checkbox"> <span>Show Gemini <span id="gm-l2-a">Flash</span></span></label>
+    <label class="child gemini-child"><input id="gm7p" type="checkbox"> <span>Gemini <span id="gm-l2-b">Flash</span> percentage</span></label>
+  </section>
+  <section>
     <h2>Refresh interval (minutes)</h2>
     <div class="radios">
       <label><input name="iv" type="radio" value="1">1</label>
@@ -62,7 +70,7 @@
   <div id="status" class="status" aria-live="polite"></div>
   <script>
     const params = new URLSearchParams(location.search);
-    const toggleIds = ['claude_on', 'c5', 'c5p', 'c7', 'c7p', 'codex_on', 'cx5', 'cx5p', 'cx7', 'cx7p'];
+    const toggleIds = ['claude_on', 'c5', 'c5p', 'c7', 'c7p', 'codex_on', 'cx5', 'cx5p', 'cx7', 'cx7p', 'gemini_on', 'gm5', 'gm5p', 'gm7', 'gm7p'];
     function muteChildren(service) {
       const on = document.querySelector(`#${service}_on`).checked;
       document.querySelectorAll(`.${service}-child`).forEach(label => {
@@ -87,6 +95,13 @@
         document.getElementById('cx7').closest('label').hidden = !l2;
         document.getElementById('cx7p').closest('label').hidden = !l2;
       }
+      const gl1 = get('gm_l1'), gl2 = get('gm_l2');
+      if (gl1) { document.getElementById('gm-l1-a').textContent = gl1; document.getElementById('gm-l1-b').textContent = gl1; }
+      if (gl2) { document.getElementById('gm-l2-a').textContent = gl2; document.getElementById('gm-l2-b').textContent = gl2; }
+      if (gl1 !== null) {
+        document.getElementById('gm7').closest('label').hidden = !gl2;
+        document.getElementById('gm7p').closest('label').hidden = !gl2;
+      }
       toggleIds.forEach(id => {
         const input = document.querySelector(`#${id}`);
         if (document.activeElement === input) return;
@@ -97,6 +112,7 @@
       });
       muteChildren('claude');
       muteChildren('codex');
+      muteChildren('gemini');
     }
 
     toggleIds.forEach(id => {
@@ -104,6 +120,7 @@
       input.addEventListener('change', () => {
         if (id === 'claude_on') muteChildren('claude');
         if (id === 'codex_on') muteChildren('codex');
+        if (id === 'gemini_on') muteChildren('gemini');
         save(id, input.checked ? '1' : '0');
       });
     });
@@ -136,6 +153,7 @@
     });
     muteChildren('claude');
     muteChildren('codex');
+    muteChildren('gemini');
   </script>
 </body>
 </html>

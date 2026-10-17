@@ -3,7 +3,7 @@
 # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 set -euo pipefail
 
-VERSION="0.3.3"
+VERSION="0.8.0"
 REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 BRANCH="${AI_USAGE_BRANCH:-main}"
 PLUGIN_DIR="${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}"
@@ -79,6 +79,12 @@ else
   install_repo_file "codex-usage.sh" "$SUPPORT_DIR/codex-usage.sh"
 fi
 
+if [[ -n "${AI_USAGE_GEMINI_SOURCE:-}" && -f "$AI_USAGE_GEMINI_SOURCE" ]]; then
+  install -m 755 "$AI_USAGE_GEMINI_SOURCE" "$SUPPORT_DIR/gemini-usage.sh"
+else
+  install_repo_file "gemini-usage.sh" "$SUPPORT_DIR/gemini-usage.sh"
+fi
+
 AI_USAGE_CLAUDE_DIR="$CLAUDE_DIR" \
 AI_USAGE_CLAUDE_STATUSLINE_PATH="$CLAUDE_CAPTURE_TARGET" \
   "$SUPPORT_DIR/configure-claude-statusline.sh" install
@@ -88,6 +94,7 @@ if [[ ! -s "$CONFIG_FILE" ]]; then
   cat > "$CONFIG_FILE" <<'CONFIG'
 CLAUDE_ENABLED=1
 CODEX_ENABLED=1
+GEMINI_ENABLED=1
 INTERVAL_MIN=3
 CONFIG
   chmod 600 "$CONFIG_FILE" 2>/dev/null || true
@@ -123,12 +130,20 @@ if [[ -r "$CLAUDE_DIR/settings.json" ]] && jq -e '.disableAllHooks == true' "$CL
 fi
 
 if [[ "$TEST_MODE" != "1" && "${AI_USAGE_SKIP_APP_LAUNCH:-0}" != "1" ]]; then
+  if [[ -d "/Applications/AI Usage Barometer.app" ]]; then
+    if [[ -n "${AI_USAGE_LOCAL_SOURCE:-}" && -f "${AI_USAGE_LOCAL_SOURCE}/install-app.sh" ]]; then
+      /bin/bash "${AI_USAGE_LOCAL_SOURCE}/install-app.sh" 2>/dev/null || true
+    else
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/$REPO/$BRANCH/install-app.sh)" 2>/dev/null || true
+    fi
+  fi
   defaults write com.ameba.SwiftBar PluginDirectory "$PLUGIN_DIR" >/dev/null 2>&1 || true
   killall SwiftBar >/dev/null 2>&1 || true
   sleep 1
   open -a SwiftBar >/dev/null 2>&1 || open /Applications/SwiftBar.app >/dev/null 2>&1 || true
   sleep 1
   open -g "swiftbar://refreshallplugins" >/dev/null 2>&1 || true
+  osascript -e "display notification \"Updated to v0.8.0 — Gemini (Antigravity Desktop & IDE) support added.\" with title \"AI Usage Barometer\"" 2>/dev/null || true
 fi
 
 cat <<DONE
@@ -136,10 +151,11 @@ cat <<DONE
 ✅ Installed v$VERSION.
 
 Menu-bar behaviour:
-• Claude and Codex share one menu-bar item; service names appear only in the dropdown
+• Claude, Codex and Gemini share one menu-bar item; service names appear only in the dropdown
 • Every 5h/7d window is coloured independently
 • Claude: #C66D28 → #B65A1E → #C52E22
 • Codex:  #1A8BA6 → #52768A → #783F78
+• Gemini: #158F6A → #5E7B3A → #8C3B5A
 • If Codex returns a real 300-minute window, its 5h bar appears automatically
 • If one provider has no usable window, the other provider remains visible
 

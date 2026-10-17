@@ -23,8 +23,8 @@ Schon auf SwiftBar unterwegs, oder willst du es dort haben? Diese Zeile installi
 Claude und Codex teilen sich ein Element, getrennt durch eine feine Linie. Die Balken sind batterieartig: **der gefüllte Teil ist die verbleibende Kapazität**, der gepunktete Rest ist verbraucht. Auch die Prozentwerte zeigen den Rest.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 Die Menüleiste wird als Vektorbild gezeichnet, damit jeder Dienst innerhalb eines Elements seine eigene Farbe behält. Andernfalls wird automatisch Text verwendet.
@@ -34,11 +34,11 @@ Orange, Codex Cyan. Bei 11–30% Restkapazität mischt die Warnfarbe Orange bei;
 bei höchstens 10% enthält die kritische Farbe kräftiges Rot. Codex behält in
 beiden Mischungen einen starken Blauanteil:
 
-| Stufe | Nutzung | Claude | Codex |
-|---|---:|---|---|
-| normal | 0–69% genutzt | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| Warnung | 70–89% genutzt | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| kritisch | 90–100% genutzt | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| Stufe | Nutzung | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| normal | 0–69% genutzt | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| Warnung | 70–89% genutzt | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| kritisch | 90–100% genutzt | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## Einstellungen
 
@@ -54,9 +54,9 @@ Die Plugin-Oberfläche ist ausschließlich auf Englisch. Diese GitHub-Dokumentat
 | Claude 7d anzeigen | 7-Tage-Fenster ein-/ausblenden |
 | Prozent von Claude 7d | Dessen Prozentwert ein-/ausblenden |
 | Codex anzeigen | Codex ein-/ausblenden |
-| Codex-Fenster 1 anzeigen | Das erste von Codex gemeldete Fenster ein-/ausblenden |
+| Codex-Fenster 1 anzeigen | Das erste von Codex gemeldete Fenster ein-/ausblenden (e.g. Codex 5h) |
 | Prozent von Codex-Fenster 1 | Dessen Prozentwert ein-/ausblenden |
-| Codex-Fenster 2 anzeigen | Das zweite Fenster ein-/ausblenden, falls vorhanden |
+| Codex-Fenster 2 anzeigen | Das zweite Fenster ein-/ausblenden, falls vorhanden (e.g. Codex 7d) |
 | Prozent von Codex-Fenster 2 | Dessen Prozentwert ein-/ausblenden |
 | Aktualisierungsintervall | 1, 3 oder 5 Minuten |
 

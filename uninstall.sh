@@ -25,6 +25,7 @@ rm -rf "$SUPPORT_DIR"
 rm -rf "$CACHE_ROOT/ai-usage-barometer"
 rm -rf "$CACHE_ROOT/claude-codex-bar"      # display settings + Claude cache
 rm -rf "$CACHE_ROOT/codex-usage-barometer" # refresh interval written for the helper
+rm -rf "$CACHE_ROOT/gemini-usage-barometer"
 
 open -g "swiftbar://refreshallplugins" >/dev/null 2>&1 || true
 echo "AI Usage Barometer removed. Previous Claude Code status line restored when applicable."

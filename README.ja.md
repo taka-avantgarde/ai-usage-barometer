@@ -23,8 +23,8 @@
 Claude と Codex を細い区切り線で分けて1項目にまとめています。バーはバッテリー式で、**塗りが残量**、点々が消費済みです。％も残量を示します。
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 メニューバーはベクター画像として描画するため、1項目の中でサービスごとに別の色を保てます。描画できない環境では自動的にテキスト表示に切り替わります。
@@ -32,11 +32,11 @@ Claude と Codex を細い区切り線で分けて1項目にまとめていま�
 どちらも彩度とコントラストを高めた配色で、Claudeはオレンジ、Codexはシアンです。
 残り11〜30%ではオレンジを混ぜた警告色、残り10%以下では鮮やかな赤を混ぜた逼迫色になります。Codexはどちらも青を強く残します。
 
-| 段階 | 使用量 | Claude | Codex |
-|---|---:|---|---|
-| 通常 | 0–69% 使用 | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| 警告 | 70–89% 使用 | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| 逼迫 | 90–100% 使用 | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| 段階 | 使用量 | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| 通常 | 0–69% 使用 | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| 警告 | 70–89% 使用 | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| 逼迫 | 90–100% 使用 | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## 設定
 
@@ -52,10 +52,15 @@ Claude と Codex を細い区切り線で分けて1項目にまとめていま�
 | Claude 7d を表示 | 7日枠の表示/非表示 |
 | Claude 7d の％ | 7日枠の％表示/非表示 |
 | Codex を表示 | Codex 全体の表示/非表示 |
-| Codex 1個目の枠を表示 | Codex が最初に返す枠の表示/非表示 |
+| Codex 1個目の枠を表示 | Codex が最初に返す枠の表示/非表示 (e.g. Codex 5h) |
 | Codex 1個目の枠の％ | その％表示/非表示 |
-| Codex 2個目の枠を表示 | Codex が2番目の枠を返した場合の表示/非表示 |
+| Codex 2個目の枠を表示 | Codex が2番目の枠を返した場合の表示/非表示 (e.g. Codex 7d) |
 | Codex 2個目の枠の％ | その％表示/非表示 |
+| Gemini を表示 | Gemini 全体の表示/非表示 |
+| Gemini 1個目の枠を表示 | Gemini が最初に返す枠の表示/非表示（例: 5h） |
+| Gemini 1個目の枠の％ | その％表示/非表示 |
+| Gemini 2個目の枠を表示 | Gemini が2番目の枠を返した場合の表示/非表示（例: Flash） |
+| Gemini 2個目の枠の％ | その％表示/非表示 |
 | 更新間隔 | 1分・3分・5分 |
 
 すべてのゲージを非表示にしても、設定を開けるように `AI …` の項目が残ります。メニューバーの色は実際に表示中のゲージだけで決まります。設定は `~/.cache/claude-codex-bar/` に保存され、アップデートしても引き継がれます。
@@ -111,11 +116,15 @@ cd ai-usage-barometer/app && swift run
 
 **Codex** は、インストーラが `~/SwiftBar/.ai-usage-barometer/` に配置するローカルヘルパー `codex-usage.sh` の出力から読み取ります。枠は個数も名前も動的です（プラン変更で `5h`/`7d` が `30d` のような枠に変わることがあります）。上記2つのトグルは Codex が実際に返す1個目・2個目の枠にそのまま追従し、設定画面の表記も実際の枠名に自動で変わります。
 
+**Gemini** は、インストーラが配置するローカルヘルパー `gemini-usage.sh` の出力から読み取ります。Antigravity Desktop App 2.0 および Antigravity IDE の両方に対応し、外部API呼び出しや認証情報の書き換えなしに、ローカル Language Server の Connect RPC・SQLite (`state.vscdb`)・キャッシュの3段階フォールバックで安全に取得します。
+
 ## うまく動かないとき
 
 **`Claude ⚠` と出る** — ドロップダウンに理由が表示されます。*Sign in to Claude Code again* は OAuth トークンの期限切れで、Claude Code の CLI か IDE 拡張から再認証してください。**Claude デスクトップアプリとは別物**なので、Claude.app にサインインしてもこのトークンは更新されません。*Rate limited* は時間で解消します（15分バックオフし、残り時間を表示します）。
 
 **Codex に警告が出る** — ヘルパーが無いか、Codex のデータがまだ生成されていません。インストーラを再実行し、Codex CLI を一度使ってください。
+
+**Gemini に警告が出る** — Antigravity が一度も起動されていないか、データ待機中です。Antigravity Desktop または Antigravity IDE を起動してください。
 
 **メニューバーとドロップダウンで色が違って見える** — macOS は半透明のメニューバーを、システムがダークでもライト扱いにすることがあります。Python が使える場合は常に2色のベクター描画を使い、Python がない場合だけ1色のテキスト表示にフォールバックします。
 

@@ -23,8 +23,8 @@
 Claude และ Codex ใช้รายการเดียวร่วมกัน คั่นด้วยเส้นบาง แถบเป็นแบบแบตเตอรี่: **ส่วนที่เติมคือปริมาณคงเหลือ** ส่วนที่เป็นจุดคือที่ใช้ไปแล้ว เปอร์เซ็นต์ก็คือส่วนที่เหลือเช่นกัน
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 แถบเมนูวาดเป็นภาพเวกเตอร์ เพื่อให้แต่ละบริการคงสีของตนไว้ในรายการเดียว หากทำไม่ได้จะสลับไปใช้ข้อความธรรมดาโดยอัตโนมัติ
@@ -33,11 +33,11 @@ Claude และ Codex ใช้รายการเดียวร่วมก
 เมื่อเหลือ 11–30% สีเตือนจะผสมสีส้ม และเมื่อเหลือ 10% หรือน้อยกว่า
 สีวิกฤตจะผสมสีแดงสด โดย Codex ยังคงส่วนผสมสีน้ำเงินที่ชัดเจนในทั้งสองระดับ:
 
-| ระดับ | ใช้ไป | Claude | Codex |
-|---|---:|---|---|
-| ปกติ | 0–69% ใช้ไป | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| เตือน | 70–89% ใช้ไป | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| วิกฤต | 90–100% ใช้ไป | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| ระดับ | ใช้ไป | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| ปกติ | 0–69% ใช้ไป | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| เตือน | 70–89% ใช้ไป | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| วิกฤต | 90–100% ใช้ไป | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## การตั้งค่า
 
@@ -53,9 +53,9 @@ Claude และ Codex ใช้รายการเดียวร่วมก
 | แสดง Claude 7d | แสดงหรือซ่อนช่วง 7 วัน |
 | เปอร์เซ็นต์ของ Claude 7d | แสดงหรือซ่อนเปอร์เซ็นต์ของช่วงนี้ |
 | แสดง Codex | แสดงหรือซ่อน Codex |
-| แสดงโควตา Codex ที่ 1 | แสดงหรือซ่อนโควตาแรกที่ Codex รายงาน |
+| แสดงโควตา Codex ที่ 1 | แสดงหรือซ่อนโควตาแรกที่ Codex รายงาน (e.g. Codex 5h) |
 | เปอร์เซ็นต์โควตา Codex ที่ 1 | แสดงหรือซ่อนเปอร์เซ็นต์ของโควตานี้ |
-| แสดงโควตา Codex ที่ 2 | แสดงหรือซ่อนโควตาที่สอง ถ้ามี |
+| แสดงโควตา Codex ที่ 2 | แสดงหรือซ่อนโควตาที่สอง ถ้ามี (e.g. Codex 7d) |
 | เปอร์เซ็นต์โควตา Codex ที่ 2 | แสดงหรือซ่อนเปอร์เซ็นต์ของโควตานี้ |
 | ช่วงการรีเฟรช | 1, 3 หรือ 5 นาที |
 

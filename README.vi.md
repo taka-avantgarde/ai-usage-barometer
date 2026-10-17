@@ -23,8 +23,8 @@
 Claude và Codex dùng chung một mục, ngăn bởi một vạch mảnh. Thanh theo kiểu pin: **phần đầy là dung lượng còn lại**, phần chấm là đã dùng. Phần trăm cũng là lượng còn lại.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 Thanh menu được vẽ dạng ảnh vector nên mỗi dịch vụ giữ được màu riêng trong cùng một mục. Nếu không thể, hệ thống tự chuyển sang văn bản thuần.
@@ -33,11 +33,11 @@ Cả hai bảng màu đều có độ bão hòa và tương phản cao: Claude d
 lục lam. Khi còn 11–30%, màu cảnh báo pha cam; khi còn 10% trở xuống, màu nguy
 cấp pha đỏ tươi. Codex giữ thành phần xanh lam mạnh trong cả hai màu pha:
 
-| Mức | Đã dùng | Claude | Codex |
-|---|---:|---|---|
-| bình thường | 0–69% đã dùng | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| cảnh báo | 70–89% đã dùng | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| nguy cấp | 90–100% đã dùng | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| Mức | Đã dùng | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| bình thường | 0–69% đã dùng | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| cảnh báo | 70–89% đã dùng | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| nguy cấp | 90–100% đã dùng | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## Cài đặt
 
@@ -53,9 +53,9 @@ Giao diện plugin chỉ hiển thị bằng tiếng Anh. Tài liệu GitHub nà
 | Hiện Claude 7d | Hiện hoặc ẩn khung 7 ngày |
 | Phần trăm Claude 7d | Hiện hoặc ẩn phần trăm tương ứng |
 | Hiện Codex | Hiện hoặc ẩn Codex |
-| Hiện khung Codex 1 | Hiện hoặc ẩn khung đầu tiên mà Codex trả về |
+| Hiện khung Codex 1 | Hiện hoặc ẩn khung đầu tiên mà Codex trả về (e.g. Codex 5h) |
 | Phần trăm khung Codex 1 | Hiện hoặc ẩn phần trăm tương ứng |
-| Hiện khung Codex 2 | Hiện hoặc ẩn khung thứ hai, nếu có |
+| Hiện khung Codex 2 | Hiện hoặc ẩn khung thứ hai, nếu có (e.g. Codex 7d) |
 | Phần trăm khung Codex 2 | Hiện hoặc ẩn phần trăm tương ứng |
 | Khoảng làm mới | 1, 3 hoặc 5 phút |
 

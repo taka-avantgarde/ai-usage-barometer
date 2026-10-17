@@ -23,8 +23,8 @@ Sudah memakai SwiftBar, atau memang ingin di sana? Baris ini memasang versi plug
 Claude dan Codex berbagi satu item, dipisahkan garis tipis. Bilah bergaya baterai: **bagian terisi adalah kapasitas tersisa**, ekor bertitik adalah yang sudah terpakai. Persentase juga menunjukkan sisa.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 Bilah menu digambar sebagai gambar vektor sehingga tiap layanan mempertahankan warnanya dalam satu item. Jika tidak memungkinkan, otomatis beralih ke teks biasa.
@@ -34,11 +34,11 @@ oranye dan Codex sian. Saat tersisa 11–30%, warna peringatan mencampurkan
 oranye; saat tersisa 10% atau kurang, warna kritis mencampurkan merah cerah.
 Codex mempertahankan unsur biru kuat pada kedua campuran:
 
-| Tahap | Pemakaian | Claude | Codex |
-|---|---:|---|---|
-| normal | 0–69% terpakai | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| peringatan | 70–89% terpakai | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| kritis | 90–100% terpakai | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| Tahap | Pemakaian | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| normal | 0–69% terpakai | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| peringatan | 70–89% terpakai | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| kritis | 90–100% terpakai | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## Pengaturan
 
@@ -54,9 +54,9 @@ Antarmuka plugin hanya tersedia dalam bahasa Inggris. Dokumentasi GitHub ini tet
 | Tampilkan Claude 7d | Tampilkan atau sembunyikan jendela 7 hari |
 | Persentase Claude 7d | Tampilkan atau sembunyikan persentasenya |
 | Tampilkan Codex | Tampilkan atau sembunyikan Codex |
-| Tampilkan jendela Codex 1 | Tampilkan atau sembunyikan jendela pertama yang dilaporkan Codex |
+| Tampilkan jendela Codex 1 | Tampilkan atau sembunyikan jendela pertama yang dilaporkan Codex (e.g. Codex 5h) |
 | Persentase jendela Codex 1 | Tampilkan atau sembunyikan persentasenya |
-| Tampilkan jendela Codex 2 | Tampilkan atau sembunyikan jendela kedua, jika ada |
+| Tampilkan jendela Codex 2 | Tampilkan atau sembunyikan jendela kedua, jika ada (e.g. Codex 7d) |
 | Persentase jendela Codex 2 | Tampilkan atau sembunyikan persentasenya |
 | Interval penyegaran | 1, 3, atau 5 menit |
 

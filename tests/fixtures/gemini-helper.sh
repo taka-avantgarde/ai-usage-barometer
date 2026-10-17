@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+echo "Gemini 5h ████░ | color=#158F6A font=Menlo"
+echo "---"
+echo "Gemini usage | color=#158F6A"
+echo "Plan: Google AI Ultra | color=#808080"
+echo "---"
+echo "5h   ██████░░░░   40% used | color=#158F6A font=Menlo"
+echo "     60% left · resets in 2h 07m | color=#808080 font=Menlo size=11"
+echo "---"
+echo "Source: live local language_server | color=#808080"

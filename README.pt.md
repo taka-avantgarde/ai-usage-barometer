@@ -23,8 +23,8 @@ Já usa o SwiftBar, ou prefere ali? Esta linha instala o plugin no lugar, trazen
 Claude e Codex dividem um item, separados por um traço fino. As barras são estilo bateria: **a parte preenchida é a capacidade restante** e a cauda pontilhada é o que já foi gasto. As porcentagens também são do restante.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 A barra de menus é desenhada como imagem vetorial para que cada serviço mantenha sua cor dentro de um mesmo item. Caso não seja possível, usa-se texto simples automaticamente.
@@ -34,11 +34,11 @@ Codex ciano. Com 11–30% restante, o aviso mistura laranja; com 10% ou menos, o
 estado crítico mistura vermelho vivo. Codex mantém azul forte nas duas
 misturas:
 
-| Estágio | Uso | Claude | Codex |
-|---|---:|---|---|
-| normal | 0–69% usado | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| aviso | 70–89% usado | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| crítico | 90–100% usado | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| Estágio | Uso | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| normal | 0–69% usado | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| aviso | 70–89% usado | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| crítico | 90–100% usado | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## Configurações
 
@@ -54,9 +54,9 @@ A interface do plugin está disponível somente em inglês. Esta documentação 
 | Mostrar Claude 7d | Mostrar ou ocultar a janela de 7 dias |
 | Porcentagem de Claude 7d | Mostrar ou ocultar sua porcentagem |
 | Mostrar Codex | Mostrar ou ocultar o Codex |
-| Mostrar janela 1 do Codex | Mostrar ou ocultar a primeira janela relatada pelo Codex |
+| Mostrar janela 1 do Codex | Mostrar ou ocultar a primeira janela relatada pelo Codex (e.g. Codex 5h) |
 | Porcentagem da janela 1 do Codex | Mostrar ou ocultar sua porcentagem |
-| Mostrar janela 2 do Codex | Mostrar ou ocultar a segunda janela, se houver |
+| Mostrar janela 2 do Codex | Mostrar ou ocultar a segunda janela, se houver (e.g. Codex 7d) |
 | Porcentagem da janela 2 do Codex | Mostrar ou ocultar sua porcentagem |
 | Intervalo de atualização | 1, 3 ou 5 minutos |
 

@@ -23,8 +23,8 @@ Esa es la app. Sin Homebrew, sin Xcode, sin SwiftBar. macOS 13 o posterior. La p
 Claude y Codex comparten un elemento, separados por una línea fina. Las barras son tipo batería: **la parte llena es la capacidad restante** y la cola punteada es lo consumido. Los porcentajes también son capacidad restante.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 La barra de menús se dibuja como imagen vectorial para que cada servicio conserve su color dentro de un mismo elemento. Si no es posible, se usa texto plano automáticamente.
@@ -34,11 +34,11 @@ y Codex cian. Con un 11–30% restante, el aviso mezcla naranja; con un 10% o
 menos, el estado crítico mezcla rojo vivo. Codex conserva el azul en ambas
 mezclas:
 
-| Etapa | Uso | Claude | Codex |
-|---|---:|---|---|
-| normal | 0–69% usado | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| aviso | 70–89% usado | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| crítico | 90–100% usado | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| Etapa | Uso | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| normal | 0–69% usado | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| aviso | 70–89% usado | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| crítico | 90–100% usado | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## Ajustes
 
@@ -54,9 +54,9 @@ La interfaz del complemento está disponible solo en inglés. Esta documentació
 | Mostrar Claude 7d | Mostrar u ocultar la ventana de 7 días |
 | Porcentaje de Claude 7d | Mostrar u ocultar su porcentaje |
 | Mostrar Codex | Mostrar u ocultar Codex |
-| Mostrar ventana 1 de Codex | Mostrar u ocultar la primera ventana que reporte Codex |
+| Mostrar ventana 1 de Codex | Mostrar u ocultar la primera ventana que reporte Codex (e.g. Codex 5h) |
 | Porcentaje de ventana 1 de Codex | Mostrar u ocultar su porcentaje |
-| Mostrar ventana 2 de Codex | Mostrar u ocultar la segunda ventana, si existe |
+| Mostrar ventana 2 de Codex | Mostrar u ocultar la segunda ventana, si existe (e.g. Codex 7d) |
 | Porcentaje de ventana 2 de Codex | Mostrar u ocultar su porcentaje |
 | Intervalo de actualización | 1, 3 o 5 minutos |
 

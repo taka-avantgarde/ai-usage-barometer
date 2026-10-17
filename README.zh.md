@@ -23,8 +23,8 @@
 Claude 与 Codex 共用一项，中间以细线分隔。进度条为电量式：**填充部分是剩余额度**，点状部分是已消耗。百分比同样表示剩余。
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 菜单栏以矢量图绘制，因此同一项内每个服务都能保留各自的颜色。无法绘制时会自动改用纯文本。
@@ -32,11 +32,11 @@ Claude 与 Codex 共用一项，中间以细线分隔。进度条为电量式：
 两套配色都采用高饱和度、高对比度颜色：Claude 使用橙色，Codex 使用青色。
 剩余11–30%时，警告色会混入橙色；剩余10%或更少时，紧张色会混入鲜红色。Codex在两种混色中都保留较强的蓝色：
 
-| 阶段 | 使用量 | Claude | Codex |
-|---|---:|---|---|
-| 正常 | 0–69% 已用 | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| 警告 | 70–89% 已用 | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| 紧张 | 90–100% 已用 | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| 阶段 | 使用量 | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| 正常 | 0–69% 已用 | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| 警告 | 70–89% 已用 | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| 紧张 | 90–100% 已用 | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## 设置
 
@@ -52,10 +52,10 @@ Claude 与 Codex 共用一项，中间以细线分隔。进度条为电量式：
 | 显示 Claude 7d | 显示或隐藏 7 天额度 |
 | Claude 7d 百分比 | 显示或隐藏其百分比 |
 | 显示 Codex | 显示或隐藏 Codex |
-| 显示 Codex 第1个额度 | 显示/隐藏 Codex 返回的第一个额度窗口 |
-| Codex 第1个额度百分比 | 显示或隐藏其百分比 |
-| 显示 Codex 第2个额度 | 若存在则显示或隐藏第二个额度窗口 |
-| Codex 第2个额度百分比 | 显示或隐藏其百分比 |
+| 显示 Codex 第1个额度 | 显示/隐藏 Codex 返回的第一个额度窗口 (e.g. Codex 5h) |
+| Codex 第1个额度百分比 | 显示或隐藏其百分比 (e.g. Codex 5h) |
+| 显示 Codex 第2个额度 | 若存在则显示或隐藏第二个额度窗口 (e.g. Codex 7d) |
+| Codex 第2个额度百分比 | 显示或隐藏其百分比 (e.g. Codex 7d) |
 | 刷新间隔 | 1、3 或 5 分钟 |
 
 即使隐藏全部进度条，也会保留中性的 `AI …` 项以便打开设置。颜色只由实际显示的进度条决定。设置保存在 `~/.cache/claude-codex-bar/`，升级后仍保留。

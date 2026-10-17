@@ -5,15 +5,16 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TMP_ROOT="${TMPDIR:-/tmp}"
 [[ -d "$TMP_ROOT" && -w "$TMP_ROOT" ]] || TMP_ROOT="/tmp"
 TMP="$(mktemp -d "${TMP_ROOT%/}/ai-usage-colours.XXXXXX" 2>/dev/null || mktemp -d "/tmp/ai-usage-colours.XXXXXX")"
-trap 'rm -rf "$TMP"' EXIT
+trap 'rm -rf "$TMP" "$ROOT/state.json"' EXIT
 
 # The active v0.3 palette keeps orange and cyan service identities, adds orange
 # to warning, and adds vivid red to critical. Lock rendering and documentation.
 grep -q 'CL_OK="#C66D28"; CL_WARN="#B65A1E"; CL_DANGER="#C52E22"' "$ROOT/claude-codex.60s.sh"
 grep -q 'CX_OK="#1A8BA6"; CX_WARN="#52768A"; CX_DANGER="#783F78"' "$ROOT/claude-codex.60s.sh"
+grep -q 'GM_OK="#158F6A"; GM_WARN="#5E7B3A"; GM_DANGER="#8C3B5A"' "$ROOT/claude-codex.60s.sh"
 
 for doc in "$ROOT"/README*.md "$ROOT/DESIGN.md"; do
-  for colour in C66D28 B65A1E C52E22 1A8BA6 52768A 783F78; do
+  for colour in C66D28 B65A1E C52E22 1A8BA6 52768A 783F78 158F6A 5E7B3A 8C3B5A; do
     grep -q "#$colour" "$doc"
   done
 done
@@ -27,7 +28,8 @@ done
 
 for entry in \
   claude-healthy:C66D28 claude-warning:B65A1E claude-critical:C52E22 \
-  codex-healthy:1A8BA6 codex-warning:52768A codex-critical:783F78; do
+  codex-healthy:1A8BA6 codex-warning:52768A codex-critical:783F78 \
+  gemini-healthy:158F6A gemini-warning:5E7B3A gemini-critical:8C3B5A; do
   swatch="${entry%%:*}"
   colour="${entry#*:}"
   grep -q "fill=\"#$colour\"" "$ROOT/assets/colors/$swatch.svg"
@@ -36,7 +38,7 @@ for entry in \
   done
 done
 
-for colour in C66D28 B65A1E C52E22 1A8BA6 52768A 783F78; do
+for colour in C66D28 B65A1E C52E22 1A8BA6 52768A 783F78 158F6A 5E7B3A 8C3B5A; do
   grep -q "#$colour" "$ROOT/install.sh"
 done
 grep -q 'Claude uses orange' "$ROOT/README.md"
@@ -50,11 +52,12 @@ grep -q 'Codex uses cyan' "$ROOT/README.md"
 mkdir -p "$TMP/home/.cache/claude-codex-bar"
 printf '0\n' > "$TMP/home/.cache/claude-codex-bar/mb2"
 printf '%s\t%s\t%s\t\t\n' "$(date +%s)" 0.10 0.95 > "$TMP/home/.cache/claude-codex-bar/claude.tsv"
-OUT="$(HOME="$TMP/home" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" "$ROOT/claude-codex.60s.sh")"
+OUT="$(HOME="$TMP/home" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" GEMINI_HELPER="$ROOT/tests/fixtures/gemini-helper.sh" "$ROOT/claude-codex.60s.sh")"
 
 grep -q '^5h  .*color=#C66D28$' <<< "$OUT"
 grep -q '^7d  .*color=#C52E22$' <<< "$OUT"
 grep -q '^7d  .*color=#1A8BA6$' <<< "$OUT"
+grep -q '^5h  .*color=#158F6A$' <<< "$OUT"
 ! grep -q 'Two-colour menu bar' <<< "$OUT"
 
 IMAGE="$(head -n 1 <<< "$OUT" | sed -nE 's/.*image=([^ ]+).*/\1/p')"
@@ -70,6 +73,7 @@ for operation in (
     "0.7765 0.4275 0.1569 rg",  # Claude healthy: #C66D28
     "0.7725 0.1804 0.1333 rg",  # Claude critical: #C52E22
     "0.1020 0.5451 0.6510 rg",  # Codex healthy: #1A8BA6
+    "0.0824 0.5608 0.4157 rg",  # Gemini healthy: #158F6A
 ):
     assert operation in pdf, operation
 PY
@@ -95,8 +99,40 @@ CODEX_CRITICAL="$(HOME="$TMP/home" CODEX_USED=90 CODEX_HELPER="$TMP/codex-stage.
 grep -q '^7d  .*color=#52768A$' <<< "$CODEX_WARNING"
 grep -q '^7d  .*color=#783F78$' <<< "$CODEX_CRITICAL"
 
+# Gemini crosses to moss-green warning at 70% used (30% remaining), then dark ruby
+# critical at 90% used (10% remaining).
+cat > "$TMP/gemini-stage.sh" <<'GEMINI'
+#!/usr/bin/env bash
+echo "Gemini 5h ███░░"
+echo "---"
+echo "Gemini usage"
+echo "---"
+echo "5h  ██████░░░░  ${GEMINI_USED}% used"
+echo "---"
+GEMINI
+chmod +x "$TMP/gemini-stage.sh"
+GEMINI_WARNING="$(HOME="$TMP/home" GEMINI_USED=70 GEMINI_HELPER="$TMP/gemini-stage.sh" CODEX_HELPER="$TMP/codex-stage.sh" "$ROOT/claude-codex.60s.sh")"
+GEMINI_CRITICAL="$(HOME="$TMP/home" GEMINI_USED=90 GEMINI_HELPER="$TMP/gemini-stage.sh" CODEX_HELPER="$TMP/codex-stage.sh" "$ROOT/claude-codex.60s.sh")"
+grep -q '^5h  .*color=#5E7B3A$' <<< "$GEMINI_WARNING"
+grep -q '^5h  .*color=#8C3B5A$' <<< "$GEMINI_CRITICAL"
+
 # Turning a service off skips its helper/API work. Display settings are supplied
 # by a persistent web view whose child controls are muted and disabled in place.
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/gemini_on"
+cat > "$TMP/gemini-should-not-run.sh" <<'STOP'
+#!/usr/bin/env bash
+printf 'ran\n' > "$HOME/gemini-helper-ran"
+echo "Gemini helper must not run when Gemini is disabled" >&2
+exit 99
+STOP
+chmod +x "$TMP/gemini-should-not-run.sh"
+rm -f "$TMP/home/gemini-helper-ran"
+DISABLED_GM_OUT="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" GEMINI_HELPER="$TMP/gemini-should-not-run.sh" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" "$ROOT/claude-codex.60s.sh")"
+grep -q 'gemini_on=0' <<< "$DISABLED_GM_OUT"
+! grep -q 'Gemini helper must not run' <<< "$DISABLED_GM_OUT"
+[[ ! -e "$TMP/home/gemini-helper-ran" ]]
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/gemini_on"
+
 printf '0\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
 cat > "$TMP/should-not-run.sh" <<'STOP'
 #!/usr/bin/env bash
@@ -106,7 +142,7 @@ exit 99
 STOP
 chmod +x "$TMP/should-not-run.sh"
 rm -f "$TMP/home/codex-helper-ran"
-DISABLED_OUT="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
+DISABLED_OUT="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP/should-not-run.sh" GEMINI_HELPER="$ROOT/tests/fixtures/gemini-helper.sh" "$ROOT/claude-codex.60s.sh")"
 grep -q 'webview=true' <<< "$DISABLED_OUT"
 grep -q 'codex_on=0' <<< "$DISABLED_OUT"
 ! grep -q 'must not run' <<< "$DISABLED_OUT"
@@ -115,13 +151,13 @@ printf '1\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
 
 # The web page provides visible gray locked rows for disabled services.
 printf '0\n' > "$TMP/home/.cache/claude-codex-bar/claude_on"
-DISABLED_CLAUDE="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" "$ROOT/claude-codex.60s.sh")"
+DISABLED_CLAUDE="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" GEMINI_HELPER="$ROOT/tests/fixtures/gemini-helper.sh" "$ROOT/claude-codex.60s.sh")"
 grep -q 'claude_on=0' <<< "$DISABLED_CLAUDE"
 grep -q 'label.muted' "$ROOT/settings.html"
 grep -q "label.classList.toggle('muted', !on)" "$ROOT/settings.html"
 grep -q "label.querySelector('input').disabled = !on" "$ROOT/settings.html"
 grep -q 'swiftbar.persistentWebView' "$ROOT/claude-codex.60s.sh"
-for key in cx5 cx5p cx7 cx7p; do
+for key in cx5 cx5p cx7 cx7p gm5 gm5p gm7 gm7p; do
   grep -q "id=\"$key\"" "$ROOT/settings.html"
 done
 
@@ -191,16 +227,19 @@ grep -q 'update=v9.9.9' <<< "$UPDATE_OUT"
 grep -q "id=\"install-update\"" "$ROOT/settings.html"
 grep -q 'AUB_ACTION=update' "$ROOT/settings.html"
 
-# Disabling both services must not silently re-enable Claude. The header remains
+# Disabling all services must not silently re-enable Claude. The header remains
 # clickable through the neutral fallback while every child row stays muted.
 printf '0\n' > "$TMP/home/.cache/claude-codex-bar/claude_on"
 printf '0\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
-BOTH_DISABLED="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP/should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
+printf '0\n' > "$TMP/home/.cache/claude-codex-bar/gemini_on"
+BOTH_DISABLED="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP/should-not-run.sh" GEMINI_HELPER="$TMP/gemini-should-not-run.sh" "$ROOT/claude-codex.60s.sh")"
 grep -q '^AI … |' <<< "$BOTH_DISABLED"
 grep -q 'claude_on=0' <<< "$BOTH_DISABLED"
 grep -q 'codex_on=0' <<< "$BOTH_DISABLED"
+grep -q 'gemini_on=0' <<< "$BOTH_DISABLED"
 ! grep -q '^Claude |' <<< "$BOTH_DISABLED"
 ! grep -q '^Codex |' <<< "$BOTH_DISABLED"
+! grep -q '^Gemini |' <<< "$BOTH_DISABLED"
 
 # URL-scheme parameters are validated before writing and are reflected in the
 # same plugin invocation. Invalid keys and values must not create files.
@@ -213,6 +252,7 @@ HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$TMP
 [[ ! -e "$TMP/home/.cache/claude-codex-bar/unexpected" ]]
 printf '1\n' > "$TMP/home/.cache/claude-codex-bar/claude_on"
 printf '1\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
+printf '1\n' > "$TMP/home/.cache/claude-codex-bar/gemini_on"
 
 # Small menu-bar marks need enough contrast against the common light-gray
 # translucent macOS background. Keep even the healthy stages near 3:1.
@@ -225,7 +265,7 @@ def luminance(value):
     return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
 
 background = luminance("#E6E6E6")
-for colour in ("#C66D28", "#B65A1E", "#C52E22", "#1A8BA6", "#52768A", "#783F78"):
+for colour in ("#C66D28", "#B65A1E", "#C52E22", "#1A8BA6", "#52768A", "#783F78", "#158F6A", "#5E7B3A", "#8C3B5A"):
     foreground = luminance(colour)
     contrast = (max(background, foreground) + 0.05) / (min(background, foreground) + 0.05)
     assert contrast >= 2.95, (colour, contrast)

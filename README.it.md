@@ -23,8 +23,8 @@ Usi già SwiftBar, o lo preferisci? Questa riga installa il plugin al suo posto,
 Claude e Codex condividono un elemento, separati da una linea sottile. Le barre sono in stile batteria: **la parte piena è la capacità rimasta**, la coda punteggiata è ciò che è stato consumato. Anche le percentuali indicano il residuo.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 La barra dei menu è disegnata come immagine vettoriale, così ogni servizio mantiene il proprio colore in un unico elemento. Altrimenti si passa automaticamente al testo semplice.
@@ -34,11 +34,11 @@ l’arancione e Codex il ciano. Con l’11–30% rimanente, l’avviso incorpora
 arancione; con il 10% o meno, lo stato critico incorpora rosso vivo. Codex
 mantiene una forte componente blu in entrambe le miscele:
 
-| Fase | Uso | Claude | Codex |
-|---|---:|---|---|
-| normale | 0–69% usato | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| attenzione | 70–89% usato | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| critico | 90–100% usato | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| Fase | Uso | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| normale | 0–69% usato | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| attenzione | 70–89% usato | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| critico | 90–100% usato | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## Impostazioni
 
@@ -54,10 +54,10 @@ L’interfaccia del plugin è disponibile solo in inglese. Questa documentazione
 | Mostra Claude 7d | Mostra o nascondi la finestra di 7 giorni |
 | Percentuale di Claude 7d | Mostra o nascondi la relativa percentuale |
 | Mostra Codex | Mostra o nascondi Codex |
-| Mostra finestra 1 di Codex | Mostra o nascondi la prima finestra restituita da Codex |
-| Percentuale finestra 1 di Codex | Mostra o nascondi la relativa percentuale |
-| Mostra finestra 2 di Codex | Mostra o nascondi la seconda, se presente |
-| Percentuale finestra 2 di Codex | Mostra o nascondi la relativa percentuale |
+| Mostra finestra 1 di Codex | Mostra o nascondi la prima finestra restituita da Codex (e.g. Codex 5h) |
+| Percentuale finestra 1 di Codex | Mostra o nascondi la relativa percentuale (e.g. Codex 5h) |
+| Mostra finestra 2 di Codex | Mostra o nascondi la seconda, se presente (e.g. Codex 7d) |
+| Percentuale finestra 2 di Codex | Mostra o nascondi la relativa percentuale (e.g. Codex 7d) |
 | Intervallo di aggiornamento | 1, 3 o 5 minuti |
 
 Quando tutti gli indicatori sono nascosti, rimane una voce neutra `AI …` per aprire le impostazioni. Il colore dipende solo dalle barre visibili. Le impostazioni sono in `~/.cache/claude-codex-bar/` e sopravvivono agli aggiornamenti.

@@ -6,10 +6,10 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.7.3</xbar.version>
+# <xbar.version>v0.8.0</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
-# <xbar.desc>One menu-bar item for Claude and Codex usage, with per-window toggles.</xbar.desc>
+# <xbar.desc>One menu-bar item for Claude, Codex and Gemini usage, with per-window toggles.</xbar.desc>
 # <xbar.dependencies>bash,curl</xbar.dependencies>
 # <xbar.abouturl>https://github.com/taka-avantgarde/ai-usage-barometer</xbar.abouturl>
 # <swiftbar.hideRunInTerminal>true</swiftbar.hideRunInTerminal>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.7.3"
+VERSION="v0.8.0"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -28,6 +28,9 @@ FILL="█"; EMPTY="░"; FONT="font=Menlo size=12"; SCALE="auto"
 
 SELF_DIR="$(cd "$(dirname "${SWIFTBAR_PLUGIN_PATH:-$0}")" 2>/dev/null && pwd)"
 CODEX_HELPER="${CODEX_HELPER:-$SELF_DIR/.ai-usage-barometer/codex-usage.sh}"
+[ ! -f "$CODEX_HELPER" ] && [ -f "$SELF_DIR/codex-usage.sh" ] && CODEX_HELPER="$SELF_DIR/codex-usage.sh"
+GEMINI_HELPER="${GEMINI_HELPER:-$SELF_DIR/.ai-usage-barometer/gemini-usage.sh}"
+[ ! -f "$GEMINI_HELPER" ] && [ -f "$SELF_DIR/gemini-usage.sh" ] && GEMINI_HELPER="$SELF_DIR/gemini-usage.sh"
 SETTINGS_PAGE="${AI_USAGE_SETTINGS_PAGE:-$SELF_DIR/.ai-usage-barometer/settings.html}"
 UPDATER="${AI_USAGE_UPDATER:-$SELF_DIR/.ai-usage-barometer/update.sh}"
 
@@ -56,6 +59,7 @@ jpick() { # jpick <json> <field> [parent]
 
 CL_ON=$(rd claude_on); C5=$(rd c5); C5P=$(rd c5p); C7=$(rd c7); C7P=$(rd c7p)
 CX_ON=$(rd codex_on); CXP=$(rd cxp); CX5=$(rd cx5); CX7=$(rd cx7)
+GM_ON=$(rd gemini_on); GM5=$(rd gm5); GM5P=$(rd gm5p); GM7=$(rd gm7); GM7P=$(rd gm7p)
 CMP=$(rd cmp)
 # Preserve the legacy shared Codex percentage preference on first upgrade.
 if [ -f "$CFG/cx5p" ]; then CX5P=$(rd cx5p); else CX5P=$CXP; fi
@@ -69,7 +73,7 @@ case "$IV" in 1|3|5) ;; *) IV=3 ;; esac
 apply_web_setting() {
   local key="${AUB_KEY:-}" value="${AUB_VALUE:-}"
   case "$key" in
-    claude_on|codex_on|c5|c5p|c7|c7p|cx5|cx5p|cx7|cx7p|cmp)
+    claude_on|codex_on|gemini_on|c5|c5p|c7|c7p|cx5|cx5p|cx7|cx7p|gm5|gm5p|gm7|gm7p|cmp)
       case "$value" in 0|1) printf '%s\n' "$value" > "$CFG/$key" ;; esac
       ;;
     iv)
@@ -78,6 +82,8 @@ apply_web_setting() {
           printf '%s\n' "$value" > "$CFG/iv"
           mkdir -p "$HOME/.cache/codex-usage-barometer"
           printf '%s\n' "$((value*60))" > "$HOME/.cache/codex-usage-barometer/interval"
+          mkdir -p "$HOME/.cache/gemini-usage-barometer"
+          printf '%s\n' "$((value*60))" > "$HOME/.cache/gemini-usage-barometer/interval"
           ;;
       esac
       ;;
@@ -105,6 +111,7 @@ fi
 if [ -n "${AUB_KEY:-}" ]; then
   CL_ON=$(rd claude_on); C5=$(rd c5); C5P=$(rd c5p); C7=$(rd c7); C7P=$(rd c7p)
   CX_ON=$(rd codex_on); CX5=$(rd cx5); CX5P=$(rd cx5p); CX7=$(rd cx7); CX7P=$(rd cx7p)
+  GM_ON=$(rd gemini_on); GM5=$(rd gm5); GM5P=$(rd gm5p); GM7=$(rd gm7); GM7P=$(rd gm7p)
   CMP=$(rd cmp)
   IV=3; [ -f "$CFG/iv" ] && read -r IV < "$CFG/iv" 2>/dev/null
   case "$IV" in 1|3|5) ;; *) IV=3 ;; esac
@@ -116,6 +123,8 @@ CL_ACTIVE=0
 [ "$CL_ON" = 1 ] && { [ "$C5" = 1 ] || [ "$C7" = 1 ]; } && CL_ACTIVE=1
 CX_ACTIVE=0
 [ "$CX_ON" = 1 ] && { [ "$CX5" = 1 ] || [ "$CX7" = 1 ]; } && CX_ACTIVE=1
+GM_ACTIVE=0
+[ "$GM_ON" = 1 ] && { [ "$GM5" = 1 ] || [ "$GM7" = 1 ]; } && GM_ACTIVE=1
 
 # The plugin interface is intentionally English-only. Documentation remains
 # available in multiple languages on GitHub.
@@ -162,6 +171,19 @@ LATEST_VERSION=$(latest_release_version || true)
 UPDATE_AVAILABLE=0
 [ -n "$LATEST_VERSION" ] && semver_is_newer "$LATEST_VERSION" "$VERSION" && UPDATE_AVAILABLE=1
 
+SELF_PATH="${SWIFTBAR_PLUGIN_PATH:-$0}"
+if [ "$UPDATE_AVAILABLE" = 1 ]; then
+  if [ "${AI_USAGE_AUTO_UPDATE:-1}" = 1 ] && [ -z "${AI_USAGE_UPDATE_CHECK:-}" ] && [ -n "${SWIFTBAR_PLUGIN_PATH:-}" ]; then
+    LAST_AUTO_UPDATED=""
+    [ -f "$CFG/auto_updated_version" ] && read -r LAST_AUTO_UPDATED < "$CFG/auto_updated_version" 2>/dev/null || true
+    if [ "$LAST_AUTO_UPDATED" != "$LATEST_VERSION" ]; then
+      printf '%s\n' "$LATEST_VERSION" > "$CFG/auto_updated_version" 2>/dev/null || true
+      osascript -e "display notification \"Updating automatically to $LATEST_VERSION (Claude, Codex & Gemini)…\" with title \"AI Usage Barometer\"" 2>/dev/null || true
+      "$SELF_PATH" --update >/tmp/ai-usage-barometer-update.log 2>&1 &
+    fi
+  fi
+fi
+
 uri() {
   python3 - "$1" <<'PY'
 import pathlib
@@ -177,9 +199,9 @@ PY
 write_settings_state() {
   local dir; dir="$(dirname "$SETTINGS_PAGE")"
   [ -d "$dir" ] || return 0
-  printf '{"claude_on":"%s","c5":"%s","c5p":"%s","c7":"%s","c7p":"%s","codex_on":"%s","cx5":"%s","cx5p":"%s","cx7":"%s","cx7p":"%s","iv":"%s","update":"%s","cx_l1":"%s","cx_l2":"%s"}\n' \
-    "$CL_ON" "$C5" "$C5P" "$C7" "$C7P" "$CX_ON" "$CX5" "$CX5P" "$CX7" "$CX7P" "$IV" \
-    "$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION")" "$CX_L1" "$CX_L2" > "$dir/state.json.tmp" &&
+  printf '{"claude_on":"%s","c5":"%s","c5p":"%s","c7":"%s","c7p":"%s","codex_on":"%s","cx5":"%s","cx5p":"%s","cx7":"%s","cx7p":"%s","gemini_on":"%s","gm5":"%s","gm5p":"%s","gm7":"%s","gm7p":"%s","iv":"%s","update":"%s","cx_l1":"%s","cx_l2":"%s","gm_l1":"%s","gm_l2":"%s"}\n' \
+    "$CL_ON" "$C5" "$C5P" "$C7" "$C7P" "$CX_ON" "$CX5" "$CX5P" "$CX7" "$CX7P" "$GM_ON" "$GM5" "$GM5P" "$GM7" "$GM7P" "$IV" \
+    "$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION")" "$CX_L1" "$CX_L2" "$GM_L1" "$GM_L2" > "$dir/state.json.tmp" &&
     mv -f "$dir/state.json.tmp" "$dir/state.json"
 }
 
@@ -198,6 +220,11 @@ toggle_menu() {
     [ -n "$CX_L1" ] && { tg cx5 "$CX5" "  $CX_L1"; tg cx5p "$CX5P" "  $CX_L1 percentage"; }
     [ -n "$CX_L2" ] && { tg cx7 "$CX7" "  $CX_L2"; tg cx7p "$CX7P" "  $CX_L2 percentage"; }
   fi
+  tg gemini_on "$GM_ON" "Show Gemini"
+  if [ "$GM_ON" = 1 ]; then
+    [ -n "$GM_L1" ] && { tg gm5 "$GM5" "  $GM_L1"; tg gm5p "$GM5P" "  $GM_L1 percentage"; }
+    [ -n "$GM_L2" ] && { tg gm7 "$GM7" "  $GM_L2"; tg gm7p "$GM7P" "  $GM_L2 percentage"; }
+  fi
   tg cmp "$CMP" "Compact (fits beside the notch)"
   echo "⏱ Refresh: ${IV} min | size=12"
   local m
@@ -210,7 +237,7 @@ settings_menu() {
   local page="$SETTINGS_PAGE"
   if [ -f "$page" ]; then
     write_settings_state
-    echo "⚙ $T_SET | size=12 href=$(uri "$page")?claude_on=$CL_ON&c5=$C5&c5p=$C5P&c7=$C7&c7p=$C7P&codex_on=$CX_ON&cx5=$CX5&cx5p=$CX5P&cx7=$CX7&cx7p=$CX7P&iv=$IV&update=$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION") webview=true webvieww=430 webviewh=720"
+    echo "⚙ $T_SET | size=12 href=$(uri "$page")?claude_on=$CL_ON&c5=$C5&c5p=$C5P&c7=$C7&c7p=$C7P&codex_on=$CX_ON&cx5=$CX5&cx5p=$CX5P&cx7=$CX7&cx7p=$CX7P&gemini_on=$GM_ON&gm5=$GM5&gm5p=$GM5P&gm7=$GM7&gm7p=$GM7P&iv=$IV&update=$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION") webview=true webvieww=430 webviewh=720"
   else
     echo "⚠ $T_SET | size=12 color=#FF9F0A tooltip=Settings helper missing; re-run the installer"
   fi
@@ -229,10 +256,13 @@ bar() { local p=$1 w=$2 i f s=""; (( p<0 )) && p=0; (( p>100 )) && p=100
 # サービス固有色。白を混ぜた明るい色調を保ち、同系色内で段階を分ける。
 CL_OK="#C66D28"; CL_WARN="#B65A1E"; CL_DANGER="#C52E22"   # Claude: オレンジ警告・赤橙の逼迫
 CX_OK="#1A8BA6"; CX_WARN="#52768A"; CX_DANGER="#783F78"   # Codex: 青橙警告・青赤の逼迫
+GM_OK="#158F6A"; GM_WARN="#5E7B3A"; GM_DANGER="#8C3B5A"   # Gemini: エメラルドグリーン
 clcol() { local p=$1; if (( p>=DANGER )); then echo "$CL_DANGER"
   elif (( p>=WARN )); then echo "$CL_WARN"; else echo "$CL_OK"; fi; }
 cxcol() { local p=$1; if (( p>=DANGER )); then echo "$CX_DANGER"
   elif (( p>=WARN )); then echo "$CX_WARN"; else echo "$CX_OK"; fi; }
+gmcol() { local p=$1; if (( p>=DANGER )); then echo "$GM_DANGER"
+  elif (( p>=WARN )); then echo "$GM_WARN"; else echo "$GM_OK"; fi; }
 fmt() { local p=$1; (( p<0 )) && { echo "--"; return; }; printf '%d%%' "$p"; }
 remain() { local iso="$1" ts e n d; [ -z "$iso" ] && { echo ""; return; }
   ts="${iso/Z/+00:00}"
@@ -360,10 +390,58 @@ cx_window_percentage() {
   esac
 }
 
+# ── Gemini（ヘルパーの出力を解析）──
+GM_L1=""; GM_U1=-1; GM_T1=""; GM_L2=""; GM_U2=-1; GM_T2=""; GM_PLAN=""; GM_ERR=""
+if [ "$GM_ACTIVE" = 1 ]; then
+  if [ -x "$GEMINI_HELPER" ]; then
+    GM_OUT=$("$GEMINI_HELPER" 2>/dev/null || true)
+    n=0; expect=""
+    while IFS= read -r line; do
+      p="${line%%|*}"
+      lbl=$(printf '%s' "$p" | sed -nE 's/^[[:space:]]*([0-9a-zA-Z]+)[[:space:]].*[^0-9]([0-9]+)% used.*/\1/p')
+      if [ -n "$lbl" ]; then
+        usd=$(printf '%s' "$p" | sed -nE 's/.*[^0-9]([0-9]+)% used.*/\1/p')
+        n=$((n+1))
+        if [ $n = 1 ]; then GM_L1="$lbl"; GM_U1="$usd"; expect=1
+        elif [ $n = 2 ]; then GM_L2="$lbl"; GM_U2="$usd"; expect=2; fi
+        continue
+      fi
+      rst=$(printf '%s' "$p" | sed -nE 's/.*resets in ([^|]*).*/\1/p' | sed 's/[[:space:]]*$//')
+      if [ -n "$rst" ] && [ -n "$expect" ]; then
+        [ "$expect" = 1 ] && GM_T1="$rst"; [ "$expect" = 2 ] && GM_T2="$rst"
+        expect=""; continue
+      fi
+      case "$p" in Plan:*) GM_PLAN=$(printf '%s' "$p" | sed 's/^[[:space:]]*Plan:[[:space:]]*//; s/[[:space:]]*$//') ;; esac
+    done <<EOF_GM
+$(printf '%s\n' "$GM_OUT" | sed -n '/^---$/,$p')
+EOF_GM
+    [ $n = 0 ] && GM_ERR="$T_GMWAIT"
+  else
+    GM_ERR="$T_GMMISS"
+  fi
+fi
+
+GM_R1=$(( GM_U1<0 ? -1 : 100-GM_U1 )); GM_R2=$(( GM_U2<0 ? -1 : 100-GM_U2 ))
+
+gm_window_enabled() {
+  case "$1" in
+    1) [ "$GM5" = 1 ] ;;
+    2) [ "$GM7" = 1 ] ;;
+    *) return 0 ;;
+  esac
+}
+gm_window_percentage() {
+  case "$1" in
+    1) printf '%s' "$GM5P" ;;
+    2) printf '%s' "$GM7P" ;;
+    *) printf '1' ;;
+  esac
+}
+
 # ── メニューバー ──
 # 1項目=1色の制約があるため、Claude 表示中は Claude の色、
-# Claude 非表示のときだけ Codex の色を使う（各サービスの最悪値で段階が決まる）。
-CL_WORST=-1; CX_WORST=-1
+# Claude 非表示のときだけ Codex / Gemini の色を使う（各サービスの最悪値で段階が決まる）。
+CL_WORST=-1; CX_WORST=-1; GM_WORST=-1
 if [ "$CL_ACTIVE" = 1 ] && [ -z "$CL_ERR" ]; then
   [ "$C5" = 1 ] && (( P5 > CL_WORST )) && CL_WORST=$P5
   [ "$C7" = 1 ] && (( P7 > CL_WORST )) && CL_WORST=$P7
@@ -372,12 +450,19 @@ if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
   cx_window_enabled 1 && (( CX_U1 > CX_WORST )) && CX_WORST=$CX_U1
   cx_window_enabled 2 && (( CX_U2 > CX_WORST )) && CX_WORST=$CX_U2
 fi
+if [ "$GM_ACTIVE" = 1 ] && [ -z "$GM_ERR" ]; then
+  gm_window_enabled 1 && (( GM_U1 > GM_WORST )) && GM_WORST=$GM_U1
+  gm_window_enabled 2 && (( GM_U2 > GM_WORST )) && GM_WORST=$GM_U2
+fi
 if [ "$CL_ACTIVE" = 1 ]; then
   (( CL_WORST<0 )) && CL_WORST=0
   MB_COLOR=$(clcol $CL_WORST)
-else
+elif [ "$CX_ACTIVE" = 1 ]; then
   (( CX_WORST<0 )) && CX_WORST=0
   MB_COLOR=$(cxcol $CX_WORST)
+else
+  (( GM_WORST<0 )) && GM_WORST=0
+  MB_COLOR=$(gmcol $GM_WORST)
 fi
 
 MB=""
@@ -399,9 +484,21 @@ if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ] && [ -n "$CX_L1" ]; then
   [ -n "$CXMB" ] && MB="${MB:+$MB │ }$CXMB"
 fi
 [ "$CX_ACTIVE" = 1 ] && [ -n "$CX_ERR" ] && MB="${MB:+$MB │ }Codex ⚠"
+
+if [ "$GM_ACTIVE" = 1 ] && [ -z "$GM_ERR" ] && [ -n "$GM_L1" ]; then
+  GMMB=""
+  if gm_window_enabled 1; then
+    GMMB="$GM_L1 $(bar $GM_R1 $MBAR_W)$([ "$(gm_window_percentage 1)" = 1 ] && printf ' %s' "$(fmt $GM_R1)")"
+  fi
+  if [ -n "$GM_L2" ] && gm_window_enabled 2; then
+    GMMB="${GMMB:+$GMMB  }$GM_L2 $(bar $GM_R2 $MBAR_W)$([ "$(gm_window_percentage 2)" = 1 ] && printf ' %s' "$(fmt $GM_R2)")"
+  fi
+  [ -n "$GMMB" ] && MB="${MB:+$MB │ }$GMMB"
+fi
+[ "$GM_ACTIVE" = 1 ] && [ -n "$GM_ERR" ] && MB="${MB:+$MB │ }Gemini ⚠"
 [ -z "$MB" ] && MB="AI …"
 
-# メニューバー: PDF なら Claude/Codex を別色で描ける（テキストは1項目1色まで）
+# メニューバー: PDF なら Claude/Codex/Gemini を別色で描ける（テキストは1項目1色まで）
 # ── --json：他のフロントエンド（フローティング版アプリ等）向けの機械可読出力 ──
 # 認証・バックオフ・設定・Codex解析はこのスクリプトが唯一の実装。
 # 描画側はここから先を読むだけで、判断を二重に持たない。
@@ -421,6 +518,8 @@ if [ "${1:-}" = "--json" ]; then
   S7=0; [ "$C7" = 1 ] && [ "$REM7" -ge 0 ] && S7=1
   X1=0; [ "$CX5" = 1 ] && [ "$CX_R1" -ge 0 ] && X1=1
   X2=0; [ "$CX7" = 1 ] && [ "$CX_R2" -ge 0 ] && X2=1
+  G1=0; [ "$GM5" = 1 ] && [ "$GM_R1" -ge 0 ] && G1=1
+  G2=0; [ "$GM7" = 1 ] && [ "$GM_R2" -ge 0 ] && G2=1
 
   CL_WINS="$(jwin "5h" "$REM5" "$(clcol "$P5")" "$(remain "$R5")" "$S5" "$C5P"),"
   CL_WINS="$CL_WINS$(jwin "7d" "$REM7" "$(clcol "$P7")" "$(remain "$R7")" "$S7" "$C7P")"
@@ -430,17 +529,26 @@ if [ "${1:-}" = "--json" ]; then
   [ -n "$CX_L1" ] && CX_WINS="$(jwin "$CX_L1" "$CX_R1" "$(cxcol "$CX_U1")" "$CX_T1" "$X1" "$CX5P")"
   [ -n "$CX_L2" ] && CX_WINS="${CX_WINS:+$CX_WINS,}$(jwin "$CX_L2" "$CX_R2" "$(cxcol "$CX_U2")" "$CX_T2" "$X2" "$CX7P")"
 
+  # Gemini の枠
+  GM_WINS=""
+  [ -n "$GM_L1" ] && GM_WINS="$(jwin "$GM_L1" "$GM_R1" "$(gmcol "$GM_U1")" "$GM_T1" "$G1" "$GM5P")"
+  [ -n "$GM_L2" ] && GM_WINS="${GM_WINS:+$GM_WINS,}$(jwin "$GM_L2" "$GM_R2" "$(gmcol "$GM_U2")" "$GM_T2" "$G2" "$GM7P")"
+
   printf '{"version":"%s","update":{"available":%s,"latest":"%s"},"updated":"%s",' \
     "$(jesc "$VERSION")" "$(jbool "$UPDATE_AVAILABLE")" "$(jesc "$LATEST_VERSION")" "$(date '+%H:%M:%S')"
   printf '"settings":{"claude_on":%s,"c5":%s,"c5p":%s,"c7":%s,"c7p":%s,' \
     "$(jnum "$CL_ON")" "$(jnum "$C5")" "$(jnum "$C5P")" "$(jnum "$C7")" "$(jnum "$C7P")"
-  printf '"codex_on":%s,"cx5":%s,"cx5p":%s,"cx7":%s,"cx7p":%s,"iv":%s,"cmp":%s},' \
-    "$(jnum "$CX_ON")" "$(jnum "$CX5")" "$(jnum "$CX5P")" "$(jnum "$CX7")" "$(jnum "$CX7P")" \
+  printf '"codex_on":%s,"cx5":%s,"cx5p":%s,"cx7":%s,"cx7p":%s,' \
+    "$(jnum "$CX_ON")" "$(jnum "$CX5")" "$(jnum "$CX5P")" "$(jnum "$CX7")" "$(jnum "$CX7P")"
+  printf '"gemini_on":%s,"gm5":%s,"gm5p":%s,"gm7":%s,"gm7p":%s,"iv":%s,"cmp":%s},' \
+    "$(jnum "$GM_ON")" "$(jnum "$GM5")" "$(jnum "$GM5P")" "$(jnum "$GM7")" "$(jnum "$GM7P")" \
     "$(jnum "$IV" 3)" "$(jnum "$CMP")"
   printf '"services":[{"name":"Claude","on":%s,"error":"%s","color":"%s","credits":"","windows":[%s]},' \
     "$(jbool "$CL_ACTIVE")" "$(jesc "$CL_ERR")" "$(jesc "$CL_OK")" "$CL_WINS"
-  printf '{"name":"Codex","on":%s,"error":"%s","color":"%s","credits":"%s","windows":[%s]}]}\n' \
+  printf '{"name":"Codex","on":%s,"error":"%s","color":"%s","credits":"%s","windows":[%s]},' \
     "$(jbool "$CX_ACTIVE")" "$(jesc "$CX_ERR")" "$(jesc "$CX_OK")" "$(jesc "$CX_CREDITS")" "$CX_WINS"
+  printf '{"name":"Gemini","on":%s,"error":"%s","color":"%s","credits":"","windows":[%s]}]}\n' \
+    "$(jbool "$GM_ACTIVE")" "$(jesc "$GM_ERR")" "$(jesc "$GM_OK")" "$GM_WINS"
   exit 0
 fi
 
@@ -462,10 +570,23 @@ if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
     PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}$CX_PDF"
   fi
 fi
+if [ "$GM_ACTIVE" = 1 ] && [ -z "$GM_ERR" ]; then
+  GM_PDF=""
+  if [ "$GM_R1" -ge 0 ] && gm_window_enabled 1; then
+    GM_PDF="$GM_L1,$GM_R1,$(gmcol $GM_U1),$(gm_window_percentage 1)"
+  fi
+  if [ -n "$GM_L2" ] && [ "$GM_R2" -ge 0 ] && gm_window_enabled 2; then
+    GM_PDF="${GM_PDF:+$GM_PDF;}$GM_L2,$GM_R2,$(gmcol $GM_U2),$(gm_window_percentage 2)"
+  fi
+  if [ -n "$GM_PDF" ]; then
+    [ -n "$PDF_SPEC" ] && PDF_SPEC="$PDF_SPEC;|"
+    PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}$GM_PDF"
+  fi
+fi
 B64=""
 # 更新の印は画像の中にベクタで描く。テキストに落とすと、更新するまで
 # 二色バーが失われる。
-if [ -n "$PDF_SPEC" ] && [ -z "$CL_ERR$CX_ERR" ] && command -v python3 >/dev/null 2>&1; then
+if [ -n "$PDF_SPEC" ] && [ -z "$CL_ERR$CX_ERR$GM_ERR" ] && command -v python3 >/dev/null 2>&1; then
   B64=$(python3 - "$PDF_SPEC" "$UPDATE_AVAILABLE" "$CMP" <<'PYEOF' 2>/dev/null
 import sys, base64
 spec=[x for x in sys.argv[1].split(";") if x]
@@ -590,9 +711,30 @@ if [ "$CX_ACTIVE" = 1 ] && { [ -n "$CX_ERR" ] || [ "$CX_ROWS" = 1 ]; }; then
     [ -n "$CX_CREDITS" ] && echo "$CX_CREDITS | size=11 color=#888888"
   fi
 fi
+# 表示する枠が1つも無いなら見出しごと出さない（見出しだけ浮くのを防ぐ）
+GM_ROWS=0
+if [ "$GM_ACTIVE" = 1 ] && [ -z "$GM_ERR" ]; then
+  [ -n "$GM_L1" ] && gm_window_enabled 1 && GM_ROWS=1
+  [ -n "$GM_L2" ] && gm_window_enabled 2 && GM_ROWS=1
+fi
+if [ "$GM_ACTIVE" = 1 ] && { [ -n "$GM_ERR" ] || [ "$GM_ROWS" = 1 ]; }; then
+  echo "Gemini | size=11 color=$GM_OK"
+  if [ -n "$GM_ERR" ]; then
+    echo "⚠ $GM_ERR | $FONT color=#FF9F0A"
+  else
+    if [ -n "$GM_L1" ] && gm_window_enabled 1; then
+      echo "$GM_L1  $(bar $GM_R1 $DROP_W)$([ "$(gm_window_percentage 1)" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $GM_R1)")") | $FONT color=$(gmcol $GM_U1)"
+      [ -n "$GM_T1" ] && echo "       $(sub "$T_RESET" "$GM_T1") | size=11 color=#888888"
+    fi
+    if [ -n "$GM_L2" ] && gm_window_enabled 2; then
+      echo "$GM_L2  $(bar $GM_R2 $DROP_W)$([ "$(gm_window_percentage 2)" = 1 ] && printf '  %s' "$(sub "$T_LEFT" "$(fmt $GM_R2)")") | $FONT color=$(gmcol $GM_U2)"
+      [ -n "$GM_T2" ] && echo "       $(sub "$T_RESET" "$GM_T2") | size=11 color=#888888"
+    fi
+  fi
+fi
 echo "---"
 if [ "$UPDATE_AVAILABLE" = 1 ]; then
-  echo "⬆ Update to $LATEST_VERSION | color=#FF9F0A size=13"
+  echo "⬆ Update $LATEST_VERSION available | color=#FF9F0A size=13"
   echo "--Install now | color=#FF9F0A bash='$SELF_PATH' param1=--update terminal=false refresh=true"
   echo "--Release notes | href=https://github.com/taka-avantgarde/ai-usage-barometer/releases/latest"
   echo "---"

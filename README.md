@@ -23,8 +23,8 @@ Already on SwiftBar, or want it there? This line installs the plugin instead, ad
 Claude and Codex share a single item, separated by a thin rule. Bars are battery-style: **the filled part is capacity left**, and the dotted tail is what has been spent. Percentages are remaining capacity too.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 The menu bar is drawn as a vector image so each service keeps its own colour inside one item. It uses a dark charcoal `#20252B` backdrop with light labels for readability on the translucent macOS menu bar. A plain-text fallback is used automatically when that is unavailable.
@@ -33,11 +33,11 @@ Both palettes use saturated, high-contrast colours: Claude uses orange and
 Codex uses cyan. At 11–30% remaining, warning shades mix in orange; at 10% or
 less, critical shades mix in vivid red. Codex keeps blue in both blends:
 
-| Stage | Usage | Claude | Codex |
-|---|---:|---|---|
-| healthy | 0–69% used | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| warning | 70–89% used | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| critical | 90–100% used | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| Stage | Usage | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| healthy | 0–69% used | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| warning | 70–89% used | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| critical | 90–100% used | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## Settings
 
@@ -53,10 +53,15 @@ The plugin interface is English-only. This GitHub documentation remains availabl
 | Show Claude 7d | Show or hide the 7-day window |
 | Claude 7d percentage | Show or hide the 7-day percentage |
 | Show Codex | Show or hide Codex entirely |
-| Show Codex window 1 | Show or hide whichever window Codex reports first |
+| Show Codex window 1 | Show or hide whichever window Codex reports first (e.g. Codex 5h) |
 | Codex window 1 percentage | Show or hide its percentage |
-| Show Codex window 2 | Show or hide the second window, if Codex reports one |
+| Show Codex window 2 | Show or hide the second window, if Codex reports one (e.g. Codex 7d) |
 | Codex window 2 percentage | Show or hide its percentage |
+| Show Gemini | Show or hide Gemini entirely |
+| Show Gemini window 1 | Show or hide whichever window Gemini reports first (e.g. 5h) |
+| Gemini window 1 percentage | Show or hide its percentage |
+| Show Gemini window 2 | Show or hide the second window, if Gemini reports one (e.g. Flash) |
+| Gemini window 2 percentage | Show or hide its percentage |
 | Refresh interval | 1, 3, or 5 minutes |
 
 When every gauge is hidden, a neutral `AI …` item remains so settings stay clickable. Menu-bar colour is decided only by the gauges actually shown. Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
@@ -112,11 +117,15 @@ Results are cached for the refresh interval, so the endpoint is polled at most o
 
 **Codex** is read from the local helper `codex-usage.sh` that the installer places in `~/SwiftBar/.ai-usage-barometer/`. Its windows are dynamic in both count and name — a plan change can turn `5h`/`7d` into something like `30d` — so the two toggles above track whichever windows Codex actually returns, first and second, and the settings panel relabels itself to match.
 
+**Gemini** is read from the local helper `gemini-usage.sh` in `~/SwiftBar/.ai-usage-barometer/`. It tracks Antigravity Desktop App 2.0 and Antigravity IDE without credentials or external API calls via local language server Connect RPC, read-only SQLite state fallback, and caching.
+
 ## Troubleshooting
 
 **The bar shows `Claude ⚠`.** Open the dropdown for the reason. *Sign in to Claude Code again* means the OAuth token expired — re-authenticate with the Claude Code CLI or IDE extension. This is **not** the Claude desktop app: signing into Claude.app does not refresh this token. *Rate limited* clears on its own; the plugin backs off 15 minutes and shows the remaining wait. The Keychain item was not found. Sign in with Claude Code on this Mac, then click **Refresh now**.
 
 **Codex shows a warning.** The helper is missing or Codex has not produced data yet. Re-run the installer, then use Codex CLI once.
+
+**Gemini shows a warning.** Antigravity has not been launched yet or the local helper is waiting for data. Launch Antigravity Desktop or Antigravity IDE.
 
 **Colours differ between the menu bar and the dropdown.** macOS can treat a translucent menu bar as light while menus render dark. The menu bar uses the two-colour vector renderer whenever Python is available; it falls back to one-colour text only when Python is unavailable.
 

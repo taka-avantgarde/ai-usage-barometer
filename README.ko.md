@@ -23,8 +23,8 @@
 Claude와 Codex가 얇은 구분선을 사이에 두고 한 항목을 공유합니다. 막대는 배터리 방식으로 **채워진 부분이 남은 용량**, 점으로 표시된 꼬리가 사용한 양입니다. 퍼센트도 남은 양입니다.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·
-└──── Claude ────┘     └─ Codex ─┘
+5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
+└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
 ```
 
 메뉴 막대는 벡터 이미지로 그려지므로 한 항목 안에서 서비스별 색을 유지합니다. 불가능한 환경에서는 자동으로 텍스트로 전환됩니다.
@@ -34,11 +34,11 @@ Codex는 시안을 사용합니다. 잔여량이 11–30%이면 경고색에 오
 10% 이하이면 위험색에 선명한 빨강이 섞입니다. Codex는 두 혼합색 모두
 파랑을 강하게 유지합니다:
 
-| 단계 | 사용량 | Claude | Codex |
-|---|---:|---|---|
-| 정상 | 0–69% 사용 | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` |
-| 경고 | 70–89% 사용 | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` |
-| 위험 | 90–100% 사용 | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` |
+| 단계 | 사용량 | Claude | Codex | Gemini |
+|---|---:|---|---|---|
+| 정상 | 0–69% 사용 | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
+| 경고 | 70–89% 사용 | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| 위험 | 90–100% 사용 | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## 설정
 
@@ -54,9 +54,9 @@ Codex는 시안을 사용합니다. 잔여량이 11–30%이면 경고색에 오
 | Claude 7d 표시 | 7일 한도 표시/숨김 |
 | Claude 7d 퍼센트 | 해당 퍼센트 표시/숨김 |
 | Codex 표시 | Codex 전체 표시/숨김 |
-| Codex 첫 번째 한도 표시 | Codex가 처음 반환하는 한도 표시/숨김 |
+| Codex 첫 번째 한도 표시 | Codex가 처음 반환하는 한도 표시/숨김 (e.g. Codex 5h) |
 | Codex 첫 번째 한도 퍼센트 | 해당 퍼센트 표시/숨김 |
-| Codex 두 번째 한도 표시 | 두 번째 한도가 있으면 표시/숨김 |
+| Codex 두 번째 한도 표시 | 두 번째 한도가 있으면 표시/숨김 (e.g. Codex 7d) |
 | Codex 두 번째 한도 퍼센트 | 해당 퍼센트 표시/숨김 |
 | 새로고침 간격 | 1분, 3분, 5분 |
 

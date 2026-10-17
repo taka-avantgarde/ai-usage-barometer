@@ -151,6 +151,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if let u = u {
             update = u.update.available
             latestVersion = u.update.latest
+            if update && !latestVersion.isEmpty && Settings.read("auto_updated_version", "") != latestVersion {
+                Settings.write("auto_updated_version", latestVersion)
+                post(title: "AI Usage Barometer " + latestVersion, body: "Updating automatically in the background…")
+                installUpdate()
+            }
             for s in u.services {
                 if !s.on { continue }
                 if !s.error.isEmpty {
@@ -250,7 +255,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let m = NSMenu()
         m.addItem(check("Show Claude", ["claude_on"]))
         m.addItem(check("Show Codex", ["codex_on"]))
-        m.addItem(check("Percentages", ["c5p", "c7p", "cx5p", "cx7p"]))
+        m.addItem(check("Show Gemini", ["gemini_on"]))
+        m.addItem(check("Percentages", ["c5p", "c7p", "cx5p", "cx7p", "gm5p", "gm7p"]))
         m.addItem(NSMenuItem.separator())
 
         let p = Presence.load()
