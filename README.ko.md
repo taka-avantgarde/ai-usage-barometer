@@ -2,6 +2,14 @@
 
 # 🎚️ AI Usage Barometer
 
+**Claude, Codex, Gemini의 남은 사용량을 한눈에 확인. Mac의 3곳(메뉴 막대, Dock 아이콘, 플로팅 바)에서 실시간 표시.**
+
+| AI 서비스 | 색상 | 지원 소스 |
+|:---|:---|:---|
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (공식 상태줄 연동) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI 및 웹 토큰 |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE 세션 한도 |
+
 <img src="assets/hero.svg" alt="메뉴 막대, Dock 아이콘, 플로팅 바에 표시된 AI Usage Barometer" width="725">
 
 ## ⚡ 설치 — 이 한 줄을 터미널에 붙여넣기
@@ -20,7 +28,7 @@
 
 ## 메뉴 막대 항목은 하나
 
-Claude와 Codex가 얇은 구분선을 사이에 두고 한 항목을 공유합니다. 막대는 배터리 방식으로 **채워진 부분이 남은 용량**, 점으로 표시된 꼬리가 사용한 양입니다. 퍼센트도 남은 양입니다.
+Claude, Codex, Gemini가 얇은 구분선을 사이에 두고 한 항목을 공유합니다. 막대는 배터리 방식으로 **채워진 부분이 남은 용량**, 점으로 표시된 꼬리가 사용한 양입니다. 퍼센트도 남은 양입니다.
 
 ```text
 5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·

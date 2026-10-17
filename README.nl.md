@@ -2,6 +2,14 @@
 
 # 🎚️ AI Usage Barometer
 
+**Volg Claude, Codex en Gemini in één oogopslag in realtime op 3 Mac-plekken: menubalk, Dock-symbool en zwevende balk.**
+
+| AI-dienst | Kleur | Ondersteunde bronnen |
+|:---|:---|:---|
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (officiële statusregel) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI en web-tokens |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE sessiequota |
+
 <img src="assets/hero.svg" alt="AI Usage Barometer in de menubalk, het Dock-icoon en een zwevende balk" width="725">
 
 ## ⚡ Installatie — plak deze ene regel in Terminal
@@ -20,7 +28,7 @@ Zit je al op SwiftBar, of wil je hem daar? Deze regel installeert in plaats daar
 
 ## Eén item in de menubalk
 
-Claude en Codex delen één item, gescheiden door een dunne streep. De balken zijn batterij-stijl: **het gevulde deel is de resterende capaciteit**, de gestippelde staart is verbruikt. Percentages tonen eveneens het restant.
+Claude, Codex en Gemini delen één item, gescheiden door een dunne streep. De balken zijn batterij-stijl: **het gevulde deel is de resterende capaciteit**, de gestippelde staart is verbruikt. Percentages tonen eveneens het restant.
 
 ```text
 5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·

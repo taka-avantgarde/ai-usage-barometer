@@ -2,6 +2,14 @@
 
 # 🎚️ AI Usage Barometer
 
+**Claude・Codex・Gemini の残量を一目で把握。Macの「メニューバー」「Dockアイコン」「フローティングバー」の3箇所でリアルタイム表示。**
+
+| AIサービス | カラー | 対応ソース |
+|:---|:---|:---|
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code（公式ステータスライン連携） |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI・Webトークン |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE セッション枠 |
+
 <img src="assets/hero.svg" alt="メニューバー・Dockアイコン・フローティングバーに表示した AI Usage Barometer" width="725">
 
 ## ⚡ インストール — この1行をターミナルに貼るだけ
@@ -10,7 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-これがアプリ版です。Homebrew も Xcode も SwiftBar も要りません。macOS 13 以降。初回起動時に置き場所（メニューバー・Dockアイコン・フローティングバー）を聞かれ、あとからメニューでいつでも変えられます。
+これらはアプリ版です。Homebrew も Xcode も SwiftBar も要りません。macOS 13 以降。初回起動時に置き場所（メニューバー・Dockアイコン・フローティングバー）を聞かれ、あとからメニューでいつでも変えられます。
 
 すでに SwiftBar を使っている、あるいは SwiftBar に出したい場合は、こちらの1行でプラグイン版が入ります（Homebrew と SwiftBar は無いときだけ導入）。何度実行しても安全なので、更新にも同じ1行を使えます。
 
@@ -20,7 +28,7 @@
 
 ## メニューバーは1項目
 
-Claude と Codex を細い区切り線で分けて1項目にまとめています。バーはバッテリー式で、**塗りが残量**、点々が消費済みです。％も残量を示します。
+Claude・Codex・Gemini を細い区切り線で分けて1項目にまとめています。バーはバッテリー式で、**塗りが残量**、点々が消費済みです。％も残量を示します。
 
 ```text
 5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·

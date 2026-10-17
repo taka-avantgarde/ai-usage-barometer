@@ -2,6 +2,14 @@
 
 # 🎚️ AI Usage Barometer
 
+**Pantau Claude, Codex, dan Gemini secara sekilas dalam waktu nyata di 3 tempat Mac: bilah menu, ikon Dock, dan bilah mengambang.**
+
+| Layanan AI | Warna | Sumber yang didukung |
+|:---|:---|:---|
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (baris status resmi) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI & token web |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Kuota sesi Google Antigravity Desktop & IDE |
+
 <img src="assets/hero.svg" alt="AI Usage Barometer di bilah menu, ikon Dock, dan bilah mengambang" width="725">
 
 ## ⚡ Instalasi — tempel satu baris ini di Terminal
@@ -20,7 +28,7 @@ Sudah memakai SwiftBar, atau memang ingin di sana? Baris ini memasang versi plug
 
 ## Satu item di bilah menu
 
-Claude dan Codex berbagi satu item, dipisahkan garis tipis. Bilah bergaya baterai: **bagian terisi adalah kapasitas tersisa**, ekor bertitik adalah yang sudah terpakai. Persentase juga menunjukkan sisa.
+Claude, Codex, dan Gemini berbagi satu item, dipisahkan garis tipis. Bilah bergaya baterai: **bagian terisi adalah kapasitas tersisa**, ekor bertitik adalah yang sudah terpakai. Persentase juga menunjukkan sisa.
 
 ```text
 5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·

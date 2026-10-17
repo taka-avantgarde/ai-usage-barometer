@@ -2,6 +2,14 @@
 
 # 🎚️ AI Usage Barometer
 
+**Behalte Claude, Codex und Gemini auf einen Blick in Echtzeit im Auge — an 3 Orten auf dem Mac: Menüleiste, Dock-Symbol und schwebende Leiste.**
+
+| KI-Dienst | Farbe | Unterstützte Quellen |
+|:---|:---|:---|
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (offizielle Statuszeile) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI und Web-Token |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Sitzungskontingente für Google Antigravity Desktop & IDE |
+
 <img src="assets/hero.svg" alt="AI Usage Barometer in der Menüleiste, im Dock-Symbol und in einer schwebenden Leiste" width="725">
 
 ## ⚡ Installation — diese eine Zeile ins Terminal einfügen
@@ -20,7 +28,7 @@ Schon auf SwiftBar unterwegs, oder willst du es dort haben? Diese Zeile installi
 
 ## Ein Element in der Menüleiste
 
-Claude und Codex teilen sich ein Element, getrennt durch eine feine Linie. Die Balken sind batterieartig: **der gefüllte Teil ist die verbleibende Kapazität**, der gepunktete Rest ist verbraucht. Auch die Prozentwerte zeigen den Rest.
+Claude, Codex und Gemini teilen sich ein Element, getrennt durch eine feine Linie. Die Balken sind batterieartig: **der gefüllte Teil ist die verbleibende Kapazität**, der gepunktete Rest ist verbraucht. Auch die Prozentwerte zeigen den Rest.
 
 ```text
 5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·

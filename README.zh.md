@@ -2,6 +2,14 @@
 
 # 🎚️ AI Usage Barometer
 
+**一目了然实时掌握 Claude、Codex 与 Gemini 的用量，Mac 上的 3 处显示：菜单栏、Dock 图标与浮动条。**
+
+| AI 服务 | 颜色 | 支持来源 |
+|:---|:---|:---|
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code（官方状态行关联） |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI 与网页 Token |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE 会话配额 |
+
 <img src="assets/hero.svg" alt="菜单栏、Dock 图标与浮动条上的 AI Usage Barometer" width="725">
 
 ## ⚡ 安装 — 把这一行粘贴到终端
@@ -20,7 +28,7 @@
 
 ## 菜单栏只占一项
 
-Claude 与 Codex 共用一项，中间以细线分隔。进度条为电量式：**填充部分是剩余额度**，点状部分是已消耗。百分比同样表示剩余。
+Claude、Codex 与 Gemini 共用一项，中间以细线分隔。进度条为电量式：**填充部分是剩余额度**，点状部分是已消耗。百分比同样表示剩余。
 
 ```text
 5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·

@@ -2,6 +2,14 @@
 
 # 🎚️ AI Usage Barometer
 
+**Controla Claude, Codex y Gemini de un vistazo en tiempo real en 3 lugares de tu Mac: barra de menús, icono del Dock y barra flotante.**
+
+| Servicio AI | Color | Fuentes compatibles |
+|:---|:---|:---|
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (línea de estado oficial) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI y tokens web |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Cuotas de sesión de Google Antigravity Desktop e IDE |
+
 <img src="assets/hero.svg" alt="AI Usage Barometer en la barra de menús, el icono del Dock y una barra flotante" width="725">
 
 ## ⚡ Instalación — pega esta línea en Terminal
@@ -20,7 +28,7 @@ Esa es la app. Sin Homebrew, sin Xcode, sin SwiftBar. macOS 13 o posterior. La p
 
 ## Un solo elemento en la barra de menús
 
-Claude y Codex comparten un elemento, separados por una línea fina. Las barras son tipo batería: **la parte llena es la capacidad restante** y la cola punteada es lo consumido. Los porcentajes también son capacidad restante.
+Claude, Codex y Gemini comparten un elemento, separados por una línea fina. Las barras son tipo batería: **la parte llena es la capacidad restante** y la cola punteada es lo consumido. Los porcentajes también son capacidad restante.
 
 ```text
 5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·

@@ -2,6 +2,14 @@
 
 # 🎚️ AI Usage Barometer
 
+**Theo dõi Claude, Codex và Gemini trong nháy mắt theo thời gian thực trên 3 vị trí của Mac: thanh menu, biểu tượng Dock và thanh nổi.**
+
+| Dịch vụ AI | Màu sắc | Nguồn hỗ trợ |
+|:---|:---|:---|
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (dòng trạng thái chính thức) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI & web token |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Hạn ngạch phiên Google Antigravity Desktop & IDE |
+
 <img src="assets/hero.svg" alt="AI Usage Barometer trên thanh menu, biểu tượng Dock và thanh nổi" width="725">
 
 ## ⚡ Cài đặt — dán một dòng này vào Terminal
@@ -20,7 +28,7 @@
 
 ## Chỉ một mục trên thanh menu
 
-Claude và Codex dùng chung một mục, ngăn bởi một vạch mảnh. Thanh theo kiểu pin: **phần đầy là dung lượng còn lại**, phần chấm là đã dùng. Phần trăm cũng là lượng còn lại.
+Claude, Codex và Gemini dùng chung một mục, ngăn bởi một vạch mảnh. Thanh theo kiểu pin: **phần đầy là dung lượng còn lại**, phần chấm là đã dùng. Phần trăm cũng là lượng còn lại.
 
 ```text
 5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
