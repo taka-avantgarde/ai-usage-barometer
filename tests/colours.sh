@@ -153,13 +153,32 @@ printf '1\n' > "$TMP/home/.cache/claude-codex-bar/codex_on"
 printf '0\n' > "$TMP/home/.cache/claude-codex-bar/claude_on"
 DISABLED_CLAUDE="$(HOME="$TMP/home" AI_USAGE_SETTINGS_PAGE="$ROOT/settings.html" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" GEMINI_HELPER="$ROOT/tests/fixtures/gemini-helper.sh" "$ROOT/claude-codex.60s.sh")"
 grep -q 'claude_on=0' <<< "$DISABLED_CLAUDE"
-grep -q 'label.muted' "$ROOT/settings.html"
-grep -q "label.classList.toggle('muted', !on)" "$ROOT/settings.html"
-grep -q "label.querySelector('input').disabled = !on" "$ROOT/settings.html"
+grep -q '.sub-row.muted' "$ROOT/settings.html"
+grep -q "sub.classList.toggle('muted', !parentOn)" "$ROOT/settings.html"
 grep -q 'swiftbar.persistentWebView' "$ROOT/claude-codex.60s.sh"
-for key in cx5 cx5p cx7 cx7p gm5 gm5p gm7 gm7p; do
+for key in c5 c5p c7 c7p cx5 cx5p cx7 cx7p gm5 gm5p; do
   grep -q "id=\"$key\"" "$ROOT/settings.html"
 done
+! grep -q 'Gemini Flash / 2nd' "$ROOT/settings.html"
+! grep -q 'Gemini Flash / 2nd' "$ROOT/claude-codex.60s.sh"
+! grep -q 'Gemini Flash / 2nd' "$ROOT/app/Sources/AIUsageBarometer/main.swift"
+
+# Parent-child cascade: turning parent OFF disables children; turning parent ON
+# enables children; turning any child ON enables parent; turning all children OFF
+# disables parent.
+HOME="$TMP/home" "$ROOT/claude-codex.60s.sh" --set claude_on 0 >/dev/null
+[[ "$(cat "$TMP/home/.cache/claude-codex-bar/claude_on")" == 0 ]]
+[[ "$(cat "$TMP/home/.cache/claude-codex-bar/c5")" == 0 ]]
+[[ "$(cat "$TMP/home/.cache/claude-codex-bar/c7")" == 0 ]]
+HOME="$TMP/home" "$ROOT/claude-codex.60s.sh" --set c5 1 >/dev/null
+[[ "$(cat "$TMP/home/.cache/claude-codex-bar/claude_on")" == 1 ]]
+[[ "$(cat "$TMP/home/.cache/claude-codex-bar/c5")" == 1 ]]
+HOME="$TMP/home" "$ROOT/claude-codex.60s.sh" --set c5 0 >/dev/null
+[[ "$(cat "$TMP/home/.cache/claude-codex-bar/claude_on")" == 0 ]]
+HOME="$TMP/home" "$ROOT/claude-codex.60s.sh" --set claude_on 1 >/dev/null
+[[ "$(cat "$TMP/home/.cache/claude-codex-bar/c5")" == 1 ]]
+[[ "$(cat "$TMP/home/.cache/claude-codex-bar/c7")" == 1 ]]
+
 
 # The plugin UI is English-only. A legacy saved language must be ignored, the
 # settings page has no selector, and the settings URL carries no locale state.
