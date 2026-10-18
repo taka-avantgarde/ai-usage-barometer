@@ -259,6 +259,38 @@ endpoint_is_allowed() {
   esac
 }
 
+refresh_auth_token() {
+  [[ -r "$AUTH_FILE" && -w "$AUTH_FILE" ]] || return 1
+  local rt resp new_at tmp_auth
+  rt="$(jq -r '.tokens.refresh_token // empty' "$AUTH_FILE" 2>/dev/null)"
+  [[ -n "$rt" ]] || return 1
+  resp="$(curl -sS --connect-timeout "$CONNECT_TIMEOUT" --max-time "$MAX_TIME" \
+    -X POST "https://auth.openai.com/oauth/token" \
+    -H "Content-Type: application/json" \
+    -d "{\"client_id\":\"app_EMoamEEZ73f0CkXaXp7hrann\",\"grant_type\":\"refresh_token\",\"refresh_token\":\"$rt\"}" 2>/dev/null || true)"
+  new_at="$(printf '%s' "$resp" | jq -r '.access_token // empty' 2>/dev/null)"
+  [[ -n "$new_at" ]] || return 1
+  tmp_auth="$(mktemp "$CACHE_DIR/auth.XXXXXX")" || return 1
+  chmod 600 "$tmp_auth" 2>/dev/null || true
+  if jq --arg at "$new_at" \
+        --arg rt_new "$(printf '%s' "$resp" | jq -r '.refresh_token // empty' 2>/dev/null)" \
+        --arg id_new "$(printf '%s' "$resp" | jq -r '.id_token // empty' 2>/dev/null)" '
+        if .tokens then
+          .tokens.access_token = $at |
+          (if $rt_new != "" then .tokens.refresh_token = $rt_new else . end) |
+          (if $id_new != "" then .tokens.id_token = $id_new else . end)
+        else
+          .access_token = $at
+        end
+      ' "$AUTH_FILE" > "$tmp_auth" 2>/dev/null && [[ -s "$tmp_auth" ]]; then
+    mv "$tmp_auth" "$AUTH_FILE"
+    printf '%s\n' "$new_at"
+    return 0
+  fi
+  rm -f "$tmp_auth"
+  return 1
+}
+
 fetch_live() {
   local token account endpoint body status tmp parsed
 
@@ -294,6 +326,19 @@ fetch_live() {
     status="$(curl -sS -o "$tmp" -w '%{http_code}' \
       --connect-timeout "$CONNECT_TIMEOUT" --max-time "$MAX_TIME" \
       "${headers[@]}" "$endpoint" 2>/dev/null || printf '000')"
+
+    if [[ "$status" == "401" && -z "${CODEX_USAGE_ENDPOINT:-}" ]]; then
+      local refreshed
+      refreshed="$(refresh_auth_token || true)"
+      if [[ -n "$refreshed" ]]; then
+        token="$refreshed"
+        headers=(-H "Authorization: Bearer $token" -H "Accept: application/json" -H "User-Agent: codex-cli")
+        [[ -n "$account" ]] && headers+=(-H "ChatGPT-Account-Id: $account")
+        status="$(curl -sS -o "$tmp" -w '%{http_code}' \
+          --connect-timeout "$CONNECT_TIMEOUT" --max-time "$MAX_TIME" \
+          "${headers[@]}" "$endpoint" 2>/dev/null || printf '000')"
+      fi
+    fi
 
     if [[ "$status" == "200" ]]; then
       body="$(cat "$tmp")"

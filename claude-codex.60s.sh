@@ -75,6 +75,25 @@ apply_web_setting() {
   case "$key" in
     claude_on|codex_on|gemini_on|c5|c5p|c7|c7p|cx5|cx5p|cx7|cx7p|gm5|gm5p|gm7|gm7p|cmp)
       case "$value" in 0|1) printf '%s\n' "$value" > "$CFG/$key" ;; esac
+      # 親子連動:
+      # 1) 親を OFF にしたら傘下の 5h / 1w もすべて OFF にする
+      # 2) 親を ON にしたら傘下の 5h / 1w もすべて ON にする
+      # 3) 子を ON にしたら親も自動で ON にする
+      # 4) 傘下の子がすべて OFF になったら親も自動で OFF にする
+      case "$key:$value" in
+        claude_on:0) printf '0\n' > "$CFG/c5"; printf '0\n' > "$CFG/c7" ;;
+        claude_on:1) printf '1\n' > "$CFG/c5"; printf '1\n' > "$CFG/c7" ;;
+        codex_on:0)  printf '0\n' > "$CFG/cx5"; printf '0\n' > "$CFG/cx7" ;;
+        codex_on:1)  printf '1\n' > "$CFG/cx5"; printf '1\n' > "$CFG/cx7" ;;
+        gemini_on:0) printf '0\n' > "$CFG/gm5"; printf '0\n' > "$CFG/gm7" ;;
+        gemini_on:1) printf '1\n' > "$CFG/gm5"; printf '1\n' > "$CFG/gm7" ;;
+        c5:1|c7:1)   printf '1\n' > "$CFG/claude_on" ;;
+        c5:0|c7:0)   [ "$(rd c5)" = 0 ] && [ "$(rd c7)" = 0 ] && printf '0\n' > "$CFG/claude_on" ;;
+        cx5:1|cx7:1) printf '1\n' > "$CFG/codex_on" ;;
+        cx5:0|cx7:0) [ "$(rd cx5)" = 0 ] && [ "$(rd cx7)" = 0 ] && printf '0\n' > "$CFG/codex_on" ;;
+        gm5:1|gm7:1) printf '1\n' > "$CFG/gemini_on" ;;
+        gm5:0)       printf '0\n' > "$CFG/gemini_on" ;;
+      esac
       ;;
     iv)
       case "$value" in
@@ -94,6 +113,7 @@ apply_web_setting() {
 # 直接呼べる引数も用意する（Codex ヘルパーと同じ bash= 方式）。
 if [ "${1:-}" = "--set" ] && [ -n "${2:-}" ]; then
   AUB_KEY="$2" AUB_VALUE="${3:-}" apply_web_setting
+  open -g "swiftbar://refreshplugin?name=claude-codex.60s.sh" >/dev/null 2>&1 &
   exit 0
 fi
 # 更新はメニューから1クリックで完了させる。通知だけ出して手順を読ませない。
@@ -213,25 +233,29 @@ tg() { # tg <key> <現在値> <ラベル>
   echo "--$3$([ "$2" = 1 ] && echo '  ✓') | bash='$SELF_PATH' param1=--set param2=$1 param3=$nx terminal=false refresh=true"
 }
 toggle_menu() {
+  local cl_c5=0 cl_c7=0 cx_5=0 cx_7=0 gm_5=0
+  [ "$CL_ON" = 1 ] && [ "$C5" = 1 ] && cl_c5=1
+  [ "$CL_ON" = 1 ] && [ "$C7" = 1 ] && cl_c7=1
+  [ "$CX_ON" = 1 ] && [ "$CX5" = 1 ] && cx_5=1
+  [ "$CX_ON" = 1 ] && [ "$CX7" = 1 ] && cx_7=1
+  [ "$GM_ON" = 1 ] && [ "$GM5" = 1 ] && gm_5=1
   echo "⚙ Display settings | size=12"
-  tg claude_on "$CL_ON" "Show Claude"
-  tg c5 "$C5" "  Claude 5h"
-  tg c5p "$C5P" "  Claude 5h percentage"
-  tg c7 "$C7" "  Claude 7d (1w)"
-  tg c7p "$C7P" "  Claude 7d (1w) percentage"
-  tg codex_on "$CX_ON" "Show Codex"
+  tg claude_on "$CL_ACTIVE" "Claude"
+  tg c5 "$cl_c5" "  5h"
+  tg c5p "$C5P" "  5h %"
+  tg c7 "$cl_c7" "  1w (7d)"
+  tg c7p "$C7P" "  1w (7d) %"
+  tg codex_on "$CX_ACTIVE" "Codex"
   local cx_l1="${CX_L1:-5h}" cx_l2="${CX_L2:-7d}"
   [ "$CX_L1" = "7d" ] && [ -z "$CX_L2" ] && { cx_l1="5h"; cx_l2="7d"; }
-  tg cx5 "$CX5" "  Codex $cx_l1"
-  tg cx5p "$CX5P" "  Codex $cx_l1 percentage"
-  tg cx7 "$CX7" "  Codex $cx_l2 (1w)"
-  tg cx7p "$CX7P" "  Codex $cx_l2 (1w) percentage"
-  tg gemini_on "$GM_ON" "Show Gemini"
-  local gm_l1="${GM_L1:-5h}" gm_l2="${GM_L2:-Flash}"
-  tg gm5 "$GM5" "  Gemini $gm_l1"
-  tg gm5p "$GM5P" "  Gemini $gm_l1 percentage"
-  tg gm7 "$GM7" "  Gemini $gm_l2"
-  tg gm7p "$GM7P" "  Gemini $gm_l2 percentage"
+  tg cx5 "$cx_5" "  $cx_l1"
+  tg cx5p "$CX5P" "  $cx_l1 %"
+  tg cx7 "$cx_7" "  1w ($cx_l2)"
+  tg cx7p "$CX7P" "  1w ($cx_l2) %"
+  tg gemini_on "$GM_ACTIVE" "Gemini"
+  local gm_l1="${GM_L1:-5h}"
+  tg gm5 "$gm_5" "  $gm_l1"
+  tg gm5p "$GM5P" "  $gm_l1 %"
   tg cmp "$CMP" "Compact (fits beside the notch)"
   echo "⏱ Refresh: ${IV} min | size=12"
   local m
@@ -254,7 +278,7 @@ to_pct() { local v="$1"; [ -z "$v" ] && { echo "-1"; return; }
   case "$SCALE" in
     yes) awk -v x="$v" 'BEGIN{printf "%.0f", x*100}' ;;
     no)  awk -v x="$v" 'BEGIN{printf "%.0f", x}' ;;
-    *)   awk -v x="$v" 'BEGIN{ if (x<=1) printf "%.0f",x*100; else printf "%.0f",x }' ;;
+    *)   awk -v x="$v" 'BEGIN{ if (x>0 && x<1) printf "%.0f",x*100; else printf "%.0f",x }' ;;
   esac; }
 bar() { local p=$1 w=$2 i f s=""; (( p<0 )) && p=0; (( p>100 )) && p=100
   f=$(( (p*w+50)/100 )); (( f>w )) && f=w
@@ -271,10 +295,12 @@ cxcol() { local p=$1; if (( p>=DANGER )); then echo "$CX_DANGER"
 gmcol() { local p=$1; if (( p>=DANGER )); then echo "$GM_DANGER"
   elif (( p>=WARN )); then echo "$GM_WARN"; else echo "$GM_OK"; fi; }
 fmt() { local p=$1; (( p<0 )) && { echo "--"; return; }; printf '%d%%' "$p"; }
-remain() { local iso="$1" ts e n d; [ -z "$iso" ] && { echo ""; return; }
+iso_epoch() { local iso="$1" ts; [ -z "$iso" ] && return 1
   ts="${iso/Z/+00:00}"
   ts=$(printf '%s' "$ts" | sed -E 's/\.[0-9]+//; s/([+-][0-9][0-9]):([0-9][0-9])$/\1\2/')
-  e=$(date -j -f "%Y-%m-%dT%H:%M:%S%z" "$ts" +%s 2>/dev/null)
+  date -j -f "%Y-%m-%dT%H:%M:%S%z" "$ts" +%s 2>/dev/null; }
+remain() { local iso="$1" e n d; [ -z "$iso" ] && { echo ""; return; }
+  e=$(iso_epoch "$iso")
   [ -z "$e" ] && { echo "$iso"; return; }
   n=$(date +%s); d=$((e-n)); (( d<0 )) && { echo "$T_SOON"; return; }
   if (( d>=86400 )); then printf '%dd %dh' $((d/86400)) $(((d%86400)/3600))
@@ -341,6 +367,16 @@ elif [ "$CL_ACTIVE" = 1 ]; then
     CL_ERR=""; U5="$cU5"; U7="$cU7"; R5="$cR5"; R7="$cR7"
     P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
   fi
+fi
+
+# リセット時刻を過ぎている枠は 0% used (100% left) にロールオーバーする
+if [ "$P5" -ge 0 ] && [ -n "$R5" ]; then
+  e5=$(iso_epoch "$R5" || true)
+  if [ -n "$e5" ] && [ "$e5" -le "$NOW" ]; then P5=0; R5=""; fi
+fi
+if [ "$P7" -ge 0 ] && [ -n "$R7" ]; then
+  e7=$(iso_epoch "$R7" || true)
+  if [ -n "$e7" ] && [ "$e7" -le "$NOW" ]; then P7=0; R7=""; fi
 fi
 
 REM5=$(( P5<0 ? -1 : 100-P5 )); REM7=$(( P7<0 ? -1 : 100-P7 ))

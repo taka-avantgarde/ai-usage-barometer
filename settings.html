@@ -3,148 +3,525 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>AI Usage Barometer settings</title>
+  <title>AI Usage Barometer — Display Settings</title>
   <style>
-    :root { color-scheme: light dark; font: 14px -apple-system, BlinkMacSystemFont, sans-serif; }
+    :root {
+      color-scheme: dark light;
+      --bg: #16191d;
+      --card: #20252b;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --row-border: rgba(255, 255, 255, 0.06);
+      --text: #ebeff5;
+      --muted: #8b949e;
+      --dim: rgba(235, 239, 245, 0.35);
+      --track: rgba(255, 255, 255, 0.14);
+      --claude: #C66D28;
+      --codex: #1A8BA6;
+      --gemini: #158F6A;
+      font: 13px/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f5f6f8;
+        --card: #ffffff;
+        --card-border: rgba(0, 0, 0, 0.08);
+        --row-border: rgba(0, 0, 0, 0.06);
+        --text: #1c1e21;
+        --muted: #6e7781;
+        --dim: rgba(28, 30, 33, 0.35);
+        --track: rgba(0, 0, 0, 0.12);
+      }
+    }
     * { box-sizing: border-box; }
-    body { margin: 0; padding: 18px; background: Canvas; color: CanvasText; }
-    h1 { margin: 0 0 16px; font-size: 20px; }
-    section { margin: 0 0 18px; padding: 14px; border: 1px solid color-mix(in srgb, CanvasText 15%, transparent); border-radius: 12px; }
-    h2 { margin: 0 0 9px; font-size: 13px; color: #6e6e73; }
-    label { display: flex; align-items: center; gap: 9px; min-height: 34px; }
-    label.child { padding-left: 24px; }
-    label.muted { color: #8e8e93; opacity: .68; }
-    input { width: 17px; height: 17px; accent-color: #1a8ba6; }
-    .radios { display: flex; gap: 17px; }
-    .radios label { min-height: 28px; }
-    .status { min-height: 18px; margin-top: 8px; color: #6e6e73; font-size: 12px; }
-    .update { display: none; margin: 0 0 16px; padding: 12px 14px; border-radius: 12px; background: color-mix(in srgb, #ff9f0a 16%, Canvas); border: 1px solid color-mix(in srgb, #ff9f0a 45%, transparent); }
-    .update.visible { display: block; }
-    .update-title { margin-bottom: 8px; font-weight: 650; }
-    .update-actions { display: flex; gap: 8px; }
-    .update a, .update button { padding: 6px 10px; border: 0; border-radius: 7px; background: #1a8ba6; color: white; font: inherit; text-decoration: none; cursor: pointer; }
-    .update a { background: #6e6e73; }
+    body {
+      margin: 0;
+      padding: 16px;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .status {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--gemini);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .status.show { opacity: 1; }
+    .update {
+      display: none;
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: color-mix(in srgb, #ff9f0a 15%, var(--card));
+      border: 1px solid color-mix(in srgb, #ff9f0a 42%, transparent);
+    }
+    .update.visible { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .update-title { font-size: 12px; font-weight: 600; }
+    .update-actions { display: flex; gap: 6px; }
+    .update a, .update button {
+      padding: 5px 10px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--codex);
+      color: #fff;
+      font: 500 11px/1 -apple-system, sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .update a { background: rgba(128, 128, 128, 0.3); color: var(--text); }
+
+    .card {
+      margin-bottom: 10px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: opacity 0.18s ease;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 14px;
+      cursor: pointer;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot.claude { background: var(--claude); box-shadow: 0 0 8px color-mix(in srgb, var(--claude) 55%, transparent); }
+    .dot.codex  { background: var(--codex);  box-shadow: 0 0 8px color-mix(in srgb, var(--codex) 55%, transparent); }
+    .dot.gemini { background: var(--gemini); box-shadow: 0 0 8px color-mix(in srgb, var(--gemini) 55%, transparent); }
+
+    .windows {
+      border-top: 1px solid var(--row-border);
+      padding: 2px 14px 6px 32px;
+    }
+    .win-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 32px;
+      padding: 2px 0;
+      transition: opacity 0.15s ease;
+    }
+    .win-row + .win-row {
+      border-top: 1px solid var(--row-border);
+    }
+    .win-row.off .win-label {
+      color: var(--dim);
+    }
+    .win-label {
+      font-size: 12.5px;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .win-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Percentage pill button */
+    .pct-pill {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 20px;
+      padding: 0 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--track);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .pct-pill input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .pct-pill:has(input:checked) {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.24);
+    }
+    @media (prefers-color-scheme: light) {
+      .pct-pill:has(input:checked) {
+        color: #1c1e21;
+        background: rgba(0, 0, 0, 0.16);
+      }
+    }
+    .win-row.off .pct-pill {
+      opacity: 0.35;
+    }
+
+    /* Apple-style toggle switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 34px;
+      height: 20px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .switch.sm {
+      width: 30px;
+      height: 17px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: var(--track);
+      border-radius: 999px;
+      transition: background 0.18s ease;
+    }
+    .slider::before {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      left: 2px;
+      top: 2px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+      transition: transform 0.18s cubic-bezier(0.2, 0.85, 0.32, 1.1);
+    }
+    .switch.sm .slider::before {
+      width: 13px;
+      height: 13px;
+    }
+    .switch input:checked + .slider.claude { background: var(--claude); }
+    .switch input:checked + .slider.codex  { background: var(--codex); }
+    .switch input:checked + .slider.gemini { background: var(--gemini); }
+    .switch input:checked + .slider { transform: none; }
+    .switch input:checked + .slider::before { transform: translateX(14px); }
+    .switch.sm input:checked + .slider::before { transform: translateX(13px); }
+
+    /* Footer Refresh Interval Segmented Bar */
+    .footer-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+    }
+    .footer-title {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .segmented {
+      display: inline-flex;
+      padding: 2px;
+      background: var(--track);
+      border-radius: 7px;
+      gap: 2px;
+    }
+    .segmented label {
+      position: relative;
+      padding: 3px 10px;
+      border-radius: 5px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .segmented input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .segmented label:has(input:checked) {
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    }
   </style>
 </head>
 <body>
-  <h1 id="title">Display settings</h1>
+  <header>
+    <h1 id="title">Display Settings</h1>
+    <div id="status" class="status" aria-live="polite">Saved</div>
+  </header>
+
   <div id="update" class="update">
     <div id="update-title" class="update-title"></div>
     <div class="update-actions">
-      <a href="https://github.com/taka-avantgarde/ai-usage-barometer/releases/latest" target="_blank">Release notes</a>
-      <button id="install-update" type="button">Update now</button>
+      <a href="https://github.com/taka-avantgarde/ai-usage-barometer/releases/latest" target="_blank">Notes</a>
+      <button id="install-update" type="button">Update</button>
     </div>
   </div>
-  <section>
-    <h2>Claude</h2>
-    <label><input id="claude_on" type="checkbox"> <span>Show Claude</span></label>
-    <label class="child claude-child"><input id="c5" type="checkbox"> <span>Show Claude 5h</span></label>
-    <label class="child claude-child"><input id="c5p" type="checkbox"> <span>Claude 5h percentage</span></label>
-    <label class="child claude-child"><input id="c7" type="checkbox"> <span>Show Claude 7d</span></label>
-    <label class="child claude-child"><input id="c7p" type="checkbox"> <span>Claude 7d percentage</span></label>
-  </section>
-  <section>
-    <h2>Codex</h2>
-    <label><input id="codex_on" type="checkbox"> <span>Show Codex</span></label>
-    <label class="child codex-child"><input id="cx5" type="checkbox"> <span>Show Codex <span id="cx-l1-a">5h</span></span></label>
-    <label class="child codex-child"><input id="cx5p" type="checkbox"> <span>Codex <span id="cx-l1-b">5h</span> percentage</span></label>
-    <label class="child codex-child"><input id="cx7" type="checkbox"> <span>Show Codex <span id="cx-l2-a">7d</span></span></label>
-    <label class="child codex-child"><input id="cx7p" type="checkbox"> <span>Codex <span id="cx-l2-b">7d</span> percentage</span></label>
-  </section>
-  <section>
-    <h2>Gemini</h2>
-    <label><input id="gemini_on" type="checkbox"> <span>Show Gemini</span></label>
-    <label class="child gemini-child"><input id="gm5" type="checkbox"> <span>Show Gemini <span id="gm-l1-a">5h</span></span></label>
-    <label class="child gemini-child"><input id="gm5p" type="checkbox"> <span>Gemini <span id="gm-l1-b">5h</span> percentage</span></label>
-    <label class="child gemini-child"><input id="gm7" type="checkbox"> <span>Show Gemini <span id="gm-l2-a">Flash</span></span></label>
-    <label class="child gemini-child"><input id="gm7p" type="checkbox"> <span>Gemini <span id="gm-l2-b">Flash</span> percentage</span></label>
-  </section>
-  <section>
-    <h2>Refresh interval (minutes)</h2>
-    <div class="radios">
-      <label><input name="iv" type="radio" value="1">1</label>
-      <label><input name="iv" type="radio" value="3">3</label>
-      <label><input name="iv" type="radio" value="5">5</label>
+
+  <!-- Claude -->
+  <div class="card" id="card-claude">
+    <label class="card-header">
+      <span class="brand"><span class="dot claude"></span>Claude</span>
+      <span class="switch"><input id="claude_on" type="checkbox"><span class="slider claude"></span></span>
+    </label>
+    <div class="windows">
+      <div class="win-row" id="row-c5">
+        <label class="win-label" for="c5">5h</label>
+        <div class="win-controls">
+          <label class="pct-pill" title="Show percentage"><input id="c5p" type="checkbox">%</label>
+          <label class="switch sm"><input id="c5" type="checkbox"><span class="slider claude"></span></label>
+        </div>
+      </div>
+      <div class="win-row" id="row-c7">
+        <label class="win-label" for="c7">1w (7d)</label>
+        <div class="win-controls">
+          <label class="pct-pill" title="Show percentage"><input id="c7p" type="checkbox">%</label>
+          <label class="switch sm"><input id="c7" type="checkbox"><span class="slider claude"></span></label>
+        </div>
+      </div>
     </div>
-  </section>
-  <div id="status" class="status" aria-live="polite"></div>
+  </div>
+
+  <!-- Codex -->
+  <div class="card" id="card-codex">
+    <label class="card-header">
+      <span class="brand"><span class="dot codex"></span>Codex</span>
+      <span class="switch"><input id="codex_on" type="checkbox"><span class="slider codex"></span></span>
+    </label>
+    <div class="windows">
+      <div class="win-row" id="row-cx5">
+        <label class="win-label" for="cx5"><span id="cx-l1-a">5h</span></label>
+        <div class="win-controls">
+          <label class="pct-pill" title="Show percentage"><input id="cx5p" type="checkbox">%</label>
+          <label class="switch sm"><input id="cx5" type="checkbox"><span class="slider codex"></span></label>
+        </div>
+      </div>
+      <div class="win-row" id="row-cx7">
+        <label class="win-label" for="cx7">1w (<span id="cx-l2-a">7d</span>)</label>
+        <div class="win-controls">
+          <label class="pct-pill" title="Show percentage"><input id="cx7p" type="checkbox">%</label>
+          <label class="switch sm"><input id="cx7" type="checkbox"><span class="slider codex"></span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gemini -->
+  <div class="card" id="card-gemini">
+    <label class="card-header">
+      <span class="brand"><span class="dot gemini"></span>Gemini</span>
+      <span class="switch"><input id="gemini_on" type="checkbox"><span class="slider gemini"></span></span>
+    </label>
+    <div class="windows">
+      <div class="win-row" id="row-gm5">
+        <label class="win-label" for="gm5"><span id="gm-l1-a">5h</span></label>
+        <div class="win-controls">
+          <label class="pct-pill" title="Show percentage"><input id="gm5p" type="checkbox">%</label>
+          <label class="switch sm"><input id="gm5" type="checkbox"><span class="slider gemini"></span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Refresh Interval -->
+  <div class="footer-card">
+    <span class="footer-title">Refresh every</span>
+    <div class="segmented">
+      <label><input name="iv" type="radio" value="1">1m</label>
+      <label><input name="iv" type="radio" value="3">3m</label>
+      <label><input name="iv" type="radio" value="5">5m</label>
+    </div>
+  </div>
+
   <script>
     const params = new URLSearchParams(location.search);
-    const toggleIds = ['claude_on', 'c5', 'c5p', 'c7', 'c7p', 'codex_on', 'cx5', 'cx5p', 'cx7', 'cx7p', 'gemini_on', 'gm5', 'gm5p', 'gm7', 'gm7p'];
-    function muteChildren(service) {
-      const on = document.querySelector(`#${service}_on`).checked;
-      document.querySelectorAll(`.${service}-child`).forEach(label => {
-        label.classList.toggle('muted', !on);
-        label.querySelector('input').disabled = !on;
-      });
+    const toggleIds = ['claude_on', 'c5', 'c5p', 'c7', 'c7p', 'codex_on', 'cx5', 'cx5p', 'cx7', 'cx7p', 'gemini_on', 'gm5', 'gm5p'];
+    const el = id => document.getElementById(id);
+    let statusTimer = null;
+
+    function flashSaved() {
+      const s = el('status');
+      s.classList.add('show');
+      clearTimeout(statusTimer);
+      statusTimer = setTimeout(() => s.classList.remove('show'), 1200);
+    }
+
+    function syncVisualState() {
+      const clOn = el('claude_on').checked;
+      el('row-c5').classList.toggle('off', !clOn || !el('c5').checked);
+      el('row-c7').classList.toggle('off', !clOn || !el('c7').checked);
+
+      const cxOn = el('codex_on').checked;
+      el('row-cx5').classList.toggle('off', !cxOn || !el('cx5').checked);
+      el('row-cx7').classList.toggle('off', !cxOn || !el('cx7').checked);
+
+      const gmOn = el('gemini_on').checked;
+      el('row-gm5').classList.toggle('off', !gmOn || !el('gm5').checked);
     }
 
     function save(key, value) {
       params.set(key, value);
-      document.querySelector('#status').textContent = 'Saved';
-      setTimeout(resync, 400); setTimeout(resync, 1500);
+      flashSaved();
+      syncVisualState();
+      setTimeout(resync, 400);
+      setTimeout(resync, 1500);
       location.href = `swiftbar://refreshplugin?name=claude-codex.60s.sh&AUB_KEY=${encodeURIComponent(key)}&AUB_VALUE=${encodeURIComponent(value)}`;
     }
 
     function applyState(get) {
       const l1 = get('cx_l1'), l2 = get('cx_l2');
-      if (l1) { document.getElementById('cx-l1-a').textContent = l1; document.getElementById('cx-l1-b').textContent = l1; }
-      if (l2) { document.getElementById('cx-l2-a').textContent = l2; document.getElementById('cx-l2-b').textContent = l2; }
-      const gl1 = get('gm_l1'), gl2 = get('gm_l2');
-      if (gl1) { document.getElementById('gm-l1-a').textContent = gl1; document.getElementById('gm-l1-b').textContent = gl1; }
-      if (gl2) { document.getElementById('gm-l2-a').textContent = gl2; document.getElementById('gm-l2-b').textContent = gl2; }
-      toggleIds.forEach(id => {
-        const input = document.querySelector(`#${id}`);
-        if (document.activeElement === input) return;
-        input.checked = get(id) !== '0';
-      });
+      if (l1) el('cx-l1-a').textContent = l1;
+      if (l2) el('cx-l2-a').textContent = l2;
+      const gl1 = get('gm_l1');
+      if (gl1) el('gm-l1-a').textContent = gl1;
+
+      const clOn = get('claude_on') !== '0';
+      const c5 = clOn && get('c5') !== '0';
+      const c7 = clOn && get('c7') !== '0';
+      el('claude_on').checked = c5 || c7;
+      el('c5').checked = c5;
+      el('c7').checked = c7;
+      el('c5p').checked = get('c5p') !== '0';
+      el('c7p').checked = get('c7p') !== '0';
+
+      const cxOn = get('codex_on') !== '0';
+      const cx5 = cxOn && get('cx5') !== '0';
+      const cx7 = cxOn && get('cx7') !== '0';
+      el('codex_on').checked = cx5 || cx7;
+      el('cx5').checked = cx5;
+      el('cx7').checked = cx7;
+      el('cx5p').checked = get('cx5p') !== '0';
+      el('cx7p').checked = get('cx7p') !== '0';
+
+      const gmOn = get('gemini_on') !== '0' && get('gm5') !== '0';
+      el('gemini_on').checked = gmOn;
+      el('gm5').checked = gmOn;
+      el('gm5p').checked = get('gm5p') !== '0';
+
       document.querySelectorAll('input[name="iv"]').forEach(input => {
         input.checked = input.value === (get('iv') || '3');
       });
-      muteChildren('claude');
-      muteChildren('codex');
-      muteChildren('gemini');
+      syncVisualState();
     }
 
-    toggleIds.forEach(id => {
-      const input = document.querySelector(`#${id}`);
-      input.addEventListener('change', () => {
-        if (id === 'claude_on') muteChildren('claude');
-        if (id === 'codex_on') muteChildren('codex');
-        if (id === 'gemini_on') muteChildren('gemini');
-        save(id, input.checked ? '1' : '0');
+    // 親子連動:
+    // 親をOFFにしたら傘下の5h/1wもすべてOFFにし、親をONにしたら傘下もすべてONにする。
+    // 子をONにしたら親もONにし、傘下の子がすべてOFFになったら親もOFFにする。
+    el('claude_on').addEventListener('change', e => {
+      const on = e.target.checked;
+      el('c5').checked = on;
+      el('c7').checked = on;
+      params.set('c5', on ? '1' : '0');
+      params.set('c7', on ? '1' : '0');
+      save('claude_on', on ? '1' : '0');
+    });
+    ['c5', 'c7'].forEach(id => {
+      el(id).addEventListener('change', e => {
+        if (e.target.checked) {
+          el('claude_on').checked = true;
+          params.set('claude_on', '1');
+        } else if (!el('c5').checked && !el('c7').checked) {
+          el('claude_on').checked = false;
+          params.set('claude_on', '0');
+        }
+        save(id, e.target.checked ? '1' : '0');
       });
     });
+
+    el('codex_on').addEventListener('change', e => {
+      const on = e.target.checked;
+      el('cx5').checked = on;
+      el('cx7').checked = on;
+      params.set('cx5', on ? '1' : '0');
+      params.set('cx7', on ? '1' : '0');
+      save('codex_on', on ? '1' : '0');
+    });
+    ['cx5', 'cx7'].forEach(id => {
+      el(id).addEventListener('change', e => {
+        if (e.target.checked) {
+          el('codex_on').checked = true;
+          params.set('codex_on', '1');
+        } else if (!el('cx5').checked && !el('cx7').checked) {
+          el('codex_on').checked = false;
+          params.set('codex_on', '0');
+        }
+        save(id, e.target.checked ? '1' : '0');
+      });
+    });
+
+    el('gemini_on').addEventListener('change', e => {
+      const on = e.target.checked;
+      el('gm5').checked = on;
+      params.set('gm5', on ? '1' : '0');
+      save('gemini_on', on ? '1' : '0');
+    });
+    el('gm5').addEventListener('change', e => {
+      const on = e.target.checked;
+      el('gemini_on').checked = on;
+      params.set('gemini_on', on ? '1' : '0');
+      save('gm5', on ? '1' : '0');
+    });
+
+    ['c5p', 'c7p', 'cx5p', 'cx7p', 'gm5p'].forEach(id => {
+      el(id).addEventListener('change', e => save(id, e.target.checked ? '1' : '0'));
+    });
+
     document.querySelectorAll('input[name="iv"]').forEach(input => {
       input.addEventListener('change', () => save('iv', input.value));
     });
+
     applyState(k => params.get(k));
 
-    // persistentWebView はこのページを再読み込みせず生かし続けるため、
-    // クエリ文字列は最初の1回で固定される。プラグインが毎回書き出す
-    // state.json を読み直して、画面が実状態から乖離しないようにする。
     async function resync() {
       try {
         const r = await fetch(`state.json?_=${Date.now()}`, { cache: 'no-store' });
         if (!r.ok) return;
         const st = await r.json();
         applyState(k => (k in st ? String(st[k]) : null));
-      } catch (_) { /* 初回はまだ存在しない */ }
+      } catch (_) {}
     }
     document.addEventListener('visibilitychange', () => { if (!document.hidden) resync(); });
     window.addEventListener('focus', resync);
     resync();
+
     const updateVersion = params.get('update');
-    document.querySelector('#update').classList.toggle('visible', Boolean(updateVersion));
+    el('update').classList.toggle('visible', Boolean(updateVersion));
     if (updateVersion) {
-      document.querySelector('#update-title').textContent = `Update ${updateVersion} is available`;
+      el('update-title').textContent = `Update ${updateVersion} available`;
     }
-    document.querySelector('#install-update').addEventListener('click', () => {
+    el('install-update').addEventListener('click', () => {
       location.href = 'swiftbar://refreshplugin?name=claude-codex.60s.sh&AUB_ACTION=update';
     });
-    muteChildren('claude');
-    muteChildren('codex');
-    muteChildren('gemini');
   </script>
 </body>
 </html>

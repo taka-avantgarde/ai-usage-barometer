@@ -131,10 +131,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func statusClicked() {
-        guard let button = menuBar?.item.button else { return }
-        menu().popUp(positioning: nil,
-                     at: NSPoint(x: 0, y: button.bounds.height + 4),
-                     in: button)
+        guard let item = menuBar?.item, let button = item.button else { return }
+        let m = menu()
+        item.menu = m
+        button.performClick(nil)
+        item.menu = nil
     }
 
     func refresh() {
@@ -253,16 +254,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // 書くのも --set 経由。どちらの表示から変えても食い違わない。
     func menu() -> NSMenu {
         let m = NSMenu()
-        m.addItem(check("Show Claude", ["claude_on"]))
-        m.addItem(check("Claude 5h", ["c5"], indent: 1))
-        m.addItem(check("Claude 7d (1w)", ["c7"], indent: 1))
-        m.addItem(check("Show Codex", ["codex_on"]))
-        m.addItem(check("Codex 5h", ["cx5"], indent: 1))
-        m.addItem(check("Codex 7d (1w)", ["cx7"], indent: 1))
-        m.addItem(check("Show Gemini", ["gemini_on"]))
-        m.addItem(check("Gemini 5h", ["gm5"], indent: 1))
-        m.addItem(check("Gemini Flash / 2nd", ["gm7"], indent: 1))
-        m.addItem(check("Percentages", ["c5p", "c7p", "cx5p", "cx7p", "gm5p", "gm7p"]))
+        let clOn = Settings.read("claude_on", "1") == "1"
+        let c5On = clOn && Settings.read("c5", "1") == "1"
+        let c7On = clOn && Settings.read("c7", "1") == "1"
+        let clActive = c5On || c7On
+        m.addItem(serviceHeader("Claude", color: "#C66D28", key: "claude_on", on: clActive))
+        m.addItem(windowRow("5h", key: "c5", on: c5On, parentOn: clActive))
+        m.addItem(windowRow("1w (7d)", key: "c7", on: c7On, parentOn: clActive))
+
+        let cxOn = Settings.read("codex_on", "1") == "1"
+        let cx5On = cxOn && Settings.read("cx5", "1") == "1"
+        let cx7On = cxOn && Settings.read("cx7", "1") == "1"
+        let cxActive = cx5On || cx7On
+        m.addItem(serviceHeader("Codex", color: "#1A8BA6", key: "codex_on", on: cxActive))
+        m.addItem(windowRow("5h", key: "cx5", on: cx5On, parentOn: cxActive))
+        m.addItem(windowRow("1w (7d)", key: "cx7", on: cx7On, parentOn: cxActive))
+
+        let gmOn = Settings.read("gemini_on", "1") == "1" && Settings.read("gm5", "1") == "1"
+        m.addItem(serviceHeader("Gemini", color: "#158F6A", key: "gemini_on", on: gmOn))
+        m.addItem(windowRow("5h", key: "gm5", on: gmOn, parentOn: gmOn))
+        m.addItem(NSMenuItem.separator())
+        m.addItem(check("Show % numbers", ["c5p", "c7p", "cx5p", "cx7p", "gm5p"]))
         m.addItem(NSMenuItem.separator())
 
         let p = Presence.load()
@@ -315,20 +327,98 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return m
     }
 
-    private func check(_ title: String, _ keys: [String], indent: Int = 0) -> NSMenuItem {
+    private func serviceHeader(_ title: String, color hex: String, key: String, on: Bool) -> NSMenuItem {
+        let item = NSMenuItem(title: title, action: #selector(toggleKeys(_:)), keyEquivalent: "")
+        item.target = self
+        item.representedObject = [key]
+        item.state = on ? .on : .off
+        let attr = NSMutableAttributedString(
+            string: "●  ",
+            attributes: [
+                .foregroundColor: Gauge.color(hex),
+                .font: NSFont.systemFont(ofSize: 11, weight: .bold)
+            ]
+        )
+        attr.append(NSAttributedString(
+            string: title,
+            attributes: [
+                .foregroundColor: on ? NSColor.labelColor : NSColor.secondaryLabelColor,
+                .font: NSFont.systemFont(ofSize: 13, weight: .semibold)
+            ]
+        ))
+        item.attributedTitle = attr
+        return item
+    }
+
+    private func windowRow(_ title: String, key: String, on: Bool, parentOn: Bool) -> NSMenuItem {
+        let item = NSMenuItem(title: title, action: #selector(toggleKeys(_:)), keyEquivalent: "")
+        item.target = self
+        item.representedObject = [key]
+        item.state = on ? .on : .off
+        item.indentationLevel = 1
+        item.attributedTitle = NSAttributedString(
+            string: title,
+            attributes: [
+                .foregroundColor: (on && parentOn) ? NSColor.labelColor : NSColor.secondaryLabelColor,
+                .font: NSFont.monospacedDigitSystemFont(ofSize: 12.5, weight: on ? .medium : .regular)
+            ]
+        )
+        return item
+    }
+
+    private func check(_ title: String, _ keys: [String], indent: Int = 0, on: Bool? = nil) -> NSMenuItem {
         let item = NSMenuItem(title: title, action: #selector(toggleKeys(_:)), keyEquivalent: "")
         item.target = self
         item.representedObject = keys
-        item.state = Settings.read(keys[0], "1") == "1" ? .on : .off
+        let isOn = on ?? (Settings.read(keys[0], "1") == "1")
+        item.state = isOn ? .on : .off
         if indent > 0 { item.indentationLevel = indent }
         return item
     }
 
     @objc func toggleKeys(_ sender: NSMenuItem) {
-        guard let keys = sender.representedObject as? [String], let first = keys.first else { return }
-        let next = Settings.read(first, "1") == "1" ? "0" : "1"
-        for k in keys { Plugin.set(k, next) }
-        refresh()
+        guard let keys = sender.representedObject as? [String] else { return }
+        let next = sender.state == .on ? "0" : "1"
+        for k in keys {
+            Settings.write(k, next)
+            switch (k, next) {
+            case ("claude_on", "0"):
+                Settings.write("c5", "0"); Settings.write("c7", "0")
+            case ("claude_on", "1"):
+                Settings.write("c5", "1"); Settings.write("c7", "1")
+            case ("codex_on", "0"):
+                Settings.write("cx5", "0"); Settings.write("cx7", "0")
+            case ("codex_on", "1"):
+                Settings.write("cx5", "1"); Settings.write("cx7", "1")
+            case ("gemini_on", "0"):
+                Settings.write("gm5", "0"); Settings.write("gm7", "0")
+            case ("gemini_on", "1"):
+                Settings.write("gm5", "1"); Settings.write("gm7", "1")
+            case ("c5", "1"), ("c7", "1"):
+                Settings.write("claude_on", "1")
+            case ("c5", "0"), ("c7", "0"):
+                if Settings.read("c5", "1") == "0" && Settings.read("c7", "1") == "0" {
+                    Settings.write("claude_on", "0")
+                }
+            case ("cx5", "1"), ("cx7", "1"):
+                Settings.write("codex_on", "1")
+            case ("cx5", "0"), ("cx7", "0"):
+                if Settings.read("cx5", "1") == "0" && Settings.read("cx7", "1") == "0" {
+                    Settings.write("codex_on", "0")
+                }
+            case ("gm5", "1"):
+                Settings.write("gemini_on", "1")
+            case ("gm5", "0"):
+                Settings.write("gemini_on", "0")
+            default:
+                break
+            }
+        }
+        DispatchQueue.global(qos: .userInitiated).async {
+            for k in keys { Plugin.set(k, next) }
+            let u = Plugin.fetch()
+            DispatchQueue.main.async { self.apply(u) }
+        }
     }
 
     private func presenceItem(_ title: String, _ key: String, _ on: Bool) -> NSMenuItem {
