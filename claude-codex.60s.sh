@@ -199,9 +199,11 @@ PY
 write_settings_state() {
   local dir; dir="$(dirname "$SETTINGS_PAGE")"
   [ -d "$dir" ] || return 0
+  local cxl1="${CX_L1:-5h}" cxl2="${CX_L2:-7d}"
+  [ "$CX_L1" = "7d" ] && [ -z "$CX_L2" ] && { cxl1="5h"; cxl2="7d"; }
   printf '{"claude_on":"%s","c5":"%s","c5p":"%s","c7":"%s","c7p":"%s","codex_on":"%s","cx5":"%s","cx5p":"%s","cx7":"%s","cx7p":"%s","gemini_on":"%s","gm5":"%s","gm5p":"%s","gm7":"%s","gm7p":"%s","iv":"%s","update":"%s","cx_l1":"%s","cx_l2":"%s","gm_l1":"%s","gm_l2":"%s"}\n' \
     "$CL_ON" "$C5" "$C5P" "$C7" "$C7P" "$CX_ON" "$CX5" "$CX5P" "$CX7" "$CX7P" "$GM_ON" "$GM5" "$GM5P" "$GM7" "$GM7P" "$IV" \
-    "$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION")" "$CX_L1" "$CX_L2" "$GM_L1" "$GM_L2" > "$dir/state.json.tmp" &&
+    "$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION")" "$cxl1" "$cxl2" "$GM_L1" "$GM_L2" > "$dir/state.json.tmp" &&
     mv -f "$dir/state.json.tmp" "$dir/state.json"
 }
 
@@ -219,6 +221,7 @@ toggle_menu() {
   tg c7p "$C7P" "  7d percentage"
   tg codex_on "$CX_ON" "Show Codex"
   local cx_l1="${CX_L1:-5h}" cx_l2="${CX_L2:-7d}"
+  [ "$CX_L1" = "7d" ] && [ -z "$CX_L2" ] && { cx_l1="5h"; cx_l2="7d"; }
   tg cx5 "$CX5" "  $cx_l1"
   tg cx5p "$CX5P" "  $cx_l1 percentage"
   tg cx7 "$CX7" "  $cx_l2"
@@ -381,14 +384,14 @@ CX_R1=$(( CX_U1<0 ? -1 : 100-CX_U1 )); CX_R2=$(( CX_U2<0 ? -1 : 100-CX_U2 ))
 # ラベルが何であっても cx5/cx7 のトグルが効くようにする。
 cx_window_enabled() {
   case "$1" in
-    1) [ "$CX5" = 1 ] ;;
+    1) if [ "$CX_L1" = "7d" ] && [ -z "$CX_L2" ]; then [ "$CX7" = 1 ]; else [ "$CX5" = 1 ]; fi ;;
     2) [ "$CX7" = 1 ] ;;
     *) return 0 ;;
   esac
 }
 cx_window_percentage() {
   case "$1" in
-    1) printf '%s' "$CX5P" ;;
+    1) if [ "$CX_L1" = "7d" ] && [ -z "$CX_L2" ]; then printf '%s' "$CX7P"; else printf '%s' "$CX5P"; fi ;;
     2) printf '%s' "$CX7P" ;;
     *) printf '1' ;;
   esac
@@ -520,8 +523,8 @@ if [ "${1:-}" = "--json" ]; then
 
   S5=0; [ "$C5" = 1 ] && [ "$REM5" -ge 0 ] && S5=1
   S7=0; [ "$C7" = 1 ] && [ "$REM7" -ge 0 ] && S7=1
-  X1=0; [ "$CX5" = 1 ] && [ "$CX_R1" -ge 0 ] && X1=1
-  X2=0; [ "$CX7" = 1 ] && [ "$CX_R2" -ge 0 ] && X2=1
+  X1=0; cx_window_enabled 1 && [ "$CX_R1" -ge 0 ] && X1=1
+  X2=0; cx_window_enabled 2 && [ "$CX_R2" -ge 0 ] && X2=1
   G1=0; [ "$GM5" = 1 ] && [ "$GM_R1" -ge 0 ] && G1=1
   G2=0; [ "$GM7" = 1 ] && [ "$GM_R2" -ge 0 ] && G2=1
 
@@ -530,8 +533,8 @@ if [ "${1:-}" = "--json" ]; then
 
   # Codex の枠は 1 個のこともある（契約状態で変わる）。空の枠は出さない。
   CX_WINS=""
-  [ -n "$CX_L1" ] && CX_WINS="$(jwin "$CX_L1" "$CX_R1" "$(cxcol "$CX_U1")" "$CX_T1" "$X1" "$CX5P")"
-  [ -n "$CX_L2" ] && CX_WINS="${CX_WINS:+$CX_WINS,}$(jwin "$CX_L2" "$CX_R2" "$(cxcol "$CX_U2")" "$CX_T2" "$X2" "$CX7P")"
+  [ -n "$CX_L1" ] && CX_WINS="$(jwin "$CX_L1" "$CX_R1" "$(cxcol "$CX_U1")" "$CX_T1" "$X1" "$(cx_window_percentage 1)")"
+  [ -n "$CX_L2" ] && CX_WINS="${CX_WINS:+$CX_WINS,}$(jwin "$CX_L2" "$CX_R2" "$(cxcol "$CX_U2")" "$CX_T2" "$X2" "$(cx_window_percentage 2)")"
 
   # Gemini の枠
   GM_WINS=""
