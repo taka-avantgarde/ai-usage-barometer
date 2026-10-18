@@ -353,6 +353,13 @@
           <label class="switch sm"><input id="gm5" type="checkbox"><span class="slider"></span></label>
         </div>
       </div>
+      <div class="sub-row" id="row-gm7">
+        <label class="win-label" for="gm7">1w (<span id="gm-l2-a">7d</span>)</label>
+        <div class="win-controls">
+          <label class="pct-pill" title="Show percentage"><input id="gm7p" type="checkbox">%</label>
+          <label class="switch sm"><input id="gm7" type="checkbox"><span class="slider"></span></label>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -370,14 +377,14 @@
 
   <script>
     const params = new URLSearchParams(location.search);
-    const toggleIds = ['claude_on', 'c5', 'c5p', 'c7', 'c7p', 'codex_on', 'cx5', 'cx5p', 'cx7', 'cx7p', 'gemini_on', 'gm5', 'gm5p'];
+    const toggleIds = ['claude_on', 'c5', 'c5p', 'c7', 'c7p', 'codex_on', 'cx5', 'cx5p', 'cx7', 'cx7p', 'gemini_on', 'gm5', 'gm5p', 'gm7', 'gm7p'];
     const el = id => document.getElementById(id);
 
     function syncVisualState() {
       const groups = [
         ['claude_on', ['row-c5', 'row-c7']],
         ['codex_on', ['row-cx5', 'row-cx7']],
-        ['gemini_on', ['row-gm5']]
+        ['gemini_on', ['row-gm5', 'row-gm7']]
       ];
       groups.forEach(([parentId, rowIds]) => {
         const parentOn = el(parentId).checked;
@@ -392,8 +399,9 @@
       const l1 = get('cx_l1'), l2 = get('cx_l2');
       if (l1) el('cx-l1-a').textContent = l1;
       if (l2) el('cx-l2-a').textContent = l2;
-      const gl1 = get('gm_l1');
+      const gl1 = get('gm_l1'), gl2 = get('gm_l2');
       if (gl1) el('gm-l1-a').textContent = gl1;
+      if (gl2) el('gm-l2-a').textContent = gl2;
 
       const clOn = get('claude_on') !== '0';
       const c5 = clOn && get('c5') !== '0';
@@ -413,10 +421,14 @@
       el('cx5p').checked = get('cx5p') !== '0';
       el('cx7p').checked = get('cx7p') !== '0';
 
-      const gmOn = get('gemini_on') !== '0' && get('gm5') !== '0';
-      el('gemini_on').checked = gmOn;
-      el('gm5').checked = gmOn;
+      const gmOn = get('gemini_on') !== '0';
+      const gm5 = gmOn && get('gm5') !== '0';
+      const gm7 = gmOn && get('gm7') !== '0';
+      el('gemini_on').checked = gm5 || gm7;
+      el('gm5').checked = gm5;
+      el('gm7').checked = gm7;
       el('gm5p').checked = get('gm5p') !== '0';
+      el('gm7p').checked = get('gm7p') !== '0';
 
       document.querySelectorAll('input[name="iv"]').forEach(input => {
         input.checked = input.value === (get('iv') || '3');
@@ -456,11 +468,15 @@
     el('gemini_on').addEventListener('change', e => {
       const on = e.target.checked;
       el('gm5').checked = on;
+      el('gm7').checked = on;
       syncVisualState();
     });
-    el('gm5').addEventListener('change', e => {
-      el('gemini_on').checked = e.target.checked;
-      syncVisualState();
+    ['gm5', 'gm7'].forEach(id => {
+      el(id).addEventListener('change', e => {
+        if (e.target.checked) el('gemini_on').checked = true;
+        else if (!el('gm5').checked && !el('gm7').checked) el('gemini_on').checked = false;
+        syncVisualState();
+      });
     });
 
     // Save ボタンで一括保存＆ゲージ更新

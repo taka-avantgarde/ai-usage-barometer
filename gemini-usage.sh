@@ -238,6 +238,49 @@ def build_result(source, plan, models):
     }
     return res
 
+def parse_iso_ts(reset_time):
+    if isinstance(reset_time, (int, float)):
+        return int(reset_time)
+    if isinstance(reset_time, str) and reset_time:
+        try:
+            return int(datetime.fromisoformat(reset_time.replace("Z", "+00:00")).timestamp())
+        except Exception:
+            return 0
+    return 0
+
+def parse_quota_summary(qdata, plan="Google AI", source="live"):
+    resp = qdata.get("response") or qdata
+    groups = resp.get("groups") or []
+    gm_group = next((g for g in groups if "gemini" in (g.get("displayName") or "").lower()), None)
+    if not gm_group and groups:
+        gm_group = groups[0]
+    if not gm_group:
+        return None
+    buckets = gm_group.get("buckets") or []
+    w5 = None
+    w7 = None
+    for b in buckets:
+        bid = (b.get("bucketId") or "").lower()
+        win = (b.get("window") or "").lower()
+        rem = float(b.get("remainingFraction", 1.0))
+        rts = parse_iso_ts(b.get("resetTime"))
+        if rts > 0 and rts < now:
+            rem = 1.0
+        used_pct = max(0, min(100, int(round((1.0 - rem) * 100))))
+        if "5h" in win or "5h" in bid:
+            w5 = {"label": "5h", "used_percent": used_pct, "resets_at": rts}
+        elif "week" in win or "week" in bid or "7d" in win:
+            w7 = {"label": "7d", "used_percent": used_pct, "resets_at": rts}
+    if not w5 and not w7:
+        return None
+    return {
+        "source": source,
+        "fetched_at": now,
+        "plan": plan or "Google AI",
+        "primary": w5 or w7,
+        "secondary": w7 if w5 else None
+    }
+
 def parse_ustatus_obj(ustatus, source="fixture"):
     plan = None
     tier = ustatus.get("userTier") or {}
@@ -254,7 +297,13 @@ if test_json and os.path.isfile(test_json):
     try:
         with open(test_json, "r", encoding="utf-8") as f:
             d = json.load(f)
-        if "userStatus" in d:
+        if "response" in d or "groups" in d:
+            res = parse_quota_summary(d, "Google AI", "fixture")
+            if res:
+                res["fetched_at"] = now
+                print(json.dumps(res))
+                sys.exit(0)
+        elif "userStatus" in d:
             res = parse_ustatus_obj(d["userStatus"], "fixture")
             if res:
                 res["fetched_at"] = now
@@ -274,7 +323,7 @@ if test_json and os.path.isfile(test_json):
     except Exception as e:
         pass
 
-# Tier 1: Live language_server
+# Tier 1: Live language_server (RetrieveUserQuotaSummary + GetUserStatus)
 def try_language_server():
     try:
         ps_out = subprocess.check_output(["ps", "-ax", "-o", "pid=,command="], stderr=subprocess.DEVNULL).decode("utf-8")
@@ -284,7 +333,6 @@ def try_language_server():
     for line in ps_out.splitlines():
         line = line.strip()
         if "language_server" in line and "--csrf_token" in line:
-            # find pid
             parts = line.split(None, 1)
             if len(parts) == 2:
                 pid = parts[0]
@@ -305,31 +353,42 @@ def try_language_server():
             ports = re.findall(r"127\.0\.0\.1:(\d+)", lsof_out)
             for port in set(ports):
                 for scheme in ("https", "http"):
-                    curl_cmd = [
-                        "curl", "-k", "-s", "-m", "2", "-X", "POST",
-                        f"{scheme}://127.0.0.1:{port}/exa.language_server_pb.LanguageServerService/GetUserStatus",
+                    base_url = f"{scheme}://127.0.0.1:{port}/exa.language_server_pb.LanguageServerService"
+                    headers = [
                         "-H", f"x-codeium-csrf-token: {token}",
                         "-H", "Connect-Protocol-Version: 1",
                         "-H", "Content-Type: application/json",
-                        "-d", '{"metadata":{"ideName":"antigravity","extensionName":"antigravity","locale":"en"}}'
                     ]
+                    payload = '{"metadata":{"ideName":"antigravity","extensionName":"antigravity","locale":"en"}}'
+                    plan = None
+                    ustatus = None
                     try:
-                        out = subprocess.check_output(curl_cmd, stderr=subprocess.DEVNULL)
-                        if out and b"userStatus" in out:
-                            data = json.loads(out)
-                            ustatus = data.get("userStatus") or {}
-                            plan = None
+                        out_u = subprocess.check_output(
+                            ["curl", "-k", "-s", "-m", "2", "-X", "POST", f"{base_url}/GetUserStatus"] + headers + ["-d", payload],
+                            stderr=subprocess.DEVNULL
+                        )
+                        if out_u and b"userStatus" in out_u:
+                            ustatus = (json.loads(out_u).get("userStatus") or {})
                             tier = ustatus.get("userTier") or {}
-                            if tier.get("name"):
-                                plan = tier["name"]
-                            elif ustatus.get("plan"):
-                                plan = ustatus["plan"]
-                            configs = (ustatus.get("cascadeModelConfigData") or {}).get("clientModelConfigs") or []
-                            res = build_result("live", plan, configs)
+                            plan = tier.get("name") or ustatus.get("plan")
+                    except Exception:
+                        pass
+                    try:
+                        out_q = subprocess.check_output(
+                            ["curl", "-k", "-s", "-m", "2", "-X", "POST", f"{base_url}/RetrieveUserQuotaSummary"] + headers + ["-d", "{}"],
+                            stderr=subprocess.DEVNULL
+                        )
+                        if out_q and b"groups" in out_q:
+                            res = parse_quota_summary(json.loads(out_q), plan or "Google AI", "live")
                             if res:
                                 return res
                     except Exception:
                         pass
+                    if ustatus:
+                        configs = (ustatus.get("cascadeModelConfigData") or {}).get("clientModelConfigs") or []
+                        res = build_result("live", plan, configs)
+                        if res:
+                            return res
         except Exception:
             pass
     return None

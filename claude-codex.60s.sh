@@ -92,7 +92,7 @@ apply_web_setting() {
         cx5:1|cx7:1) printf '1\n' > "$CFG/codex_on" ;;
         cx5:0|cx7:0) [ "$(rd cx5)" = 0 ] && [ "$(rd cx7)" = 0 ] && printf '0\n' > "$CFG/codex_on" ;;
         gm5:1|gm7:1) printf '1\n' > "$CFG/gemini_on" ;;
-        gm5:0)       printf '0\n' > "$CFG/gemini_on" ;;
+        gm5:0|gm7:0) [ "$(rd gm5)" = 0 ] && [ "$(rd gm7)" = 0 ] && printf '0\n' > "$CFG/gemini_on" ;;
       esac
       ;;
     iv)
@@ -113,7 +113,15 @@ if [ -n "${AUB_BULK:-}" ]; then
   OLD_IFS="$IFS"; IFS=','
   for pair in $AUB_BULK; do
     IFS="$OLD_IFS"
-    AUB_KEY="${pair%%:*}" AUB_VALUE="${pair#*:}" apply_web_setting
+    bkey="${pair%%:*}"; bval="${pair#*:}"
+    case "$bkey" in
+      claude_on|codex_on|gemini_on|c5|c5p|c7|c7p|cx5|cx5p|cx7|cx7p|gm5|gm5p|gm7|gm7p|cmp)
+        case "$bval" in 0|1) printf '%s\n' "$bval" > "$CFG/$bkey" ;; esac
+        ;;
+      iv)
+        AUB_KEY=iv AUB_VALUE="$bval" apply_web_setting
+        ;;
+    esac
   done
   IFS="$OLD_IFS"
 fi
@@ -227,11 +235,12 @@ PY
 write_settings_state() {
   local dir; dir="$(dirname "$SETTINGS_PAGE")"
   [ -d "$dir" ] || return 0
-  local cxl1="${CX_L1:-5h}" cxl2="${CX_L2:-7d}"
+  local cxl1="${CX_L1:-5h}" cxl2="${CX_L2:-7d}" gml1="${GM_L1:-5h}" gml2="${GM_L2:-7d}"
   [ "$CX_L1" = "7d" ] && [ -z "$CX_L2" ] && { cxl1="5h"; cxl2="7d"; }
+  [ "$GM_L1" = "7d" ] && [ -z "$GM_L2" ] && { gml1="5h"; gml2="7d"; }
   printf '{"claude_on":"%s","c5":"%s","c5p":"%s","c7":"%s","c7p":"%s","codex_on":"%s","cx5":"%s","cx5p":"%s","cx7":"%s","cx7p":"%s","gemini_on":"%s","gm5":"%s","gm5p":"%s","gm7":"%s","gm7p":"%s","iv":"%s","update":"%s","cx_l1":"%s","cx_l2":"%s","gm_l1":"%s","gm_l2":"%s"}\n' \
     "$CL_ON" "$C5" "$C5P" "$C7" "$C7P" "$CX_ON" "$CX5" "$CX5P" "$CX7" "$CX7P" "$GM_ON" "$GM5" "$GM5P" "$GM7" "$GM7P" "$IV" \
-    "$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION")" "$cxl1" "$cxl2" "$GM_L1" "$GM_L2" > "$dir/state.json.tmp" &&
+    "$([ "$UPDATE_AVAILABLE" = 1 ] && printf '%s' "$LATEST_VERSION")" "$cxl1" "$cxl2" "$gml1" "$gml2" > "$dir/state.json.tmp" &&
     mv -f "$dir/state.json.tmp" "$dir/state.json"
 }
 
@@ -330,11 +339,12 @@ if [ "$CL_ACTIVE" = 1 ] && [ $(( NOW - aT )) -lt $(( IV * 60 )) ] && [ -n "$cU5$
   U5="$cU5"; U7="$cU7"; R5="$cR5"; R7="$cR7"
   P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
 elif [ "$CL_ACTIVE" = 1 ] && [ "$NOW" -lt "$RETRY_AT" ]; then
-  if [ -n "$cU5$cU7" ]; then
+  if [ -n "$cU5$cU7" ] && [ "$LAST_ERR" != "$T_NOCRED" ] && [ "$LAST_ERR" != "$T_REAUTH" ]; then
     U5="$cU5"; U7="$cU7"; R5="$cR5"; R7="$cR7"
     P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
   else
     CL_ERR="${LAST_ERR:-Retrying soon} ($(( (RETRY_AT - NOW + 59) / 60 ))m)"
+    case "$LAST_ERR" in "$T_NOCRED"|"$T_REAUTH") CL_ERR="$LAST_ERR" ;; esac
   fi
 elif [ "$CL_ACTIVE" = 1 ]; then
   CREDS=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null)
@@ -343,12 +353,14 @@ elif [ "$CL_ACTIVE" = 1 ]; then
   [ -z "$TOKEN" ] && TOKEN=$(jpick "$CREDS" accessToken)
   if [ -z "$TOKEN" ]; then
     CL_ERR="$T_NOCRED"
+    rm -f "$CACHEF"; cU5=""; cU7=""
   else
     RESP=$(curl -s -m 8 -w $'\n%{http_code}' "$ENDPOINT" \
             -H "Authorization: Bearer $TOKEN" -H "anthropic-beta: $BETA")
     CODE="${RESP##*$'\n'}"; BODY="${RESP%$'\n'*}"
     if [ "$CODE" = "401" ]; then
       CL_ERR="$T_REAUTH"
+      rm -f "$CACHEF"; cU5=""; cU7=""
     elif [ "$CODE" = "429" ]; then
       CL_ERR="$T_RATELIMIT"
     elif [ "$CODE" != "200" ]; then
@@ -370,8 +382,8 @@ elif [ "$CL_ACTIVE" = 1 ]; then
   else
     rm -f "$ATT"
   fi
-  # 取得に失敗してもキャッシュがあればそれを表示（エラーはキャッシュ無し時のみ）
-  if [ -n "$CL_ERR" ] && [ -n "$cU5$cU7" ]; then
+  # 一時的な通信エラー・429 のときだけ直近キャッシュを表示（認証切れ・未ログイン時は表示しない）
+  if [ -n "$CL_ERR" ] && [ "$CL_ERR" != "$T_NOCRED" ] && [ "$CL_ERR" != "$T_REAUTH" ] && [ -n "$cU5$cU7" ]; then
     CL_ERR=""; U5="$cU5"; U7="$cU7"; R5="$cR5"; R7="$cR7"
     P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
   fi
@@ -476,14 +488,14 @@ GM_R1=$(( GM_U1<0 ? -1 : 100-GM_U1 )); GM_R2=$(( GM_U2<0 ? -1 : 100-GM_U2 ))
 
 gm_window_enabled() {
   case "$1" in
-    1) [ "$GM5" = 1 ] ;;
+    1) if [ "$GM_L1" = "7d" ] && [ -z "$GM_L2" ]; then [ "$GM7" = 1 ]; else [ "$GM5" = 1 ]; fi ;;
     2) [ "$GM7" = 1 ] ;;
     *) return 0 ;;
   esac
 }
 gm_window_percentage() {
   case "$1" in
-    1) printf '%s' "$GM5P" ;;
+    1) if [ "$GM_L1" = "7d" ] && [ -z "$GM_L2" ]; then printf '%s' "$GM7P"; else printf '%s' "$GM5P"; fi ;;
     2) printf '%s' "$GM7P" ;;
     *) printf '1' ;;
   esac
@@ -569,8 +581,8 @@ if [ "${1:-}" = "--json" ]; then
   S7=0; [ "$C7" = 1 ] && [ "$REM7" -ge 0 ] && S7=1
   X1=0; cx_window_enabled 1 && [ "$CX_R1" -ge 0 ] && X1=1
   X2=0; cx_window_enabled 2 && [ "$CX_R2" -ge 0 ] && X2=1
-  G1=0; [ "$GM5" = 1 ] && [ "$GM_R1" -ge 0 ] && G1=1
-  G2=0; [ "$GM7" = 1 ] && [ "$GM_R2" -ge 0 ] && G2=1
+  G1=0; gm_window_enabled 1 && [ "$GM_R1" -ge 0 ] && G1=1
+  G2=0; gm_window_enabled 2 && [ "$GM_R2" -ge 0 ] && G2=1
 
   CL_WINS="$(jwin "5h" "$REM5" "$(clcol "$P5")" "$(remain "$R5")" "$S5" "$C5P"),"
   CL_WINS="$CL_WINS$(jwin "7d" "$REM7" "$(clcol "$P7")" "$(remain "$R7")" "$S7" "$C7P")"
@@ -582,8 +594,8 @@ if [ "${1:-}" = "--json" ]; then
 
   # Gemini の枠
   GM_WINS=""
-  [ -n "$GM_L1" ] && GM_WINS="$(jwin "$GM_L1" "$GM_R1" "$(gmcol "$GM_U1")" "$GM_T1" "$G1" "$GM5P")"
-  [ -n "$GM_L2" ] && GM_WINS="${GM_WINS:+$GM_WINS,}$(jwin "$GM_L2" "$GM_R2" "$(gmcol "$GM_U2")" "$GM_T2" "$G2" "$GM7P")"
+  [ -n "$GM_L1" ] && GM_WINS="$(jwin "$GM_L1" "$GM_R1" "$(gmcol "$GM_U1")" "$GM_T1" "$G1" "$(gm_window_percentage 1)")"
+  [ -n "$GM_L2" ] && GM_WINS="${GM_WINS:+$GM_WINS,}$(jwin "$GM_L2" "$GM_R2" "$(gmcol "$GM_U2")" "$GM_T2" "$G2" "$(gm_window_percentage 2)")"
 
   printf '{"version":"%s","update":{"available":%s,"latest":"%s"},"updated":"%s",' \
     "$(jesc "$VERSION")" "$(jbool "$UPDATE_AVAILABLE")" "$(jesc "$LATEST_VERSION")" "$(date '+%H:%M:%S')"

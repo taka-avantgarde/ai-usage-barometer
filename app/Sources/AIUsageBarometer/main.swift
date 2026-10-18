@@ -272,9 +272,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 self.applyPresence()
                 self.restartTimer()
                 DispatchQueue.global(qos: .userInitiated).async {
-                    for (k, v) in draft where ["claude_on", "c5", "c5p", "c7", "c7p", "codex_on", "cx5", "cx5p", "cx7", "cx7p", "gemini_on", "gm5", "gm5p", "gm7", "gm7p", "notify"].contains(k) {
-                        Plugin.set(k, v ? "1" : "0")
-                    }
                     Plugin.set("iv", String(iv))
                     let u = Plugin.fetch()
                     DispatchQueue.main.async { self.apply(u) }
@@ -351,7 +348,10 @@ final class SettingsPanelView: NSView {
         let cx7 = cxOn && Settings.read("cx7", "1") == "1"
         let cxActive = cx5 || cx7
 
-        let gmActive = Settings.read("gemini_on", "1") == "1" && Settings.read("gm5", "1") == "1"
+        let gmOn = Settings.read("gemini_on", "1") == "1"
+        let gm5 = gmOn && Settings.read("gm5", "1") == "1"
+        let gm7 = gmOn && Settings.read("gm7", "1") == "1"
+        let gmActive = gm5 || gm7
         let p = AppDelegate.Presence.load()
 
         self.draft = [
@@ -366,9 +366,9 @@ final class SettingsPanelView: NSView {
             "cx7": cx7,
             "cx7p": Settings.read("cx7p", "1") == "1",
             "gemini_on": gmActive,
-            "gm5": gmActive,
+            "gm5": gm5,
             "gm5p": Settings.read("gm5p", "1") == "1",
-            "gm7": gmActive,
+            "gm7": gm7,
             "gm7p": Settings.read("gm7p", "1") == "1",
             "p_menu": p.menubar,
             "p_dock": p.dock,
@@ -379,7 +379,7 @@ final class SettingsPanelView: NSView {
         self.draftIv = [1, 3, 5].contains(v) ? v : 3
         self.draftLogin = (SMAppService.mainApp.status == .enabled)
 
-        let totalHeight: CGFloat = updateAvailable.isEmpty ? 596 : 636
+        let totalHeight: CGFloat = updateAvailable.isEmpty ? 628 : 668
         super.init(frame: NSRect(x: 0, y: 0, width: 328, height: totalHeight))
     }
 
@@ -413,10 +413,12 @@ final class SettingsPanelView: NSView {
             if !(draft["cx5"] ?? false) && !(draft["cx7"] ?? false) {
                 draft["codex_on"] = false
             }
-        case ("gm5", true):
-            draft["gemini_on"] = true; draft["gm7"] = true
-        case ("gm5", false):
-            draft["gemini_on"] = false; draft["gm7"] = false
+        case ("gm5", true), ("gm7", true):
+            draft["gemini_on"] = true
+        case ("gm5", false), ("gm7", false):
+            if !(draft["gm5"] ?? false) && !(draft["gm7"] ?? false) {
+                draft["gemini_on"] = false
+            }
         case ("p_menu", false), ("p_dock", false), ("p_float", false):
             if !(draft["p_menu"] ?? false) && !(draft["p_dock"] ?? false) && !(draft["p_float"] ?? false) {
                 draft["p_float"] = true
@@ -550,7 +552,7 @@ final class SettingsPanelView: NSView {
         }
 
         // ── Card 1: Claude / Codex / Gemini ──
-        let card1H: CGFloat = (36 + 32 + 32) + (36 + 32 + 32) + (36 + 32)
+        let card1H: CGFloat = (36 + 32 + 32) * 3
         drawCard(yStart: y, height: card1H)
 
         drawServiceParentRow(title: "Claude", dotHex: "#C66D28", key: "claude_on", yPos: y)
@@ -572,6 +574,8 @@ final class SettingsPanelView: NSView {
         drawServiceParentRow(title: "Gemini", dotHex: "#158F6A", key: "gemini_on", yPos: y)
         y += 36
         drawChildRow(title: "5h", key: "gm5", pctKey: "gm5p", parentKey: "gemini_on", yPos: y)
+        y += 32
+        drawChildRow(title: "1w (7d)", key: "gm7", pctKey: "gm7p", parentKey: "gemini_on", yPos: y)
         y += 32 + 8
 
         // ── Card 2: Placement & Preferences ──

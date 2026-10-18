@@ -226,6 +226,13 @@ normalise_json() {
       else . end;
     . as $root |
     (choose_snapshot) as $s |
+    (win($s.primary // $s.primary_window // $root.primary // $root.primary_window // $root.rate_limit.primary_window)) as $p |
+    (win($s.secondary // $s.secondary_window // $root.secondary // $root.secondary_window // $root.rate_limit.secondary_window)) as $sec |
+    (if $sec == null and $p != null and (($p.window_minutes // 0) >= 1440) then
+       { primary: { used_percent: 0, window_minutes: 300, resets_at: ($fetched_at + 18000) }, secondary: $p }
+     else
+       { primary: $p, secondary: $sec }
+     end) as $wins |
     {
       schema_version: 1,
       source: $source,
@@ -233,8 +240,8 @@ normalise_json() {
       limit_id: ($s.limit_id // $root.limit_id // "codex"),
       limit_name: ($s.limit_name // $root.limit_name // "Codex"),
       plan_type: ($s.plan_type // $root.plan_type // $root.planType // null),
-      primary: win($s.primary // $s.primary_window // $root.primary // $root.primary_window // $root.rate_limit.primary_window),
-      secondary: win($s.secondary // $s.secondary_window // $root.secondary // $root.secondary_window // $root.rate_limit.secondary_window),
+      primary: $wins.primary,
+      secondary: $wins.secondary,
       credits: ($s.credits // $root.credits // null),
       individual_limit: ($s.individual_limit // $root.individual_limit // null),
       spend_control_reached: ($s.spend_control_reached // $root.spend_control_reached // null)
