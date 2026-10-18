@@ -163,9 +163,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     errors.append(s.name + ": " + s.error)
                     continue
                 }
-                for w in s.windows where w.show {
+                let ordered = s.windows.sorted { ($0.label == "5h" ? 0 : 1) < ($1.label == "5h" ? 0 : 1) }
+                for w in ordered where w.show {
+                    let dispLabel = (w.label == "7d" || w.label == "1w") ? "1w" : w.label
                     rows.append(Row(service: s.name,
-                                    label: w.label,
+                                    label: dispLabel,
                                     left: w.left,
                                     color: Gauge.color(w.color),
                                     resets: w.resets,
@@ -559,7 +561,7 @@ final class SettingsPanelView: NSView {
         y += 36
         drawChildRow(title: "5h", key: "c5", pctKey: "c5p", parentKey: "claude_on", yPos: y)
         y += 32
-        drawChildRow(title: "1w (7d)", key: "c7", pctKey: "c7p", parentKey: "claude_on", yPos: y)
+        drawChildRow(title: "1w", key: "c7", pctKey: "c7p", parentKey: "claude_on", yPos: y)
         y += 32
 
         drawHairline(at: y)
@@ -567,7 +569,7 @@ final class SettingsPanelView: NSView {
         y += 36
         drawChildRow(title: "5h", key: "cx5", pctKey: "cx5p", parentKey: "codex_on", yPos: y)
         y += 32
-        drawChildRow(title: "1w (7d)", key: "cx7", pctKey: "cx7p", parentKey: "codex_on", yPos: y)
+        drawChildRow(title: "1w", key: "cx7", pctKey: "cx7p", parentKey: "codex_on", yPos: y)
         y += 32
 
         drawHairline(at: y)
@@ -575,7 +577,7 @@ final class SettingsPanelView: NSView {
         y += 36
         drawChildRow(title: "5h", key: "gm5", pctKey: "gm5p", parentKey: "gemini_on", yPos: y)
         y += 32
-        drawChildRow(title: "1w (7d)", key: "gm7", pctKey: "gm7p", parentKey: "gemini_on", yPos: y)
+        drawChildRow(title: "1w", key: "gm7", pctKey: "gm7p", parentKey: "gemini_on", yPos: y)
         y += 32 + 8
 
         // ── Card 2: Placement & Preferences ──

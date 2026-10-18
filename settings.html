@@ -306,7 +306,7 @@
         </div>
       </div>
       <div class="sub-row" id="row-c7">
-        <label class="win-label" for="c7">1w (7d)</label>
+        <label class="win-label" for="c7">1w</label>
         <div class="win-controls">
           <label class="pct-pill" title="Show percentage"><input id="c7p" type="checkbox">%</label>
           <label class="switch sm"><input id="c7" type="checkbox"><span class="slider"></span></label>
@@ -330,7 +330,7 @@
         </div>
       </div>
       <div class="sub-row" id="row-cx7">
-        <label class="win-label" for="cx7">1w (<span id="cx-l2-a">7d</span>)</label>
+        <label class="win-label" for="cx7"><span id="cx-l2-a">1w</span></label>
         <div class="win-controls">
           <label class="pct-pill" title="Show percentage"><input id="cx7p" type="checkbox">%</label>
           <label class="switch sm"><input id="cx7" type="checkbox"><span class="slider"></span></label>
@@ -354,7 +354,7 @@
         </div>
       </div>
       <div class="sub-row" id="row-gm7">
-        <label class="win-label" for="gm7">1w (<span id="gm-l2-a">7d</span>)</label>
+        <label class="win-label" for="gm7"><span id="gm-l2-a">1w</span></label>
         <div class="win-controls">
           <label class="pct-pill" title="Show percentage"><input id="gm7p" type="checkbox">%</label>
           <label class="switch sm"><input id="gm7" type="checkbox"><span class="slider"></span></label>
@@ -396,12 +396,13 @@
     }
 
     function applyState(get) {
+      const fmtLbl = v => (v === '7d' ? '1w' : v);
       const l1 = get('cx_l1'), l2 = get('cx_l2');
-      if (l1) el('cx-l1-a').textContent = l1;
-      if (l2) el('cx-l2-a').textContent = l2;
+      if (l1) el('cx-l1-a').textContent = fmtLbl(l1);
+      if (l2) el('cx-l2-a').textContent = fmtLbl(l2);
       const gl1 = get('gm_l1'), gl2 = get('gm_l2');
-      if (gl1) el('gm-l1-a').textContent = gl1;
-      if (gl2) el('gm-l2-a').textContent = gl2;
+      if (gl1) el('gm-l1-a').textContent = fmtLbl(gl1);
+      if (gl2) el('gm-l2-a').textContent = fmtLbl(gl2);
 
       const clOn = get('claude_on') !== '0';
       const c5 = clOn && get('c5') !== '0';

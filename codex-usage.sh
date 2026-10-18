@@ -230,6 +230,8 @@ normalise_json() {
     (win($s.secondary // $s.secondary_window // $root.secondary // $root.secondary_window // $root.rate_limit.secondary_window)) as $sec |
     (if $sec == null and $p != null and (($p.window_minutes // 0) >= 1440) then
        { primary: { used_percent: 0, window_minutes: 300, resets_at: ($fetched_at + 18000) }, secondary: $p }
+     elif $p != null and $sec != null and (($p.window_minutes // 0) >= 1440) and (($sec.window_minutes // 0) < 1440) then
+       { primary: $sec, secondary: $p }
      else
        { primary: $p, secondary: $sec }
      end) as $wins |

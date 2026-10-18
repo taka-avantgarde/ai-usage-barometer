@@ -250,29 +250,29 @@ tg() { # tg <key> <現在値> <ラベル>
   echo "--$3$([ "$2" = 1 ] && echo '  ✓') | bash='$SELF_PATH' param1=--set param2=$1 param3=$nx terminal=false refresh=true"
 }
 toggle_menu() {
-  local cl_c5=0 cl_c7=0 cx_5=0 cx_7=0 gm_5=0
+  local cl_c5=0 cl_c7=0 cx_5=0 cx_7=0 gm_5=0 gm_7=0
   [ "$CL_ON" = 1 ] && [ "$C5" = 1 ] && cl_c5=1
   [ "$CL_ON" = 1 ] && [ "$C7" = 1 ] && cl_c7=1
   [ "$CX_ON" = 1 ] && [ "$CX5" = 1 ] && cx_5=1
   [ "$CX_ON" = 1 ] && [ "$CX7" = 1 ] && cx_7=1
   [ "$GM_ON" = 1 ] && [ "$GM5" = 1 ] && gm_5=1
+  [ "$GM_ON" = 1 ] && [ "$GM7" = 1 ] && gm_7=1
   echo "⚙ Display settings | size=12"
   tg claude_on "$CL_ACTIVE" "Claude"
   tg c5 "$cl_c5" "  5h"
   tg c5p "$C5P" "  5h %"
-  tg c7 "$cl_c7" "  1w (7d)"
-  tg c7p "$C7P" "  1w (7d) %"
+  tg c7 "$cl_c7" "  1w"
+  tg c7p "$C7P" "  1w %"
   tg codex_on "$CX_ACTIVE" "Codex"
-  local cx_l1="${CX_L1:-5h}" cx_l2="${CX_L2:-7d}"
-  [ "$CX_L1" = "7d" ] && [ -z "$CX_L2" ] && { cx_l1="5h"; cx_l2="7d"; }
-  tg cx5 "$cx_5" "  $cx_l1"
-  tg cx5p "$CX5P" "  $cx_l1 %"
-  tg cx7 "$cx_7" "  1w ($cx_l2)"
-  tg cx7p "$CX7P" "  1w ($cx_l2) %"
+  tg cx5 "$cx_5" "  5h"
+  tg cx5p "$CX5P" "  5h %"
+  tg cx7 "$cx_7" "  1w"
+  tg cx7p "$CX7P" "  1w %"
   tg gemini_on "$GM_ACTIVE" "Gemini"
-  local gm_l1="${GM_L1:-5h}"
-  tg gm5 "$gm_5" "  $gm_l1"
-  tg gm5p "$GM5P" "  $gm_l1 %"
+  tg gm5 "$gm_5" "  5h"
+  tg gm5p "$GM5P" "  5h %"
+  tg gm7 "$gm_7" "  1w"
+  tg gm7p "$GM7P" "  1w %"
   tg cmp "$CMP" "Compact (fits beside the notch)"
   echo "⏱ Refresh: ${IV} min | size=12"
   local m
