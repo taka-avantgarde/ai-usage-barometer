@@ -220,7 +220,8 @@ grep -q 'https://chatgpt.com/backend-api/wham/usage' "$ROOT/codex-usage.sh"
 ! grep -q ';&' "$ROOT/gemini-usage.sh"
 
 # Gemini mock JSON test
-cat > "$TMP/gemini-mock.json" <<'JSON'
+GEMINI_RESET_FUTURE="$(date -u -v+2H '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || date -u -d '+2 hours' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || echo "2099-01-01T00:00:00Z")"
+cat > "$TMP/gemini-mock.json" <<JSON
 {
   "userStatus": {
     "userTier": {"name": "Google AI Ultra"},
@@ -231,7 +232,7 @@ cat > "$TMP/gemini-mock.json" <<'JSON'
           "label": "Gemini 2.5 Flash",
           "quotaInfo": {
             "remainingFraction": 0.85,
-            "resetTime": "2026-10-17T20:00:00Z"
+            "resetTime": "$GEMINI_RESET_FUTURE"
           }
         }
       ]

@@ -3,7 +3,7 @@
 # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 set -euo pipefail
 
-VERSION="0.8.0"
+VERSION="0.8.1"
 REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 BRANCH="${AI_USAGE_BRANCH:-main}"
 PLUGIN_DIR="${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}"
@@ -143,7 +143,7 @@ if [[ "$TEST_MODE" != "1" && "${AI_USAGE_SKIP_APP_LAUNCH:-0}" != "1" ]]; then
   open -a SwiftBar >/dev/null 2>&1 || open /Applications/SwiftBar.app >/dev/null 2>&1 || true
   sleep 1
   open -g "swiftbar://refreshallplugins" >/dev/null 2>&1 || true
-  osascript -e "display notification \"Updated to v0.8.0 — Gemini (Antigravity Desktop & IDE) support added.\" with title \"AI Usage Barometer\"" 2>/dev/null || true
+  osascript -e "display notification \"Updated to v0.8.1 — individual 5h/7d window toggles restored.\" with title \"AI Usage Barometer\"" 2>/dev/null || true
 fi
 
 cat <<DONE

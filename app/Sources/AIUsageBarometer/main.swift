@@ -254,8 +254,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func menu() -> NSMenu {
         let m = NSMenu()
         m.addItem(check("Show Claude", ["claude_on"]))
+        m.addItem(check("  Claude 5h", ["c5"], indent: 1))
+        m.addItem(check("  Claude 7d (1w)", ["c7"], indent: 1))
         m.addItem(check("Show Codex", ["codex_on"]))
+        m.addItem(check("  Codex 5h / Window 1", ["cx5"], indent: 1))
+        m.addItem(check("  Codex 7d (1w) / Window 2", ["cx7"], indent: 1))
         m.addItem(check("Show Gemini", ["gemini_on"]))
+        m.addItem(check("  Gemini 5h", ["gm5"], indent: 1))
+        m.addItem(check("  Gemini 2nd window", ["gm7"], indent: 1))
         m.addItem(check("Percentages", ["c5p", "c7p", "cx5p", "cx7p", "gm5p", "gm7p"]))
         m.addItem(NSMenuItem.separator())
 
@@ -309,11 +315,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return m
     }
 
-    private func check(_ title: String, _ keys: [String]) -> NSMenuItem {
+    private func check(_ title: String, _ keys: [String], indent: Int = 0) -> NSMenuItem {
         let item = NSMenuItem(title: title, action: #selector(toggleKeys(_:)), keyEquivalent: "")
         item.target = self
         item.representedObject = keys
         item.state = Settings.read(keys[0], "1") == "1" ? .on : .off
+        if indent > 0 { item.indentationLevel = indent }
         return item
     }
 

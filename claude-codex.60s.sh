@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.8.0</xbar.version>
+# <xbar.version>v0.8.1</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude, Codex and Gemini usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.8.0"
+VERSION="v0.8.1"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -213,18 +213,22 @@ tg() { # tg <key> <現在値> <ラベル>
 toggle_menu() {
   echo "⚙ Display settings | size=12"
   tg claude_on "$CL_ON" "Show Claude"
-  [ "$CL_ON" = 1 ] && { tg c5 "$C5" "  5h"; tg c5p "$C5P" "  5h percentage"
-                        tg c7 "$C7" "  7d"; tg c7p "$C7P" "  7d percentage"; }
+  tg c5 "$C5" "  5h"
+  tg c5p "$C5P" "  5h percentage"
+  tg c7 "$C7" "  7d"
+  tg c7p "$C7P" "  7d percentage"
   tg codex_on "$CX_ON" "Show Codex"
-  if [ "$CX_ON" = 1 ]; then
-    [ -n "$CX_L1" ] && { tg cx5 "$CX5" "  $CX_L1"; tg cx5p "$CX5P" "  $CX_L1 percentage"; }
-    [ -n "$CX_L2" ] && { tg cx7 "$CX7" "  $CX_L2"; tg cx7p "$CX7P" "  $CX_L2 percentage"; }
-  fi
+  local cx_l1="${CX_L1:-5h}" cx_l2="${CX_L2:-7d}"
+  tg cx5 "$CX5" "  $cx_l1"
+  tg cx5p "$CX5P" "  $cx_l1 percentage"
+  tg cx7 "$CX7" "  $cx_l2"
+  tg cx7p "$CX7P" "  $cx_l2 percentage"
   tg gemini_on "$GM_ON" "Show Gemini"
-  if [ "$GM_ON" = 1 ]; then
-    [ -n "$GM_L1" ] && { tg gm5 "$GM5" "  $GM_L1"; tg gm5p "$GM5P" "  $GM_L1 percentage"; }
-    [ -n "$GM_L2" ] && { tg gm7 "$GM7" "  $GM_L2"; tg gm7p "$GM7P" "  $GM_L2 percentage"; }
-  fi
+  local gm_l1="${GM_L1:-5h}" gm_l2="${GM_L2:-Flash}"
+  tg gm5 "$GM5" "  $gm_l1"
+  tg gm5p "$GM5P" "  $gm_l1 percentage"
+  tg gm7 "$GM7" "  $gm_l2"
+  tg gm7p "$GM7P" "  $gm_l2 percentage"
   tg cmp "$CMP" "Compact (fits beside the notch)"
   echo "⏱ Refresh: ${IV} min | size=12"
   local m
