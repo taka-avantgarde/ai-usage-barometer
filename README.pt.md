@@ -31,8 +31,8 @@ Já usa o SwiftBar, ou prefere ali? Esta linha instala o plugin no lugar, trazen
 Claude, Codex e Gemini dividem um item, separados por um traço fino. As barras são estilo bateria: **a parte preenchida é a capacidade restante** e a cauda pontilhada é o que já foi gasto. As porcentagens também são do restante.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
-└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
+5h ███░·  1w ██░░·  │  5h ████·  1w ███░·  │  5h ████·  1w ███░·
+└──── Claude ────┘     └───── Codex ─────┘     └──── Gemini ────┘
 ```
 
 A barra de menus é desenhada como imagem vetorial para que cada serviço mantenha sua cor dentro de um mesmo item. Caso não seja possível, usa-se texto simples automaticamente.

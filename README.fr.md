@@ -31,8 +31,8 @@ Déjà sur SwiftBar, ou vous le préférez ? Cette ligne installe le plugin à l
 Claude, Codex et Gemini partagent un élément, séparés par un trait fin. Les barres sont de type batterie : **la partie pleine est la capacité restante**, la traîne pointillée est ce qui a été consommé. Les pourcentages indiquent aussi le restant.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
-└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
+5h ███░·  1w ██░░·  │  5h ████·  1w ███░·  │  5h ████·  1w ███░·
+└──── Claude ────┘     └───── Codex ─────┘     └──── Gemini ────┘
 ```
 
 La barre de menus est dessinée en vectoriel afin que chaque service garde sa couleur dans un même élément. Un repli en texte simple est utilisé automatiquement si nécessaire.

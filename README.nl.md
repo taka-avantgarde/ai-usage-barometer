@@ -31,8 +31,8 @@ Zit je al op SwiftBar, of wil je hem daar? Deze regel installeert in plaats daar
 Claude, Codex en Gemini delen één item, gescheiden door een dunne streep. De balken zijn batterij-stijl: **het gevulde deel is de resterende capaciteit**, de gestippelde staart is verbruikt. Percentages tonen eveneens het restant.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
-└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
+5h ███░·  1w ██░░·  │  5h ████·  1w ███░·  │  5h ████·  1w ███░·
+└──── Claude ────┘     └───── Codex ─────┘     └──── Gemini ────┘
 ```
 
 De menubalk wordt als vectorafbeelding getekend zodat elke dienst binnen één item zijn eigen kleur houdt. Anders wordt automatisch platte tekst gebruikt.

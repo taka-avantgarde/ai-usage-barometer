@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.8.1</xbar.version>
+# <xbar.version>v0.9.0</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude, Codex and Gemini usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.8.1"
+VERSION="v0.9.0"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -193,7 +193,7 @@ latest_release_version() {
   now=$(date +%s)
   if [ -f "$file" ]; then
     mtime=$(stat -f %m "$file" 2>/dev/null || stat -c %Y "$file" 2>/dev/null || echo 0)
-    if [ $((now-mtime)) -lt 86400 ]; then read -r latest < "$file" 2>/dev/null; fi
+    if [ $((now-mtime)) -lt 900 ]; then read -r latest < "$file" 2>/dev/null; fi
   fi
   if [ -z "$latest" ]; then
     latest=$(jpick "$(curl -fsSL --connect-timeout 3 --max-time 6 \

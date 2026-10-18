@@ -31,8 +31,8 @@ Sudah memakai SwiftBar, atau memang ingin di sana? Baris ini memasang versi plug
 Claude, Codex, dan Gemini berbagi satu item, dipisahkan garis tipis. Bilah bergaya baterai: **bagian terisi adalah kapasitas tersisa**, ekor bertitik adalah yang sudah terpakai. Persentase juga menunjukkan sisa.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
-└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
+5h ███░·  1w ██░░·  │  5h ████·  1w ███░·  │  5h ████·  1w ███░·
+└──── Claude ────┘     └───── Codex ─────┘     └──── Gemini ────┘
 ```
 
 Bilah menu digambar sebagai gambar vektor sehingga tiap layanan mempertahankan warnanya dalam satu item. Jika tidak memungkinkan, otomatis beralih ke teks biasa.

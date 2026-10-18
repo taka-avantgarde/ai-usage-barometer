@@ -49,6 +49,17 @@ fi
 rm -rf "$DEST"
 mv "$STAGE" "$DEST"
 
+if [ -d "$HOME/SwiftBar" ] && [ -f "$DEST/Contents/Resources/claude-codex.60s.sh" ]; then
+  cp -f "$DEST/Contents/Resources/claude-codex.60s.sh" "$HOME/SwiftBar/claude-codex.60s.sh" 2>/dev/null || true
+  chmod +x "$HOME/SwiftBar/claude-codex.60s.sh" 2>/dev/null || true
+  if [ -d "$DEST/Contents/Resources/.ai-usage-barometer" ]; then
+    mkdir -p "$HOME/SwiftBar/.ai-usage-barometer" 2>/dev/null || true
+    cp -Rf "$DEST/Contents/Resources/.ai-usage-barometer/"* "$HOME/SwiftBar/.ai-usage-barometer/" 2>/dev/null || true
+    chmod +x "$HOME/SwiftBar/.ai-usage-barometer/"*.sh 2>/dev/null || true
+  fi
+fi
+rm -f "$HOME/.cache/claude-codex-bar/latest_release" 2>/dev/null || true
+
 echo "✔ $DEST"
 ( killall AIUsageBarometer 2>/dev/null || true; sleep 0.5; open "$DEST" ) >/dev/null 2>&1 &
 echo

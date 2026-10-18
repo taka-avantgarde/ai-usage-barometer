@@ -31,8 +31,8 @@
 Claude, Codex và Gemini dùng chung một mục, ngăn bởi một vạch mảnh. Thanh theo kiểu pin: **phần đầy là dung lượng còn lại**, phần chấm là đã dùng. Phần trăm cũng là lượng còn lại.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
-└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
+5h ███░·  1w ██░░·  │  5h ████·  1w ███░·  │  5h ████·  1w ███░·
+└──── Claude ────┘     └───── Codex ─────┘     └──── Gemini ────┘
 ```
 
 Thanh menu được vẽ dạng ảnh vector nên mỗi dịch vụ giữ được màu riêng trong cùng một mục. Nếu không thể, hệ thống tự chuyển sang văn bản thuần.

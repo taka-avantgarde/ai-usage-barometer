@@ -31,14 +31,14 @@ Already on SwiftBar, or want it there? This line installs the plugin instead, ad
 Claude, Codex, and Gemini share a single item, separated by a thin rule. Bars are battery-style: **the filled part is capacity left**, and the dotted tail is what has been spent. Percentages are remaining capacity too.
 
 ```text
-5h ███░·  7d ██░░·  │  7d ████·  │  5h ████·
-└──── Claude ────┘     └─ Codex ─┘   └─ Gemini ─┘
+5h ███░·  1w ██░░·  │  5h ████·  1w ███░·  │  5h ████·  1w ███░·
+└──── Claude ────┘     └───── Codex ─────┘     └──── Gemini ────┘
 ```
 
 The menu bar is drawn as a vector image so each service keeps its own colour inside one item. It uses a dark charcoal `#20252B` backdrop with light labels for readability on the translucent macOS menu bar. A plain-text fallback is used automatically when that is unavailable.
 
-Both palettes use saturated, high-contrast colours: Claude uses orange and
-Codex uses cyan. At 11–30% remaining, warning shades mix in orange; at 10% or
+All three palettes use saturated, high-contrast colours: Claude uses orange,
+Codex uses cyan, and Gemini uses emerald green. At 11–30% remaining, warning shades mix in orange; at 10% or
 less, critical shades mix in vivid red. Codex keeps blue in both blends:
 
 | Stage | Usage | Claude | Codex | Gemini |
@@ -49,36 +49,27 @@ less, critical shades mix in vivid red. Codex keeps blue in both blends:
 
 ## Settings
 
-Open the dropdown and choose **⚙ Display settings**. It opens a persistent settings panel, so you can change several options without the panel closing after each click. Changes take effect immediately.
+Right-click the gauge (or open the dropdown and choose **⚙ Display settings**). It opens a persistent settings panel with macOS/iOS-style ON/OFF toggle switches and a **Save** button, so you can toggle multiple options without the panel closing after each click.
 
 The plugin interface is English-only. This GitHub documentation remains available in 14 languages.
 
 | Setting | Effect |
 |---|---|
-| Show Claude | Show or hide Claude entirely |
-| Show Claude 5h | Show or hide the 5-hour window |
-| Claude 5h percentage | Show or hide the 5-hour percentage |
-| Show Claude 7d | Show or hide the 7-day window |
-| Claude 7d percentage | Show or hide the 7-day percentage |
-| Show Codex | Show or hide Codex entirely |
-| Show Codex window 1 | Show or hide whichever window Codex reports first (e.g. Codex 5h) |
-| Codex window 1 percentage | Show or hide its percentage |
-| Show Codex window 2 | Show or hide the second window, if Codex reports one (e.g. Codex 7d) |
-| Codex window 2 percentage | Show or hide its percentage |
-| Show Gemini | Show or hide Gemini entirely |
-| Show Gemini window 1 | Show or hide whichever window Gemini reports first (e.g. 5h) |
-| Gemini window 1 percentage | Show or hide its percentage |
-| Show Gemini window 2 | Show or hide the second window, if Gemini reports one (e.g. Flash) |
-| Gemini window 2 percentage | Show or hide its percentage |
-| Refresh interval | 1, 3, or 5 minutes |
+| **Claude** (`ON` / `OFF`) | Show or hide Claude entirely (cascades to both `5h` and `1w`) |
+| **Claude `5h`** + **`%`** | Show or hide the 5-hour window and its percentage |
+| **Claude `1w`** + **`%`** | Show or hide the 1-week (7d) window and its percentage |
+| **Codex** (`ON` / `OFF`) | Show or hide Codex entirely (cascades to both `5h` and `1w`) |
+| **Codex `5h`** + **`%`** | Show or hide the 5-hour window (e.g. Codex 5h) and its percentage |
+| **Codex `1w`** + **`%`** | Show or hide the 1-week window (e.g. Codex 7d) and its percentage |
+| **Gemini** (`ON` / `OFF`) | Show or hide Gemini entirely (cascades to both `5h` and `1w`) |
+| **Gemini `5h`** + **`%`** | Show or hide the 5-hour window (`5h`) and its percentage |
+| **Gemini `1w`** + **`%`** | Show or hide the 1-week window (`1w` / 7d) and its percentage |
+| **Placement** (`Menu bar` / `Dock icon` / `Floating bar`) | Choose any combination of the 3 macOS surfaces |
+| **Refresh interval** (`1m` / `3m` / `5m`) | Poll interval in minutes |
 
-When every gauge is hidden, a neutral `AI …` item remains so settings stay clickable. Menu-bar colour is decided only by the gauges actually shown. Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
+Windows are always displayed in **`5h` → `1w`** order. Turning a parent service (`Claude`, `Codex`, or `Gemini`) OFF automatically turns off both its `5h` and `1w` switches and skips its data refresh; turning both `5h` and `1w` OFF automatically turns the parent service OFF. When every gauge is hidden, a neutral `AI …` item remains so settings stay clickable. Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
 
-Turning Claude or Codex off skips that service's data refresh. Its 5h, 7d, and percentage settings remain visible but are dimmed and locked; their previous values are restored when the service is turned on again.
-
-If both the 5h and 7d windows for a service are unchecked, that service and its errors are hidden completely, and its data source is not queried.
-
-The plugin checks GitHub Releases at most once a day. When an operator update is available, the dropdown and Display settings show a notice with release notes and an **Update now** button.
+The app and plugin check GitHub Releases automatically every 15 minutes and update in the background when a new release is published.
 
 ## The app — pick where it lives
 
@@ -121,11 +112,11 @@ Settings are shared with the SwiftBar plugin, so the two never disagree.
 
 **Claude** is read from the OAuth usage endpoint `api.anthropic.com/api/oauth/usage`, using the access token Claude Code already stores in the macOS Keychain item `Claude Code-credentials` (falling back to `~/.claude/.credentials.json`). Nothing is written to either location, and the token never leaves your Mac except in the request to Anthropic. macOS may ask you to allow Keychain access on first run — choose **Always Allow**.
 
-Results are cached for the refresh interval, so the endpoint is polled at most once per interval. If a refresh fails, the last good reading stays on screen instead of blanking the bar.
+Results are cached for the refresh interval, so the endpoint is polled at most once per interval. If a temporary network error or 429 occurs, the last good reading stays on screen; if credentials are removed or logged out, stale cached data is cleared immediately.
 
-**Codex** is read from the local helper `codex-usage.sh` that the installer places in `~/SwiftBar/.ai-usage-barometer/`. Its windows are dynamic in both count and name — a plan change can turn `5h`/`7d` into something like `30d` — so the two toggles above track whichever windows Codex actually returns, first and second, and the settings panel relabels itself to match.
+**Codex** is read from the local helper `codex-usage.sh` that the installer places in `~/SwiftBar/.ai-usage-barometer/`. It tracks both `5h` and `1w` (`7d`) windows in `5h → 1w` order (even when the 5-hour burst window has not been consumed yet).
 
-**Gemini** is read from the local helper `gemini-usage.sh` in `~/SwiftBar/.ai-usage-barometer/`. It tracks Antigravity Desktop App 2.0 and Antigravity IDE without credentials or external API calls via local language server Connect RPC, read-only SQLite state fallback, and caching.
+**Gemini** is read from the local helper `gemini-usage.sh` in `~/SwiftBar/.ai-usage-barometer/`. It tracks both `5h` (Five Hour Limit) and `1w` (Weekly Limit) quotas across Antigravity Desktop App 2.0 and Antigravity IDE without credentials or external API calls via local language server Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), read-only SQLite state fallback, and caching.
 
 ## Troubleshooting
 
