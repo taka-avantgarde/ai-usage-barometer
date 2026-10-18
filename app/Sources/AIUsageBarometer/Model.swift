@@ -35,6 +35,7 @@ enum Plugin {
         var candidates: [String] = []
         if let e = ProcessInfo.processInfo.environment["AIBAR_PLUGIN"] { candidates.append(e) }
         candidates.append(NSHomeDirectory() + "/SwiftBar/claude-codex.60s.sh")
+        if let r = Bundle.main.resourcePath { candidates.append(r + "/claude-codex.60s.sh") }
         let cwd = fm.currentDirectoryPath
         candidates.append(cwd + "/claude-codex.60s.sh")
         candidates.append(cwd + "/../claude-codex.60s.sh")

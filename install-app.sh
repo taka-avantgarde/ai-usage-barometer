@@ -30,24 +30,27 @@ ditto -x -k "$T/app.zip" "$T/x"
 SRC=$(find "$T/x" -maxdepth 1 -name '*.app' -print -quit)
 [ -n "$SRC" ] || { echo "✘ zip の中に .app がありません"; exit 1; }
 
-# 動いていると差し替えられない
-pkill -f AIUsageBarometer 2>/dev/null || true
-sleep 1
-rm -rf "$DEST"
-ditto "$SRC" "$DEST"
+# アプリ自身の自動更新から呼ばれた場合、先に kill すると launchd が子プロセスごと終了させ
+# rm -rf の直後に中断して .app が消えるため、ステージング完了・差し替え後に再起動する。
+STAGE="$DEST.new.$$"
+rm -rf "$STAGE"
+ditto "$SRC" "$STAGE"
 
 # 公証済みなら隔離属性のままで起動できる。未署名のときだけ外す。
 # 自分で取ってきた自分のアプリなので外して差し支えないが、
 # 公証を入れた時点でこの迂回は自動的に使われなくなる。
-if spctl --assess --type execute "$DEST" >/dev/null 2>&1; then
+if spctl --assess --type execute "$STAGE" >/dev/null 2>&1; then
   echo "  （署名・公証済み）"
 else
-  xattr -dr com.apple.quarantine "$DEST" 2>/dev/null || true
+  xattr -dr com.apple.quarantine "$STAGE" 2>/dev/null || true
   echo "  （未署名のため隔離属性を外しました）"
 fi
 
+rm -rf "$DEST"
+mv "$STAGE" "$DEST"
+
 echo "✔ $DEST"
-open "$DEST"
+( killall AIUsageBarometer 2>/dev/null || true; sleep 0.5; open "$DEST" ) >/dev/null 2>&1 &
 echo
 echo "右クリックで設定（表示するサービス／％／置き場所）。"
 echo "置き場所は メニューバー・Dockアイコン・フローティングバー から選べます。"
