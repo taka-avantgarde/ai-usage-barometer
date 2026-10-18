@@ -254,210 +254,48 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // 書くのも --set 経由。どちらの表示から変えても食い違わない。
     func menu() -> NSMenu {
         let m = NSMenu()
-        let clOn = Settings.read("claude_on", "1") == "1"
-        let c5On = clOn && Settings.read("c5", "1") == "1"
-        let c7On = clOn && Settings.read("c7", "1") == "1"
-        let clActive = c5On || c7On
-        m.addItem(serviceHeader("Claude", color: "#C66D28", key: "claude_on", on: clActive))
-        m.addItem(windowRow("5h", key: "c5", on: c5On, parentOn: clActive))
-        m.addItem(windowRow("1w (7d)", key: "c7", on: c7On, parentOn: clActive))
-
-        let cxOn = Settings.read("codex_on", "1") == "1"
-        let cx5On = cxOn && Settings.read("cx5", "1") == "1"
-        let cx7On = cxOn && Settings.read("cx7", "1") == "1"
-        let cxActive = cx5On || cx7On
-        m.addItem(serviceHeader("Codex", color: "#1A8BA6", key: "codex_on", on: cxActive))
-        m.addItem(windowRow("5h", key: "cx5", on: cx5On, parentOn: cxActive))
-        m.addItem(windowRow("1w (7d)", key: "cx7", on: cx7On, parentOn: cxActive))
-
-        let gmOn = Settings.read("gemini_on", "1") == "1" && Settings.read("gm5", "1") == "1"
-        m.addItem(serviceHeader("Gemini", color: "#158F6A", key: "gemini_on", on: gmOn))
-        m.addItem(windowRow("5h", key: "gm5", on: gmOn, parentOn: gmOn))
-        m.addItem(NSMenuItem.separator())
-        m.addItem(check("Show % numbers", ["c5p", "c7p", "cx5p", "cx7p", "gm5p"]))
-        m.addItem(NSMenuItem.separator())
-
-        let p = Presence.load()
-        m.addItem(presenceItem("Menu bar", "p_menu", p.menubar))
-        m.addItem(presenceItem("Dock icon", "p_dock", p.dock))
-        m.addItem(presenceItem("Floating bar", "p_float", p.float))
-        m.addItem(NSMenuItem.separator())
-
-        let iv = NSMenuItem(title: "Refresh every", action: nil, keyEquivalent: "")
-        let ivMenu = NSMenu()
-        for minutes in [1, 3, 5] {
-            let item = NSMenuItem(title: "\(minutes) min", action: #selector(setInterval(_:)), keyEquivalent: "")
-            item.target = self
-            item.representedObject = minutes
-            item.state = interval == minutes ? .on : .off
-            ivMenu.addItem(item)
-        }
-        iv.submenu = ivMenu
-        m.addItem(iv)
-
-        m.addItem(check("Low-usage alerts", ["notify"]))
-
-        let login = NSMenuItem(title: "Open at login", action: #selector(toggleLogin), keyEquivalent: "")
-        login.target = self
-        login.state = SMAppService.mainApp.status == .enabled ? .on : .off
-        m.addItem(login)
-        m.addItem(NSMenuItem.separator())
-
-        // バーに矢印が出ているなら、ここから1クリックで終わらせられること。
-        // 印だけ出して手順を読ませるのは、報せていないのと同じ。
-        if floatPanel.gauge.updateAvailable && !latestVersion.isEmpty {
-            let up = NSMenuItem(title: "Update to " + latestVersion,
-                                action: #selector(installUpdate), keyEquivalent: "")
-            up.target = self
-            m.addItem(up)
-            m.addItem(NSMenuItem.separator())
-        }
-
-        let d = NSMenuItem(title: "Details…", action: #selector(showDetailAction), keyEquivalent: "")
-        d.target = self
-        m.addItem(d)
-
-        let r = NSMenuItem(title: "Refresh now", action: #selector(refreshNow), keyEquivalent: "")
-        r.target = self
-        m.addItem(r)
-        let q = NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
-        // target を指定しないとキーウィンドウが無いとき無反応になる
-        q.target = NSApp
-        m.addItem(q)
+        m.minimumWidth = 328
+        let item = NSMenuItem()
+        let panel = SettingsPanelView(
+            updateAvailable: floatPanel.gauge.updateAvailable ? latestVersion : "",
+            onSave: { [weak self] draft, iv, loginOn in
+                guard let self = self else { return }
+                for (k, v) in draft {
+                    Settings.write(k, v ? "1" : "0")
+                }
+                Settings.write("iv", String(iv))
+                let service = SMAppService.mainApp
+                let currentLogin = (service.status == .enabled)
+                if loginOn != currentLogin {
+                    try? (loginOn ? service.register() : service.unregister())
+                }
+                self.applyPresence()
+                self.restartTimer()
+                DispatchQueue.global(qos: .userInitiated).async {
+                    for (k, v) in draft where ["claude_on", "c5", "c5p", "c7", "c7p", "codex_on", "cx5", "cx5p", "cx7", "cx7p", "gemini_on", "gm5", "gm5p", "gm7", "gm7p", "notify"].contains(k) {
+                        Plugin.set(k, v ? "1" : "0")
+                    }
+                    Plugin.set("iv", String(iv))
+                    let u = Plugin.fetch()
+                    DispatchQueue.main.async { self.apply(u) }
+                }
+            },
+            onUpdate: { [weak self] in
+                self?.installUpdate()
+            },
+            onDetails: { [weak self] in
+                self?.showDetail()
+            },
+            onRefresh: { [weak self] in
+                self?.refresh()
+            },
+            onQuit: {
+                NSApp.terminate(nil)
+            }
+        )
+        item.view = panel
+        m.addItem(item)
         return m
-    }
-
-    private func serviceHeader(_ title: String, color hex: String, key: String, on: Bool) -> NSMenuItem {
-        let item = NSMenuItem(title: title, action: #selector(toggleKeys(_:)), keyEquivalent: "")
-        item.target = self
-        item.representedObject = [key]
-        item.state = on ? .on : .off
-        let attr = NSMutableAttributedString(
-            string: "●  ",
-            attributes: [
-                .foregroundColor: Gauge.color(hex),
-                .font: NSFont.systemFont(ofSize: 11, weight: .bold)
-            ]
-        )
-        attr.append(NSAttributedString(
-            string: title,
-            attributes: [
-                .foregroundColor: on ? NSColor.labelColor : NSColor.secondaryLabelColor,
-                .font: NSFont.systemFont(ofSize: 13, weight: .semibold)
-            ]
-        ))
-        item.attributedTitle = attr
-        return item
-    }
-
-    private func windowRow(_ title: String, key: String, on: Bool, parentOn: Bool) -> NSMenuItem {
-        let item = NSMenuItem(title: title, action: #selector(toggleKeys(_:)), keyEquivalent: "")
-        item.target = self
-        item.representedObject = [key]
-        item.state = on ? .on : .off
-        item.indentationLevel = 1
-        item.attributedTitle = NSAttributedString(
-            string: title,
-            attributes: [
-                .foregroundColor: (on && parentOn) ? NSColor.labelColor : NSColor.secondaryLabelColor,
-                .font: NSFont.monospacedDigitSystemFont(ofSize: 12.5, weight: on ? .medium : .regular)
-            ]
-        )
-        return item
-    }
-
-    private func check(_ title: String, _ keys: [String], indent: Int = 0, on: Bool? = nil) -> NSMenuItem {
-        let item = NSMenuItem(title: title, action: #selector(toggleKeys(_:)), keyEquivalent: "")
-        item.target = self
-        item.representedObject = keys
-        let isOn = on ?? (Settings.read(keys[0], "1") == "1")
-        item.state = isOn ? .on : .off
-        if indent > 0 { item.indentationLevel = indent }
-        return item
-    }
-
-    @objc func toggleKeys(_ sender: NSMenuItem) {
-        guard let keys = sender.representedObject as? [String] else { return }
-        let next = sender.state == .on ? "0" : "1"
-        for k in keys {
-            Settings.write(k, next)
-            switch (k, next) {
-            case ("claude_on", "0"):
-                Settings.write("c5", "0"); Settings.write("c7", "0")
-            case ("claude_on", "1"):
-                Settings.write("c5", "1"); Settings.write("c7", "1")
-            case ("codex_on", "0"):
-                Settings.write("cx5", "0"); Settings.write("cx7", "0")
-            case ("codex_on", "1"):
-                Settings.write("cx5", "1"); Settings.write("cx7", "1")
-            case ("gemini_on", "0"):
-                Settings.write("gm5", "0"); Settings.write("gm7", "0")
-            case ("gemini_on", "1"):
-                Settings.write("gm5", "1"); Settings.write("gm7", "1")
-            case ("c5", "1"), ("c7", "1"):
-                Settings.write("claude_on", "1")
-            case ("c5", "0"), ("c7", "0"):
-                if Settings.read("c5", "1") == "0" && Settings.read("c7", "1") == "0" {
-                    Settings.write("claude_on", "0")
-                }
-            case ("cx5", "1"), ("cx7", "1"):
-                Settings.write("codex_on", "1")
-            case ("cx5", "0"), ("cx7", "0"):
-                if Settings.read("cx5", "1") == "0" && Settings.read("cx7", "1") == "0" {
-                    Settings.write("codex_on", "0")
-                }
-            case ("gm5", "1"):
-                Settings.write("gemini_on", "1")
-            case ("gm5", "0"):
-                Settings.write("gemini_on", "0")
-            default:
-                break
-            }
-        }
-        DispatchQueue.global(qos: .userInitiated).async {
-            for k in keys { Plugin.set(k, next) }
-            let u = Plugin.fetch()
-            DispatchQueue.main.async { self.apply(u) }
-        }
-    }
-
-    private func presenceItem(_ title: String, _ key: String, _ on: Bool) -> NSMenuItem {
-        let item = NSMenuItem(title: title, action: #selector(togglePresence(_:)), keyEquivalent: "")
-        item.target = self
-        item.representedObject = key
-        item.state = on ? .on : .off
-        return item
-    }
-
-    @objc func togglePresence(_ sender: NSMenuItem) {
-        guard let key = sender.representedObject as? String else { return }
-        let now = sender.state == .on
-        Settings.write(key, now ? "0" : "1")
-        applyPresence()
-        refresh()
-    }
-
-    @objc func setInterval(_ sender: NSMenuItem) {
-        guard let minutes = sender.representedObject as? Int else { return }
-        // 書くのは --set 経由。Codex ヘルパー側の間隔もプラグインが面倒を見る。
-        Plugin.set("iv", String(minutes))
-        restartTimer()
-        refresh()
-    }
-
-    // ログイン項目は .app として動いているときだけ登録できる。swift run では
-    // 失敗するが、それは異常ではないので黙って無視する。
-    @objc func toggleLogin() {
-        let service = SMAppService.mainApp
-        do {
-            if service.status == .enabled {
-                try service.unregister()
-            } else {
-                try service.register()
-            }
-        } catch {
-            NSSound.beep()
-        }
     }
 
     @objc func installUpdate() {
@@ -466,15 +304,448 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             DispatchQueue.main.async { self.refresh() }
         }
     }
+}
 
-    @objc func showDetailAction() {
-        showDetail()
+// ── iOS / macOS System Settings 風のトグルスイッチ＋Saveボタン付きパネル ──
+final class SettingsPanelView: NSView {
+    override var isFlipped: Bool { true }
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+
+    private var draft: [String: Bool] = [:]
+    private var draftIv: Int = 3
+    private var draftLogin: Bool = false
+    private var savedFlash: Bool = false
+    private let updateVersion: String
+    private let onSave: ([String: Bool], Int, Bool) -> Void
+    private let onUpdate: () -> Void
+    private let onDetails: () -> Void
+    private let onRefresh: () -> Void
+    private let onQuit: () -> Void
+
+    private struct HitZone {
+        let rect: NSRect
+        let action: () -> Void
+    }
+    private var hitZones: [HitZone] = []
+
+    init(updateAvailable: String,
+         onSave: @escaping ([String: Bool], Int, Bool) -> Void,
+         onUpdate: @escaping () -> Void,
+         onDetails: @escaping () -> Void,
+         onRefresh: @escaping () -> Void,
+         onQuit: @escaping () -> Void) {
+        self.updateVersion = updateAvailable
+        self.onSave = onSave
+        self.onUpdate = onUpdate
+        self.onDetails = onDetails
+        self.onRefresh = onRefresh
+        self.onQuit = onQuit
+
+        let clOn = Settings.read("claude_on", "1") == "1"
+        let c5 = clOn && Settings.read("c5", "1") == "1"
+        let c7 = clOn && Settings.read("c7", "1") == "1"
+        let clActive = c5 || c7
+
+        let cxOn = Settings.read("codex_on", "1") == "1"
+        let cx5 = cxOn && Settings.read("cx5", "1") == "1"
+        let cx7 = cxOn && Settings.read("cx7", "1") == "1"
+        let cxActive = cx5 || cx7
+
+        let gmActive = Settings.read("gemini_on", "1") == "1" && Settings.read("gm5", "1") == "1"
+        let p = AppDelegate.Presence.load()
+
+        self.draft = [
+            "claude_on": clActive,
+            "c5": c5,
+            "c5p": Settings.read("c5p", "1") == "1",
+            "c7": c7,
+            "c7p": Settings.read("c7p", "1") == "1",
+            "codex_on": cxActive,
+            "cx5": cx5,
+            "cx5p": Settings.read("cx5p", "1") == "1",
+            "cx7": cx7,
+            "cx7p": Settings.read("cx7p", "1") == "1",
+            "gemini_on": gmActive,
+            "gm5": gmActive,
+            "gm5p": Settings.read("gm5p", "1") == "1",
+            "gm7": gmActive,
+            "gm7p": Settings.read("gm7p", "1") == "1",
+            "p_menu": p.menubar,
+            "p_dock": p.dock,
+            "p_float": p.float,
+            "notify": Settings.read("notify", "1") == "1"
+        ]
+        let v = Int(Settings.read("iv", "3")) ?? 3
+        self.draftIv = [1, 3, 5].contains(v) ? v : 3
+        self.draftLogin = (SMAppService.mainApp.status == .enabled)
+
+        let totalHeight: CGFloat = updateAvailable.isEmpty ? 596 : 636
+        super.init(frame: NSRect(x: 0, y: 0, width: 328, height: totalHeight))
     }
 
-    @objc func refreshNow() {
-        refresh()
+    required init?(coder: NSCoder) { fatalError() }
+
+    private func toggleKey(_ key: String) {
+        let next = !(draft[key] ?? true)
+        draft[key] = next
+        switch (key, next) {
+        case ("claude_on", false):
+            draft["c5"] = false; draft["c7"] = false
+        case ("claude_on", true):
+            draft["c5"] = true; draft["c7"] = true
+        case ("codex_on", false):
+            draft["cx5"] = false; draft["cx7"] = false
+        case ("codex_on", true):
+            draft["cx5"] = true; draft["cx7"] = true
+        case ("gemini_on", false):
+            draft["gm5"] = false; draft["gm7"] = false
+        case ("gemini_on", true):
+            draft["gm5"] = true; draft["gm7"] = true
+        case ("c5", true), ("c7", true):
+            draft["claude_on"] = true
+        case ("c5", false), ("c7", false):
+            if !(draft["c5"] ?? false) && !(draft["c7"] ?? false) {
+                draft["claude_on"] = false
+            }
+        case ("cx5", true), ("cx7", true):
+            draft["codex_on"] = true
+        case ("cx5", false), ("cx7", false):
+            if !(draft["cx5"] ?? false) && !(draft["cx7"] ?? false) {
+                draft["codex_on"] = false
+            }
+        case ("gm5", true):
+            draft["gemini_on"] = true; draft["gm7"] = true
+        case ("gm5", false):
+            draft["gemini_on"] = false; draft["gm7"] = false
+        case ("p_menu", false), ("p_dock", false), ("p_float", false):
+            if !(draft["p_menu"] ?? false) && !(draft["p_dock"] ?? false) && !(draft["p_float"] ?? false) {
+                draft["p_float"] = true
+            }
+        default:
+            break
+        }
+        savedFlash = false
+        needsDisplay = true
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        hitZones.removeAll()
+
+        let bg = NSColor(srgbRed: 0.055, green: 0.063, blue: 0.078, alpha: 1.0) // #0E1014
+        let cardBg = NSColor(srgbRed: 0.082, green: 0.094, blue: 0.122, alpha: 1.0) // #15181F
+        let borderCol = NSColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.09)
+        let hairlineCol = NSColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.07)
+        let blueOn = NSColor(srgbRed: 0.039, green: 0.518, blue: 1.0, alpha: 1.0) // #0A84FF
+        let switchOff = NSColor(srgbRed: 0.224, green: 0.224, blue: 0.239, alpha: 1.0) // #39393D
+        let textPrimary = NSColor(srgbRed: 0.95, green: 0.96, blue: 0.98, alpha: 1.0)
+        let textMuted = NSColor(srgbRed: 0.56, green: 0.59, blue: 0.65, alpha: 1.0)
+
+        let outerPath = NSBezierPath(roundedRect: bounds.insetBy(dx: 4, dy: 2), xRadius: 12, yRadius: 12)
+        bg.setFill()
+        outerPath.fill()
+
+        let padX: CGFloat = 12
+        let cardW: CGFloat = bounds.width - padX * 2
+        var y: CGFloat = 10
+
+        func drawCard(yStart: CGFloat, height: CGFloat) {
+            let r = NSRect(x: padX, y: yStart, width: cardW, height: height)
+            let p = NSBezierPath(roundedRect: r, xRadius: 10, yRadius: 10)
+            cardBg.setFill()
+            p.fill()
+            borderCol.setStroke()
+            p.lineWidth = 1
+            p.stroke()
+        }
+
+        func drawHairline(at yPos: CGFloat, indent: CGFloat = 0) {
+            let line = NSBezierPath()
+            line.move(to: NSPoint(x: padX + indent, y: yPos))
+            line.line(to: NSPoint(x: padX + cardW, y: yPos))
+            hairlineCol.setStroke()
+            line.lineWidth = 1
+            line.stroke()
+        }
+
+        func drawSwitch(x: CGFloat, yCenter: CGFloat, on: Bool, small: Bool = false, dimmed: Bool = false) {
+            let w: CGFloat = small ? 38 : 42
+            let h: CGFloat = small ? 22 : 24
+            let rect = NSRect(x: x, y: yCenter - h / 2, width: w, height: h)
+            let track = NSBezierPath(roundedRect: rect, xRadius: h / 2, yRadius: h / 2)
+            let fill = on ? blueOn : switchOff
+            (dimmed ? fill.withAlphaComponent(0.35) : fill).setFill()
+            track.fill()
+
+            let knobSize = h - 4
+            let knobX = on ? (x + w - knobSize - 2) : (x + 2)
+            let knobRect = NSRect(x: knobX, y: yCenter - knobSize / 2, width: knobSize, height: knobSize)
+            let knob = NSBezierPath(ovalIn: knobRect)
+            NSColor.white.withAlphaComponent(dimmed ? 0.5 : 1.0).setFill()
+            knob.fill()
+        }
+
+        func drawServiceParentRow(title: String, dotHex: String, key: String, yPos: CGFloat) {
+            let rowH: CGFloat = 36
+            let on = draft[key] ?? true
+            let rowRect = NSRect(x: padX, y: yPos, width: cardW, height: rowH)
+            let midY = yPos + rowH / 2
+
+            let dotRect = NSRect(x: padX + 12, y: midY - 4.5, width: 9, height: 9)
+            let dot = NSBezierPath(ovalIn: dotRect)
+            Gauge.color(dotHex).setFill()
+            dot.fill()
+
+            let attr: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: 13, weight: .semibold),
+                .foregroundColor: on ? textPrimary : textMuted
+            ]
+            NSString(string: title).draw(at: NSPoint(x: padX + 28, y: midY - 8), withAttributes: attr)
+
+            drawSwitch(x: padX + cardW - 54, yCenter: midY, on: on)
+            hitZones.append(HitZone(rect: rowRect) { [weak self] in self?.toggleKey(key) })
+        }
+
+        func drawChildRow(title: String, key: String, pctKey: String, parentKey: String, yPos: CGFloat) {
+            let rowH: CGFloat = 32
+            let parentOn = draft[parentKey] ?? true
+            let on = parentOn && (draft[key] ?? true)
+            let pctOn = draft[pctKey] ?? true
+            let midY = yPos + rowH / 2
+            drawHairline(at: yPos, indent: 28)
+
+            let attr: [NSAttributedString.Key: Any] = [
+                .font: NSFont.monospacedDigitSystemFont(ofSize: 12, weight: on ? .medium : .regular),
+                .foregroundColor: on ? textPrimary : textMuted.withAlphaComponent(parentOn ? 0.85 : 0.45)
+            ]
+            NSString(string: title).draw(at: NSPoint(x: padX + 28, y: midY - 7.5), withAttributes: attr)
+
+            // % バッジトグル
+            let pctRect = NSRect(x: padX + cardW - 92, y: midY - 9.5, width: 32, height: 19)
+            let pctPath = NSBezierPath(roundedRect: pctRect, xRadius: 9.5, yRadius: 9.5)
+            let activePct = on && pctOn
+            (activePct ? blueOn.withAlphaComponent(0.22) : NSColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.05)).setFill()
+            pctPath.fill()
+            (activePct ? blueOn.withAlphaComponent(0.75) : borderCol).setStroke()
+            pctPath.lineWidth = 1
+            pctPath.stroke()
+
+            let pctAttr: [NSAttributedString.Key: Any] = [
+                .font: NSFont.monospacedDigitSystemFont(ofSize: 10.5, weight: .bold),
+                .foregroundColor: activePct ? blueOn : textMuted.withAlphaComponent(0.6)
+            ]
+            NSString(string: "%").draw(at: NSPoint(x: pctRect.midX - 5, y: midY - 6.5), withAttributes: pctAttr)
+
+            drawSwitch(x: padX + cardW - 50, yCenter: midY, on: on, small: true, dimmed: !parentOn)
+
+            let mainHit = NSRect(x: padX, y: yPos, width: cardW - 96, height: rowH)
+            let switchHit = NSRect(x: padX + cardW - 56, y: yPos, width: 56, height: rowH)
+            hitZones.append(HitZone(rect: mainHit) { [weak self] in self?.toggleKey(key) })
+            hitZones.append(HitZone(rect: switchHit) { [weak self] in self?.toggleKey(key) })
+            hitZones.append(HitZone(rect: pctRect.insetBy(dx: -4, dy: -4)) { [weak self] in
+                guard let self = self else { return }
+                self.draft[pctKey] = !(self.draft[pctKey] ?? true)
+                self.savedFlash = false
+                self.needsDisplay = true
+            })
+        }
+
+        // ── Card 1: Claude / Codex / Gemini ──
+        let card1H: CGFloat = (36 + 32 + 32) + (36 + 32 + 32) + (36 + 32)
+        drawCard(yStart: y, height: card1H)
+
+        drawServiceParentRow(title: "Claude", dotHex: "#C66D28", key: "claude_on", yPos: y)
+        y += 36
+        drawChildRow(title: "5h", key: "c5", pctKey: "c5p", parentKey: "claude_on", yPos: y)
+        y += 32
+        drawChildRow(title: "1w (7d)", key: "c7", pctKey: "c7p", parentKey: "claude_on", yPos: y)
+        y += 32
+
+        drawHairline(at: y)
+        drawServiceParentRow(title: "Codex", dotHex: "#1A8BA6", key: "codex_on", yPos: y)
+        y += 36
+        drawChildRow(title: "5h", key: "cx5", pctKey: "cx5p", parentKey: "codex_on", yPos: y)
+        y += 32
+        drawChildRow(title: "1w (7d)", key: "cx7", pctKey: "cx7p", parentKey: "codex_on", yPos: y)
+        y += 32
+
+        drawHairline(at: y)
+        drawServiceParentRow(title: "Gemini", dotHex: "#158F6A", key: "gemini_on", yPos: y)
+        y += 36
+        drawChildRow(title: "5h", key: "gm5", pctKey: "gm5p", parentKey: "gemini_on", yPos: y)
+        y += 32 + 8
+
+        // ── Card 2: Placement & Preferences ──
+        let prefRows: [(String, String)] = [
+            ("Menu bar", "p_menu"),
+            ("Dock icon", "p_dock"),
+            ("Floating bar", "p_float"),
+            ("Low-usage alerts", "notify")
+        ]
+        let card2H: CGFloat = CGFloat(prefRows.count + 2) * 32
+        drawCard(yStart: y, height: card2H)
+
+        for (idx, item) in prefRows.enumerated() {
+            if idx > 0 { drawHairline(at: y, indent: 12) }
+            let rowH: CGFloat = 32
+            let midY = y + rowH / 2
+            let on = draft[item.1] ?? false
+            let attr: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: 12.5, weight: .medium),
+                .foregroundColor: on ? textPrimary : textMuted
+            ]
+            NSString(string: item.0).draw(at: NSPoint(x: padX + 12, y: midY - 7.5), withAttributes: attr)
+            drawSwitch(x: padX + cardW - 50, yCenter: midY, on: on, small: true)
+            let rowRect = NSRect(x: padX, y: y, width: cardW, height: rowH)
+            let k = item.1
+            hitZones.append(HitZone(rect: rowRect) { [weak self] in self?.toggleKey(k) })
+            y += rowH
+        }
+
+        // Open at login row
+        drawHairline(at: y, indent: 12)
+        do {
+            let rowH: CGFloat = 32
+            let midY = y + rowH / 2
+            let attr: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: 12.5, weight: .medium),
+                .foregroundColor: draftLogin ? textPrimary : textMuted
+            ]
+            NSString(string: "Open at login").draw(at: NSPoint(x: padX + 12, y: midY - 7.5), withAttributes: attr)
+            drawSwitch(x: padX + cardW - 50, yCenter: midY, on: draftLogin, small: true)
+            let rowRect = NSRect(x: padX, y: y, width: cardW, height: rowH)
+            hitZones.append(HitZone(rect: rowRect) { [weak self] in
+                guard let self = self else { return }
+                self.draftLogin.toggle()
+                self.savedFlash = false
+                self.needsDisplay = true
+            })
+            y += rowH
+        }
+
+        // Refresh interval row (1m / 3m / 5m)
+        drawHairline(at: y, indent: 12)
+        do {
+            let rowH: CGFloat = 32
+            let midY = y + rowH / 2
+            let attr: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: 12.5, weight: .medium),
+                .foregroundColor: textPrimary
+            ]
+            NSString(string: "Refresh every").draw(at: NSPoint(x: padX + 12, y: midY - 7.5), withAttributes: attr)
+
+            let opts = [1, 3, 5]
+            var bx = padX + cardW - 118
+            for m in opts {
+                let bRect = NSRect(x: bx, y: midY - 10, width: 34, height: 20)
+                let bPath = NSBezierPath(roundedRect: bRect, xRadius: 6, yRadius: 6)
+                let active = (draftIv == m)
+                (active ? blueOn : switchOff).setFill()
+                bPath.fill()
+                let bAttr: [NSAttributedString.Key: Any] = [
+                    .font: NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .semibold),
+                    .foregroundColor: active ? NSColor.white : textMuted
+                ]
+                NSString(string: "\(m)m").draw(at: NSPoint(x: bRect.midX - 8, y: midY - 7), withAttributes: bAttr)
+                hitZones.append(HitZone(rect: bRect) { [weak self] in
+                    self?.draftIv = m
+                    self?.savedFlash = false
+                    self?.needsDisplay = true
+                })
+                bx += 37
+            }
+            y += rowH + 10
+        }
+
+        // Optional update button
+        if !updateVersion.isEmpty {
+            let upRect = NSRect(x: padX, y: y, width: cardW, height: 30)
+            let upPath = NSBezierPath(roundedRect: upRect, xRadius: 8, yRadius: 8)
+            NSColor(srgbRed: 1.0, green: 0.62, blue: 0.04, alpha: 0.2).setFill()
+            upPath.fill()
+            let upAttr: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: 12, weight: .semibold),
+                .foregroundColor: NSColor(srgbRed: 1.0, green: 0.62, blue: 0.04, alpha: 1.0)
+            ]
+            let upStr = "⬆ Update to \(updateVersion)"
+            let sz = NSString(string: upStr).size(withAttributes: upAttr)
+            NSString(string: upStr).draw(at: NSPoint(x: upRect.midX - sz.width / 2, y: upRect.midY - sz.height / 2), withAttributes: upAttr)
+            hitZones.append(HitZone(rect: upRect) { [weak self] in
+                self?.enclosingMenuItem?.menu?.cancelTracking()
+                self?.onUpdate()
+            })
+            y += 38
+        }
+
+        // ── Primary Save Button ──
+        let saveRect = NSRect(x: padX, y: y, width: cardW, height: 34)
+        let savePath = NSBezierPath(roundedRect: saveRect, xRadius: 8, yRadius: 8)
+        let saveCol = savedFlash
+            ? NSColor(srgbRed: 0.082, green: 0.561, blue: 0.416, alpha: 1.0)
+            : blueOn
+        saveCol.setFill()
+        savePath.fill()
+
+        let saveTitle = savedFlash ? "Saved ✓" : "Save"
+        let saveAttr: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: 13, weight: .bold),
+            .foregroundColor: NSColor.white
+        ]
+        let saveSz = NSString(string: saveTitle).size(withAttributes: saveAttr)
+        NSString(string: saveTitle).draw(
+            at: NSPoint(x: saveRect.midX - saveSz.width / 2, y: saveRect.midY - saveSz.height / 2),
+            withAttributes: saveAttr
+        )
+        hitZones.append(HitZone(rect: saveRect) { [weak self] in
+            guard let self = self else { return }
+            self.savedFlash = true
+            self.needsDisplay = true
+            self.onSave(self.draft, self.draftIv, self.draftLogin)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
+                self?.enclosingMenuItem?.menu?.cancelTracking()
+            }
+        })
+        y += 40
+
+        // ── Footer Quick Actions (Details · Refresh · Quit) ──
+        let actions: [(String, () -> Void)] = [
+            ("Details…", { [weak self] in
+                self?.enclosingMenuItem?.menu?.cancelTracking()
+                self?.onDetails()
+            }),
+            ("Refresh now", { [weak self] in
+                self?.enclosingMenuItem?.menu?.cancelTracking()
+                self?.onRefresh()
+            }),
+            ("Quit", { [weak self] in
+                self?.enclosingMenuItem?.menu?.cancelTracking()
+                self?.onQuit()
+            })
+        ]
+        let colW = cardW / CGFloat(actions.count)
+        for (i, act) in actions.enumerated() {
+            let r = NSRect(x: padX + CGFloat(i) * colW, y: y, width: colW, height: 24)
+            let aAttr: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: 11.5, weight: .medium),
+                .foregroundColor: textMuted
+            ]
+            let sz = NSString(string: act.0).size(withAttributes: aAttr)
+            NSString(string: act.0).draw(
+                at: NSPoint(x: r.midX - sz.width / 2, y: r.midY - sz.height / 2),
+                withAttributes: aAttr
+            )
+            hitZones.append(HitZone(rect: r, action: act.1))
+        }
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        let pt = convert(event.locationInWindow, from: nil)
+        for zone in hitZones where zone.rect.contains(pt) {
+            zone.action()
+            return
+        }
     }
 }
+
 
 // NSApp を先に立ててからデリゲートを作る。順序が逆だと起動時に落ちる。
 let app = NSApplication.shared

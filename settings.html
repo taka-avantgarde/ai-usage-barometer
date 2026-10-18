@@ -6,15 +6,16 @@
   <title>AI Usage Barometer — Display Settings</title>
   <style>
     :root {
-      color-scheme: dark light;
-      --bg: #16191d;
-      --card: #20252b;
-      --card-border: rgba(255, 255, 255, 0.08);
-      --row-border: rgba(255, 255, 255, 0.06);
-      --text: #ebeff5;
-      --muted: #8b949e;
-      --dim: rgba(235, 239, 245, 0.35);
-      --track: rgba(255, 255, 255, 0.14);
+      color-scheme: dark;
+      --bg: #0E1014;
+      --card: #15181F;
+      --card-border: rgba(255, 255, 255, 0.09);
+      --row-border: rgba(255, 255, 255, 0.07);
+      --text: #F2F5FA;
+      --muted: #8E96A4;
+      --dim: rgba(242, 245, 250, 0.36);
+      --switch-off: #39393D;
+      --switch-on: #0A84FF;
       --claude: #C66D28;
       --codex: #1A8BA6;
       --gemini: #158F6A;
@@ -22,22 +23,10 @@
       -webkit-font-smoothing: antialiased;
       user-select: none;
     }
-    @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #f5f6f8;
-        --card: #ffffff;
-        --card-border: rgba(0, 0, 0, 0.08);
-        --row-border: rgba(0, 0, 0, 0.06);
-        --text: #1c1e21;
-        --muted: #6e7781;
-        --dim: rgba(28, 30, 33, 0.35);
-        --track: rgba(0, 0, 0, 0.12);
-      }
-    }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      padding: 16px;
+      padding: 14px;
       background: var(--bg);
       color: var(--text);
     }
@@ -45,58 +34,58 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     h1 {
       margin: 0;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       letter-spacing: -0.01em;
     }
     .status {
-      font-size: 11px;
-      font-weight: 500;
+      font-size: 11.5px;
+      font-weight: 600;
       color: var(--gemini);
       opacity: 0;
       transition: opacity 0.2s ease;
     }
     .status.show { opacity: 1; }
+
     .update {
       display: none;
-      margin: 0 0 12px;
+      margin: 0 0 10px;
       padding: 10px 12px;
       border-radius: 10px;
-      background: color-mix(in srgb, #ff9f0a 15%, var(--card));
-      border: 1px solid color-mix(in srgb, #ff9f0a 42%, transparent);
+      background: rgba(255, 159, 10, 0.14);
+      border: 1px solid rgba(255, 159, 10, 0.4);
     }
     .update.visible { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .update-title { font-size: 12px; font-weight: 600; }
+    .update-title { font-size: 12px; font-weight: 600; color: #FF9F0A; }
     .update-actions { display: flex; gap: 6px; }
     .update a, .update button {
       padding: 5px 10px;
       border: 0;
       border-radius: 6px;
-      background: var(--codex);
+      background: var(--switch-on);
       color: #fff;
-      font: 500 11px/1 -apple-system, sans-serif;
+      font: 600 11px/1 -apple-system, sans-serif;
       text-decoration: none;
       cursor: pointer;
     }
-    .update a { background: rgba(128, 128, 128, 0.3); color: var(--text); }
+    .update a { background: rgba(255, 255, 255, 0.12); color: var(--text); }
 
     .card {
       margin-bottom: 10px;
       background: var(--card);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
+      border-radius: 11px;
       overflow: hidden;
-      transition: opacity 0.18s ease;
     }
     .card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 11px 14px;
+      padding: 10px 14px;
       cursor: pointer;
     }
     .brand {
@@ -112,27 +101,27 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .dot.claude { background: var(--claude); box-shadow: 0 0 8px color-mix(in srgb, var(--claude) 55%, transparent); }
-    .dot.codex  { background: var(--codex);  box-shadow: 0 0 8px color-mix(in srgb, var(--codex) 55%, transparent); }
-    .dot.gemini { background: var(--gemini); box-shadow: 0 0 8px color-mix(in srgb, var(--gemini) 55%, transparent); }
+    .dot.claude { background: var(--claude); }
+    .dot.codex  { background: var(--codex); }
+    .dot.gemini { background: var(--gemini); }
 
-    .windows {
+    .sub-rows {
       border-top: 1px solid var(--row-border);
-      padding: 2px 14px 6px 32px;
+      padding: 0 14px 0 32px;
     }
-    .win-row {
+    .sub-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: 32px;
+      min-height: 34px;
       padding: 2px 0;
-      transition: opacity 0.15s ease;
+      transition: opacity 0.16s ease;
     }
-    .win-row + .win-row {
+    .sub-row + .sub-row {
       border-top: 1px solid var(--row-border);
     }
-    .win-row.off .win-label {
-      color: var(--dim);
+    .sub-row.muted {
+      opacity: 0.42;
     }
     .win-label {
       font-size: 12.5px;
@@ -147,19 +136,20 @@
       gap: 8px;
     }
 
-    /* Percentage pill button */
+    /* Percentage badge pill */
     .pct-pill {
       position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       height: 20px;
-      padding: 0 7px;
-      border-radius: 5px;
+      padding: 0 8px;
+      border-radius: 999px;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--muted);
-      background: var(--track);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
       cursor: pointer;
       transition: all 0.15s ease;
     }
@@ -169,31 +159,23 @@
       pointer-events: none;
     }
     .pct-pill:has(input:checked) {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.24);
-    }
-    @media (prefers-color-scheme: light) {
-      .pct-pill:has(input:checked) {
-        color: #1c1e21;
-        background: rgba(0, 0, 0, 0.16);
-      }
-    }
-    .win-row.off .pct-pill {
-      opacity: 0.35;
+      color: var(--switch-on);
+      background: rgba(10, 132, 255, 0.2);
+      border-color: rgba(10, 132, 255, 0.7);
     }
 
-    /* Apple-style toggle switch */
+    /* iOS / macOS System Settings blue pill toggle switch */
     .switch {
       position: relative;
       display: inline-block;
-      width: 34px;
-      height: 20px;
+      width: 42px;
+      height: 24px;
       flex-shrink: 0;
       cursor: pointer;
     }
     .switch.sm {
-      width: 30px;
-      height: 17px;
+      width: 38px;
+      height: 22px;
     }
     .switch input {
       opacity: 0;
@@ -203,61 +185,63 @@
     .slider {
       position: absolute;
       inset: 0;
-      background: var(--track);
+      background: var(--switch-off);
       border-radius: 999px;
       transition: background 0.18s ease;
     }
     .slider::before {
       content: "";
       position: absolute;
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       left: 2px;
       top: 2px;
-      background: #fff;
+      background: #FFFFFF;
       border-radius: 50%;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
       transition: transform 0.18s cubic-bezier(0.2, 0.85, 0.32, 1.1);
     }
     .switch.sm .slider::before {
-      width: 13px;
-      height: 13px;
+      width: 18px;
+      height: 18px;
     }
-    .switch input:checked + .slider.claude { background: var(--claude); }
-    .switch input:checked + .slider.codex  { background: var(--codex); }
-    .switch input:checked + .slider.gemini { background: var(--gemini); }
-    .switch input:checked + .slider { transform: none; }
-    .switch input:checked + .slider::before { transform: translateX(14px); }
-    .switch.sm input:checked + .slider::before { transform: translateX(13px); }
+    .switch input:checked + .slider {
+      background: var(--switch-on);
+    }
+    .switch input:checked + .slider::before {
+      transform: translateX(18px);
+    }
+    .switch.sm input:checked + .slider::before {
+      transform: translateX(16px);
+    }
 
-    /* Footer Refresh Interval Segmented Bar */
+    /* Refresh Interval Card */
     .footer-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 10px 14px;
+      margin-bottom: 12px;
       background: var(--card);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
+      border-radius: 11px;
     }
     .footer-title {
       font-size: 12.5px;
       font-weight: 500;
-      color: var(--muted);
+      color: var(--text);
     }
     .segmented {
       display: inline-flex;
-      padding: 2px;
-      background: var(--track);
-      border-radius: 7px;
-      gap: 2px;
+      gap: 4px;
     }
     .segmented label {
       position: relative;
-      padding: 3px 10px;
-      border-radius: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
       font-size: 11.5px;
       font-weight: 600;
+      background: var(--switch-off);
       color: var(--muted);
       cursor: pointer;
       transition: all 0.15s ease;
@@ -268,16 +252,35 @@
       pointer-events: none;
     }
     .segmented label:has(input:checked) {
-      background: var(--card);
-      color: var(--text);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+      background: var(--switch-on);
+      color: #FFFFFF;
+    }
+
+    /* Primary Save Button */
+    .save-btn {
+      display: block;
+      width: 100%;
+      height: 36px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--switch-on);
+      color: #FFFFFF;
+      font: 700 13.5px/1 -apple-system, BlinkMacSystemFont, sans-serif;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.08s ease;
+    }
+    .save-btn:active {
+      transform: scale(0.99);
+    }
+    .save-btn.saved {
+      background: var(--gemini);
     }
   </style>
 </head>
 <body>
   <header>
     <h1 id="title">Display Settings</h1>
-    <div id="status" class="status" aria-live="polite">Saved</div>
+    <div id="status" class="status" aria-live="polite">Saved ✓</div>
   </header>
 
   <div id="update" class="update">
@@ -292,21 +295,21 @@
   <div class="card" id="card-claude">
     <label class="card-header">
       <span class="brand"><span class="dot claude"></span>Claude</span>
-      <span class="switch"><input id="claude_on" type="checkbox"><span class="slider claude"></span></span>
+      <span class="switch"><input id="claude_on" type="checkbox"><span class="slider"></span></span>
     </label>
-    <div class="windows">
-      <div class="win-row" id="row-c5">
+    <div class="sub-rows">
+      <div class="sub-row" id="row-c5">
         <label class="win-label" for="c5">5h</label>
         <div class="win-controls">
           <label class="pct-pill" title="Show percentage"><input id="c5p" type="checkbox">%</label>
-          <label class="switch sm"><input id="c5" type="checkbox"><span class="slider claude"></span></label>
+          <label class="switch sm"><input id="c5" type="checkbox"><span class="slider"></span></label>
         </div>
       </div>
-      <div class="win-row" id="row-c7">
+      <div class="sub-row" id="row-c7">
         <label class="win-label" for="c7">1w (7d)</label>
         <div class="win-controls">
           <label class="pct-pill" title="Show percentage"><input id="c7p" type="checkbox">%</label>
-          <label class="switch sm"><input id="c7" type="checkbox"><span class="slider claude"></span></label>
+          <label class="switch sm"><input id="c7" type="checkbox"><span class="slider"></span></label>
         </div>
       </div>
     </div>
@@ -316,21 +319,21 @@
   <div class="card" id="card-codex">
     <label class="card-header">
       <span class="brand"><span class="dot codex"></span>Codex</span>
-      <span class="switch"><input id="codex_on" type="checkbox"><span class="slider codex"></span></span>
+      <span class="switch"><input id="codex_on" type="checkbox"><span class="slider"></span></span>
     </label>
-    <div class="windows">
-      <div class="win-row" id="row-cx5">
+    <div class="sub-rows">
+      <div class="sub-row" id="row-cx5">
         <label class="win-label" for="cx5"><span id="cx-l1-a">5h</span></label>
         <div class="win-controls">
           <label class="pct-pill" title="Show percentage"><input id="cx5p" type="checkbox">%</label>
-          <label class="switch sm"><input id="cx5" type="checkbox"><span class="slider codex"></span></label>
+          <label class="switch sm"><input id="cx5" type="checkbox"><span class="slider"></span></label>
         </div>
       </div>
-      <div class="win-row" id="row-cx7">
+      <div class="sub-row" id="row-cx7">
         <label class="win-label" for="cx7">1w (<span id="cx-l2-a">7d</span>)</label>
         <div class="win-controls">
           <label class="pct-pill" title="Show percentage"><input id="cx7p" type="checkbox">%</label>
-          <label class="switch sm"><input id="cx7" type="checkbox"><span class="slider codex"></span></label>
+          <label class="switch sm"><input id="cx7" type="checkbox"><span class="slider"></span></label>
         </div>
       </div>
     </div>
@@ -340,14 +343,14 @@
   <div class="card" id="card-gemini">
     <label class="card-header">
       <span class="brand"><span class="dot gemini"></span>Gemini</span>
-      <span class="switch"><input id="gemini_on" type="checkbox"><span class="slider gemini"></span></span>
+      <span class="switch"><input id="gemini_on" type="checkbox"><span class="slider"></span></span>
     </label>
-    <div class="windows">
-      <div class="win-row" id="row-gm5">
+    <div class="sub-rows">
+      <div class="sub-row" id="row-gm5">
         <label class="win-label" for="gm5"><span id="gm-l1-a">5h</span></label>
         <div class="win-controls">
           <label class="pct-pill" title="Show percentage"><input id="gm5p" type="checkbox">%</label>
-          <label class="switch sm"><input id="gm5" type="checkbox"><span class="slider gemini"></span></label>
+          <label class="switch sm"><input id="gm5" type="checkbox"><span class="slider"></span></label>
         </div>
       </div>
     </div>
@@ -363,39 +366,26 @@
     </div>
   </div>
 
+  <button id="save-btn" class="save-btn" type="button">Save</button>
+
   <script>
     const params = new URLSearchParams(location.search);
     const toggleIds = ['claude_on', 'c5', 'c5p', 'c7', 'c7p', 'codex_on', 'cx5', 'cx5p', 'cx7', 'cx7p', 'gemini_on', 'gm5', 'gm5p'];
     const el = id => document.getElementById(id);
-    let statusTimer = null;
-
-    function flashSaved() {
-      const s = el('status');
-      s.classList.add('show');
-      clearTimeout(statusTimer);
-      statusTimer = setTimeout(() => s.classList.remove('show'), 1200);
-    }
 
     function syncVisualState() {
-      const clOn = el('claude_on').checked;
-      el('row-c5').classList.toggle('off', !clOn || !el('c5').checked);
-      el('row-c7').classList.toggle('off', !clOn || !el('c7').checked);
-
-      const cxOn = el('codex_on').checked;
-      el('row-cx5').classList.toggle('off', !cxOn || !el('cx5').checked);
-      el('row-cx7').classList.toggle('off', !cxOn || !el('cx7').checked);
-
-      const gmOn = el('gemini_on').checked;
-      el('row-gm5').classList.toggle('off', !gmOn || !el('gm5').checked);
-    }
-
-    function save(key, value) {
-      params.set(key, value);
-      flashSaved();
-      syncVisualState();
-      setTimeout(resync, 400);
-      setTimeout(resync, 1500);
-      location.href = `swiftbar://refreshplugin?name=claude-codex.60s.sh&AUB_KEY=${encodeURIComponent(key)}&AUB_VALUE=${encodeURIComponent(value)}`;
+      const groups = [
+        ['claude_on', ['row-c5', 'row-c7']],
+        ['codex_on', ['row-cx5', 'row-cx7']],
+        ['gemini_on', ['row-gm5']]
+      ];
+      groups.forEach(([parentId, rowIds]) => {
+        const parentOn = el(parentId).checked;
+        rowIds.forEach(rId => {
+          const sub = el(rId);
+          sub.classList.toggle('muted', !parentOn);
+        });
+      });
     }
 
     function applyState(get) {
@@ -434,27 +424,18 @@
       syncVisualState();
     }
 
-    // 親子連動:
-    // 親をOFFにしたら傘下の5h/1wもすべてOFFにし、親をONにしたら傘下もすべてONにする。
-    // 子をONにしたら親もONにし、傘下の子がすべてOFFになったら親もOFFにする。
+    // 親子連動（ステージング更新）
     el('claude_on').addEventListener('change', e => {
       const on = e.target.checked;
       el('c5').checked = on;
       el('c7').checked = on;
-      params.set('c5', on ? '1' : '0');
-      params.set('c7', on ? '1' : '0');
-      save('claude_on', on ? '1' : '0');
+      syncVisualState();
     });
     ['c5', 'c7'].forEach(id => {
       el(id).addEventListener('change', e => {
-        if (e.target.checked) {
-          el('claude_on').checked = true;
-          params.set('claude_on', '1');
-        } else if (!el('c5').checked && !el('c7').checked) {
-          el('claude_on').checked = false;
-          params.set('claude_on', '0');
-        }
-        save(id, e.target.checked ? '1' : '0');
+        if (e.target.checked) el('claude_on').checked = true;
+        else if (!el('c5').checked && !el('c7').checked) el('claude_on').checked = false;
+        syncVisualState();
       });
     });
 
@@ -462,42 +443,41 @@
       const on = e.target.checked;
       el('cx5').checked = on;
       el('cx7').checked = on;
-      params.set('cx5', on ? '1' : '0');
-      params.set('cx7', on ? '1' : '0');
-      save('codex_on', on ? '1' : '0');
+      syncVisualState();
     });
     ['cx5', 'cx7'].forEach(id => {
       el(id).addEventListener('change', e => {
-        if (e.target.checked) {
-          el('codex_on').checked = true;
-          params.set('codex_on', '1');
-        } else if (!el('cx5').checked && !el('cx7').checked) {
-          el('codex_on').checked = false;
-          params.set('codex_on', '0');
-        }
-        save(id, e.target.checked ? '1' : '0');
+        if (e.target.checked) el('codex_on').checked = true;
+        else if (!el('cx5').checked && !el('cx7').checked) el('codex_on').checked = false;
+        syncVisualState();
       });
     });
 
     el('gemini_on').addEventListener('change', e => {
       const on = e.target.checked;
       el('gm5').checked = on;
-      params.set('gm5', on ? '1' : '0');
-      save('gemini_on', on ? '1' : '0');
+      syncVisualState();
     });
     el('gm5').addEventListener('change', e => {
-      const on = e.target.checked;
-      el('gemini_on').checked = on;
-      params.set('gemini_on', on ? '1' : '0');
-      save('gm5', on ? '1' : '0');
+      el('gemini_on').checked = e.target.checked;
+      syncVisualState();
     });
 
-    ['c5p', 'c7p', 'cx5p', 'cx7p', 'gm5p'].forEach(id => {
-      el(id).addEventListener('change', e => save(id, e.target.checked ? '1' : '0'));
-    });
-
-    document.querySelectorAll('input[name="iv"]').forEach(input => {
-      input.addEventListener('change', () => save('iv', input.value));
+    // Save ボタンで一括保存＆ゲージ更新
+    el('save-btn').addEventListener('click', () => {
+      const pairs = toggleIds.map(id => `${id}:${el(id).checked ? '1' : '0'}`);
+      const ivRadio = document.querySelector('input[name="iv"]:checked');
+      if (ivRadio) pairs.push(`iv:${ivRadio.value}`);
+      const btn = el('save-btn');
+      btn.textContent = 'Saved ✓';
+      btn.classList.add('saved');
+      el('status').classList.add('show');
+      setTimeout(() => {
+        btn.textContent = 'Save';
+        btn.classList.remove('saved');
+        el('status').classList.remove('show');
+      }, 1400);
+      location.href = `swiftbar://refreshplugin?name=claude-codex.60s.sh&AUB_BULK=${encodeURIComponent(pairs.join(','))}`;
     });
 
     applyState(k => params.get(k));
@@ -510,8 +490,6 @@
         applyState(k => (k in st ? String(st[k]) : null));
       } catch (_) {}
     }
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) resync(); });
-    window.addEventListener('focus', resync);
     resync();
 
     const updateVersion = params.get('update');

@@ -109,6 +109,14 @@ apply_web_setting() {
   esac
 }
 [ -n "${AUB_KEY:-}" ] && apply_web_setting
+if [ -n "${AUB_BULK:-}" ]; then
+  OLD_IFS="$IFS"; IFS=','
+  for pair in $AUB_BULK; do
+    IFS="$OLD_IFS"
+    AUB_KEY="${pair%%:*}" AUB_VALUE="${pair#*:}" apply_web_setting
+  done
+  IFS="$OLD_IFS"
+fi
 # SwiftBar の URL スキーム経由が効かない環境があるため、メニュー項目から
 # 直接呼べる引数も用意する（Codex ヘルパーと同じ bash= 方式）。
 if [ "${1:-}" = "--set" ] && [ -n "${2:-}" ]; then
@@ -128,7 +136,7 @@ if [ "${AUB_ACTION:-}" = update ] && [ -x "$UPDATER" ]; then
 fi
 # Refresh values after a web-view action so the same invocation renders the
 # updated menu-bar state rather than the values read before applying it.
-if [ -n "${AUB_KEY:-}" ]; then
+if [ -n "${AUB_KEY:-}${AUB_BULK:-}" ]; then
   CL_ON=$(rd claude_on); C5=$(rd c5); C5P=$(rd c5p); C7=$(rd c7); C7P=$(rd c7p)
   CX_ON=$(rd codex_on); CX5=$(rd cx5); CX5P=$(rd cx5p); CX7=$(rd cx7); CX7P=$(rd cx7p)
   GM_ON=$(rd gemini_on); GM5=$(rd gm5); GM5P=$(rd gm5p); GM7=$(rd gm7); GM7P=$(rd gm7p)
@@ -782,7 +790,6 @@ if [ "$UPDATE_AVAILABLE" = 1 ]; then
   echo "--Release notes | href=https://github.com/taka-avantgarde/ai-usage-barometer/releases/latest"
   echo "---"
 fi
-toggle_menu
 settings_menu
 echo "---"
 echo "$(sub "$T_UPDATED" "$(date '+%H:%M:%S')") | size=11 color=#888888"
