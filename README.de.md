@@ -66,6 +66,9 @@ Die Plugin-Oberfläche ist ausschließlich auf Englisch. Diese GitHub-Dokumentat
 | Prozent von Codex-Fenster 1 | Dessen Prozentwert ein-/ausblenden |
 | Codex-Fenster 2 anzeigen | Das zweite Fenster ein-/ausblenden, falls vorhanden (e.g. Codex 7d) |
 | Prozent von Codex-Fenster 2 | Dessen Prozentwert ein-/ausblenden |
+| Gemini anzeigen | Gemini ein- oder ausblenden |
+| Gemini 5h / % anzeigen | 5h-Fenster und Prozentsatz ein- oder ausblenden |
+| Gemini 1w / % anzeigen | 1-Wochen-Fenster (7d) und Prozentsatz ein- oder ausblenden |
 | Aktualisierungsintervall | 1, 3 oder 5 Minuten |
 
 Sind alle Anzeigen ausgeblendet, bleibt ein neutraler Eintrag `AI …`, über den die Einstellungen erreichbar sind. Die Farbe richtet sich nur nach sichtbaren Balken. Einstellungen liegen in `~/.cache/claude-codex-bar/` und überstehen Updates.
@@ -122,6 +125,8 @@ Die Einstellungen teilt sie sich mit dem SwiftBar-Plugin, beide weichen nie ab.
 Ergebnisse werden für das Intervall zwischengespeichert, der Endpunkt wird also höchstens einmal pro Intervall abgefragt. Schlägt eine Aktualisierung fehl, bleibt der letzte gültige Wert stehen.
 
 **Codex** wird aus dem lokalen Helfer `codex-usage.sh` gelesen, den der Installer nach `~/SwiftBar/.ai-usage-barometer/` legt. Seine Fenster sind dynamisch in Anzahl und Name — ein Tarifwechsel kann `5h`/`7d` in etwas wie `30d` verwandeln —, daher folgen die beiden Schalter dem ersten und zweiten Fenster, das Codex tatsächlich liefert, und das Einstellungsfeld benennt sich entsprechend um.
+
+**Gemini** wird über das lokale Hilfsskript `gemini-usage.sh` in `~/SwiftBar/.ai-usage-barometer/` gelesen. Es erfasst die `5h`- und `1w`-Kontingente (`7d`) von Antigravity Desktop App 2.0 und Antigravity IDE über lokales Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) und Cache.
 
 ## Fehlerbehebung
 

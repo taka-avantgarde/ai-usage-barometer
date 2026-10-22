@@ -528,21 +528,22 @@ else
   MB_COLOR=$(gmcol $GM_WORST)
 fi
 
+disp_lbl() { [ "$1" = "7d" ] && printf '1w' || printf '%s' "$1"; }
 MB=""
 if [ "$CL_ACTIVE" = 1 ]; then
   if [ -n "$CL_ERR" ]; then MB="Claude ⚠"
   else
     [ "$C5" = 1 ] && MB="5h $(bar $REM5 $MBAR_W)$([ "$C5P" = 1 ] && printf ' %s' "$(fmt $REM5)")"
-    [ "$C7" = 1 ] && MB="${MB:+$MB  }7d $(bar $REM7 $MBAR_W)$([ "$C7P" = 1 ] && printf ' %s' "$(fmt $REM7)")"
+    [ "$C7" = 1 ] && MB="${MB:+$MB  }1w $(bar $REM7 $MBAR_W)$([ "$C7P" = 1 ] && printf ' %s' "$(fmt $REM7)")"
   fi
 fi
 if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ] && [ -n "$CX_L1" ]; then
   CXMB=""
   if cx_window_enabled 1; then
-    CXMB="$CX_L1 $(bar $CX_R1 $MBAR_W)$([ "$(cx_window_percentage 1)" = 1 ] && printf ' %s' "$(fmt $CX_R1)")"
+    CXMB="$(disp_lbl "$CX_L1") $(bar $CX_R1 $MBAR_W)$([ "$(cx_window_percentage 1)" = 1 ] && printf ' %s' "$(fmt $CX_R1)")"
   fi
   if [ -n "$CX_L2" ] && cx_window_enabled 2; then
-    CXMB="${CXMB:+$CXMB  }$CX_L2 $(bar $CX_R2 $MBAR_W)$([ "$(cx_window_percentage 2)" = 1 ] && printf ' %s' "$(fmt $CX_R2)")"
+    CXMB="${CXMB:+$CXMB  }$(disp_lbl "$CX_L2") $(bar $CX_R2 $MBAR_W)$([ "$(cx_window_percentage 2)" = 1 ] && printf ' %s' "$(fmt $CX_R2)")"
   fi
   [ -n "$CXMB" ] && MB="${MB:+$MB │ }$CXMB"
 fi
@@ -551,10 +552,10 @@ fi
 if [ "$GM_ACTIVE" = 1 ] && [ -z "$GM_ERR" ] && [ -n "$GM_L1" ]; then
   GMMB=""
   if gm_window_enabled 1; then
-    GMMB="$GM_L1 $(bar $GM_R1 $MBAR_W)$([ "$(gm_window_percentage 1)" = 1 ] && printf ' %s' "$(fmt $GM_R1)")"
+    GMMB="$(disp_lbl "$GM_L1") $(bar $GM_R1 $MBAR_W)$([ "$(gm_window_percentage 1)" = 1 ] && printf ' %s' "$(fmt $GM_R1)")"
   fi
   if [ -n "$GM_L2" ] && gm_window_enabled 2; then
-    GMMB="${GMMB:+$GMMB  }$GM_L2 $(bar $GM_R2 $MBAR_W)$([ "$(gm_window_percentage 2)" = 1 ] && printf ' %s' "$(fmt $GM_R2)")"
+    GMMB="${GMMB:+$GMMB  }$(disp_lbl "$GM_L2") $(bar $GM_R2 $MBAR_W)$([ "$(gm_window_percentage 2)" = 1 ] && printf ' %s' "$(fmt $GM_R2)")"
   fi
   [ -n "$GMMB" ] && MB="${MB:+$MB │ }$GMMB"
 fi
@@ -574,7 +575,7 @@ if [ "${1:-}" = "--json" ]; then
   jnum() { case "$1" in ''|*[!0-9-]*) printf '%s' "${2:-0}" ;; *) printf '%s' "$1" ;; esac; }
   jwin() { # jwin <label> <left> <color> <resets> <show> <pct>
     printf '{"label":"%s","left":%s,"color":"%s","resets":"%s","show":%s,"pct":%s}' \
-      "$(jesc "$1")" "$(jnum "$2" -1)" "$(jesc "$3")" "$(jesc "$4")" "$(jbool "$5")" "$(jbool "$6")"
+      "$(jesc "$(disp_lbl "$1")")" "$(jnum "$2" -1)" "$(jesc "$3")" "$(jesc "$4")" "$(jbool "$5")" "$(jbool "$6")"
   }
 
   S5=0; [ "$C5" = 1 ] && [ "$REM5" -ge 0 ] && S5=1
@@ -585,7 +586,7 @@ if [ "${1:-}" = "--json" ]; then
   G2=0; gm_window_enabled 2 && [ "$GM_R2" -ge 0 ] && G2=1
 
   CL_WINS="$(jwin "5h" "$REM5" "$(clcol "$P5")" "$(remain "$R5")" "$S5" "$C5P"),"
-  CL_WINS="$CL_WINS$(jwin "7d" "$REM7" "$(clcol "$P7")" "$(remain "$R7")" "$S7" "$C7P")"
+  CL_WINS="$CL_WINS$(jwin "1w" "$REM7" "$(clcol "$P7")" "$(remain "$R7")" "$S7" "$C7P")"
 
   # Codex の枠は 1 個のこともある（契約状態で変わる）。空の枠は出さない。
   CX_WINS=""
@@ -618,15 +619,15 @@ fi
 PDF_SPEC=""
 if [ "$CL_ACTIVE" = 1 ] && [ -z "$CL_ERR" ]; then
   [ "$C5" = 1 ] && [ "$REM5" -ge 0 ] && PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}5h,$REM5,$(clcol $P5),$C5P"
-  [ "$C7" = 1 ] && [ "$REM7" -ge 0 ] && PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}7d,$REM7,$(clcol $P7),$C7P"
+  [ "$C7" = 1 ] && [ "$REM7" -ge 0 ] && PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}1w,$REM7,$(clcol $P7),$C7P"
 fi
 if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
   CX_PDF=""
   if [ "$CX_R1" -ge 0 ] && cx_window_enabled 1; then
-    CX_PDF="$CX_L1,$CX_R1,$(cxcol $CX_U1),$(cx_window_percentage 1)"
+    CX_PDF="$(disp_lbl "$CX_L1"),$CX_R1,$(cxcol $CX_U1),$(cx_window_percentage 1)"
   fi
   if [ -n "$CX_L2" ] && [ "$CX_R2" -ge 0 ] && cx_window_enabled 2; then
-    CX_PDF="${CX_PDF:+$CX_PDF;}$CX_L2,$CX_R2,$(cxcol $CX_U2),$(cx_window_percentage 2)"
+    CX_PDF="${CX_PDF:+$CX_PDF;}$(disp_lbl "$CX_L2"),$CX_R2,$(cxcol $CX_U2),$(cx_window_percentage 2)"
   fi
   if [ -n "$CX_PDF" ]; then
     [ -n "$PDF_SPEC" ] && PDF_SPEC="$PDF_SPEC;|"
@@ -636,10 +637,10 @@ fi
 if [ "$GM_ACTIVE" = 1 ] && [ -z "$GM_ERR" ]; then
   GM_PDF=""
   if [ "$GM_R1" -ge 0 ] && gm_window_enabled 1; then
-    GM_PDF="$GM_L1,$GM_R1,$(gmcol $GM_U1),$(gm_window_percentage 1)"
+    GM_PDF="$(disp_lbl "$GM_L1"),$GM_R1,$(gmcol $GM_U1),$(gm_window_percentage 1)"
   fi
   if [ -n "$GM_L2" ] && [ "$GM_R2" -ge 0 ] && gm_window_enabled 2; then
-    GM_PDF="${GM_PDF:+$GM_PDF;}$GM_L2,$GM_R2,$(gmcol $GM_U2),$(gm_window_percentage 2)"
+    GM_PDF="${GM_PDF:+$GM_PDF;}$(disp_lbl "$GM_L2"),$GM_R2,$(gmcol $GM_U2),$(gm_window_percentage 2)"
   fi
   if [ -n "$GM_PDF" ]; then
     [ -n "$PDF_SPEC" ] && PDF_SPEC="$PDF_SPEC;|"

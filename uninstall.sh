@@ -27,8 +27,12 @@ rm -rf "$CACHE_ROOT/claude-codex-bar"      # display settings + Claude cache
 rm -rf "$CACHE_ROOT/codex-usage-barometer" # refresh interval written for the helper
 rm -rf "$CACHE_ROOT/gemini-usage-barometer"
 
-open -g "swiftbar://refreshallplugins" >/dev/null 2>&1 || true
-echo "AI Usage Barometer removed. Previous Claude Code status line restored when applicable."
+if [[ "${AI_USAGE_TEST_MODE:-0}" != "1" ]]; then
+  killall AIUsageBarometer >/dev/null 2>&1 || true
+  rm -rf "/Applications/AI Usage Barometer.app" "$HOME/Applications/AI Usage Barometer.app" 2>/dev/null || true
+  open -g "swiftbar://refreshallplugins" >/dev/null 2>&1 || true
+fi
+echo "AI Usage Barometer (app and SwiftBar plugin) removed. Previous Claude Code status line restored when applicable."
 
 # Backups are the user's, so they are reported rather than deleted.
 shopt -s nullglob

@@ -66,6 +66,9 @@ De plugininterface is uitsluitend in het Engels. Deze GitHub-documentatie blijft
 | Percentage van Codex venster 1 | Dat percentage tonen of verbergen |
 | Codex venster 2 tonen | Het tweede venster tonen of verbergen, indien aanwezig (e.g. Codex 7d) |
 | Percentage van Codex venster 2 | Dat percentage tonen of verbergen |
+| Gemini tonen | Gemini tonen of verbergen |
+| Gemini 5h / % tonen | 5-uursvenster en percentage tonen of verbergen |
+| Gemini 1w / % tonen | 1-weeksvenster (7d) en percentage tonen of verbergen |
 | Vernieuwingsinterval | 1, 3 of 5 minuten |
 
 Wanneer alle meters verborgen zijn, blijft een neutraal item `AI …` beschikbaar om de instellingen te openen. De kleur volgt alleen zichtbare balken. Instellingen staan in `~/.cache/claude-codex-bar/` en blijven behouden.
@@ -122,6 +125,8 @@ elkaar nooit tegen.
 Resultaten worden gecachet gedurende het interval, dus het eindpunt wordt hoogstens één keer per interval bevraagd. Mislukt dat, dan blijft de laatste geldige waarde staan.
 
 **Codex** wordt gelezen uit de lokale helper `codex-usage.sh` die het installatieprogramma in `~/SwiftBar/.ai-usage-barometer/` plaatst. De vensters zijn dynamisch in aantal en naam — een planwijziging kan `5h`/`7d` veranderen in iets als `30d` — dus de twee schakelaars hierboven volgen het eerste en tweede venster dat Codex daadwerkelijk teruggeeft, en het instellingenpaneel hernoemt zichzelf om dit te weerspiegelen.
+
+**Gemini** wordt gelezen uit de lokale helper `gemini-usage.sh` in `~/SwiftBar/.ai-usage-barometer/`. Het volgt zowel de `5h`- als `1w`-quota (`7d`) van Antigravity Desktop App 2.0 en Antigravity IDE via lokale Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) en cache.
 
 ## Problemen oplossen
 

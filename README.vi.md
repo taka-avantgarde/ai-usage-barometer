@@ -65,6 +65,9 @@ Giao diện plugin chỉ hiển thị bằng tiếng Anh. Tài liệu GitHub nà
 | Phần trăm khung Codex 1 | Hiện hoặc ẩn phần trăm tương ứng |
 | Hiện khung Codex 2 | Hiện hoặc ẩn khung thứ hai, nếu có (e.g. Codex 7d) |
 | Phần trăm khung Codex 2 | Hiện hoặc ẩn phần trăm tương ứng |
+| Hiện Gemini | Hiện hoặc ẩn Gemini |
+| Hiện Gemini 5h / % | Hiện hoặc ẩn khung 5h và phần trăm |
+| Hiện Gemini 1w / % | Hiện hoặc ẩn khung 1 tuần (7d) và phần trăm |
 | Khoảng làm mới | 1, 3 hoặc 5 phút |
 
 Khi ẩn mọi đồng hồ, mục trung tính `AI …` vẫn còn để mở cài đặt. Màu chỉ do các thanh đang hiển thị quyết định. Cài đặt nằm ở `~/.cache/claude-codex-bar/` và được giữ qua các bản cập nhật.
@@ -119,6 +122,8 @@ Cài đặt dùng chung với plugin SwiftBar nên hai bên không bao giờ l�
 Kết quả được lưu đệm trong khoảng làm mới, nên mỗi khoảng chỉ gọi endpoint tối đa một lần. Nếu thất bại, giá trị hợp lệ gần nhất vẫn hiển thị.
 
 **Codex** được đọc từ trợ lý cục bộ `codex-usage.sh` mà trình cài đặt đặt tại `~/SwiftBar/.ai-usage-barometer/`. Các khung của nó động cả về số lượng lẫn tên gọi — khi đổi gói, `5h`/`7d` có thể trở thành thứ như `30d` — nên hai công tắc trên bám theo khung thứ nhất và thứ hai mà Codex thực sự trả về, và bảng cài đặt sẽ tự đổi tên cho khớp.
+
+**Gemini** được đọc từ trình trợ giúp cục bộ `gemini-usage.sh` trong `~/SwiftBar/.ai-usage-barometer/`. Công cụ theo dõi cả hạn mức `5h` và `1w` (`7d`) trên Antigravity Desktop App 2.0 và Antigravity IDE thông qua Connect RPC cục bộ (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) và bộ nhớ đệm.
 
 ## Khắc phục sự cố
 

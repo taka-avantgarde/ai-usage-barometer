@@ -66,6 +66,9 @@ A interface do plugin está disponível somente em inglês. Esta documentação 
 | Porcentagem da janela 1 do Codex | Mostrar ou ocultar sua porcentagem |
 | Mostrar janela 2 do Codex | Mostrar ou ocultar a segunda janela, se houver (e.g. Codex 7d) |
 | Porcentagem da janela 2 do Codex | Mostrar ou ocultar sua porcentagem |
+| Mostrar Gemini | Mostrar ou ocultar o Gemini |
+| Mostrar Gemini 5h / % | Mostrar ou ocultar a janela de 5h e sua porcentagem |
+| Mostrar Gemini 1w / % | Mostrar ou ocultar a janela de 1 semana (7d) e sua porcentagem |
 | Intervalo de atualização | 1, 3 ou 5 minutos |
 
 Quando todos os medidores estão ocultos, um item neutro `AI …` permanece para abrir as configurações. A cor considera apenas as barras visíveis. As configurações ficam em `~/.cache/claude-codex-bar/` e sobrevivem a atualizações.
@@ -122,6 +125,8 @@ nunca divergem.
 Os resultados ficam em cache durante o intervalo, então o endpoint é consultado no máximo uma vez por intervalo. Se falhar, a última leitura válida permanece.
 
 **Codex** é lido do auxiliar local `codex-usage.sh` que o instalador coloca em `~/SwiftBar/.ai-usage-barometer/`. Suas janelas são dinâmicas em número e nome — uma mudança de plano pode transformar `5h`/`7d` em algo como `30d` — então as duas chaves acima seguem a primeira e a segunda janela que o Codex realmente retornar, e o painel de configurações se renomeia de acordo.
+
+**Gemini** é lido do auxiliar local `gemini-usage.sh` em `~/SwiftBar/.ai-usage-barometer/`. Ele acompanha as cotas de `5h` e `1w` (`7d`) do Antigravity Desktop App 2.0 e Antigravity IDE via Connect RPC local (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) e cache.
 
 ## Solução de problemas
 

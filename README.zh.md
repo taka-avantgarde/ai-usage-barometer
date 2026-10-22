@@ -64,6 +64,9 @@ Claude、Codex 与 Gemini 共用一项，中间以细线分隔。进度条为电
 | Codex 第1个额度百分比 | 显示或隐藏其百分比 (e.g. Codex 5h) |
 | 显示 Codex 第2个额度 | 若存在则显示或隐藏第二个额度窗口 (e.g. Codex 7d) |
 | Codex 第2个额度百分比 | 显示或隐藏其百分比 (e.g. Codex 7d) |
+| 显示 Gemini | 显示或隐藏 Gemini |
+| 显示 Gemini 5h / % | 显示或隐藏 5 小时窗口及其百分比 |
+| 显示 Gemini 1w / % | 显示或隐藏 1 周 (7d) 窗口及其百分比 |
 | 刷新间隔 | 1、3 或 5 分钟 |
 
 即使隐藏全部进度条，也会保留中性的 `AI …` 项以便打开设置。颜色只由实际显示的进度条决定。设置保存在 `~/.cache/claude-codex-bar/`，升级后仍保留。
@@ -117,6 +120,8 @@ cd ai-usage-barometer/app && swift run
 结果会在刷新间隔内缓存，因此每个间隔最多请求一次。若刷新失败，将继续显示上一次的正常数值。
 
 **Codex** 读取安装程序放在 `~/SwiftBar/.ai-usage-barometer/` 的本地助手 `codex-usage.sh` 的输出。其额度窗口的数量和名称都是动态的——套餐变化可能让 `5h`/`7d` 变成类似 `30d` 的名称——因此上面两个开关分别跟随 Codex 实际返回的第一、第二个窗口，设置面板也会自动更新为对应的名称。
+
+**Gemini** 读取自安装器放置在 `~/SwiftBar/.ai-usage-barometer/` 中的本地助手 `gemini-usage.sh`。它通过本地 Language Server Connect RPC（`RetrieveUserQuotaSummary` / `GetUserStatus`）、只读 SQLite（`state.vscdb`）与缓存，同时追踪 Antigravity Desktop App 2.0 和 Antigravity IDE 的 `5h` 与 `1w`（`7d`）配额。
 
 ## 疑难排解
 

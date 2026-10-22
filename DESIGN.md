@@ -50,18 +50,17 @@ the renderer is unavailable. The vector item has a dark charcoal backdrop
 (`#20252B`) with light labels, so the service colours remain legible on
 macOS's translucent light menu bar.
 
-Colour of the fallback: Claude's colour while Claude is shown, otherwise Codex's.
+Colour of the fallback: Claude's colour while Claude is shown, otherwise Codex's, otherwise Gemini's.
 
-Hiding every gauge would leave an empty, unclickable item, so Claude's 5-hour
-bar is always kept. Menu-bar colour is decided only by gauges actually shown, so
+Hiding every gauge leaves a neutral `AI …` item so settings remain clickable. Menu-bar colour is decided only by gauges actually shown, so
 a hidden gauge never tints the bar.
 
 ## Settings
 
-All toggles live under **⚙ Display settings** and flip on a single click. State
+All toggles live under **⚙ Display settings** with iOS/macOS-style pill switches and a **Save** button. State
 is in `~/.cache/claude-codex-bar/` and survives upgrades.
 
-`claude_on`, `c5`, `c5p`, `c7`, `c7p`, `codex_on`, `cxp`, `iv`
+`claude_on`, `c5`, `c5p`, `c7`, `c7p`, `codex_on`, `cx5`, `cx5p`, `cx7`, `cx7p`, `gemini_on`, `gm5`, `gm5p`, `gm7`, `gm7p`, `cmp`, `iv`
 
 The settings menu is also emitted on the error paths, so a broken state can
 still be recovered from the dropdown.
@@ -80,15 +79,14 @@ already stores in the Keychain item `Claude Code-credentials`, falling back to
 `statusLine` JSON route because it works without any Claude Code setup step.
 
 Responses are cached for the refresh interval, so the endpoint is polled at most
-once per interval. On a failed refresh the last good reading stays on screen
-rather than blanking the bar.
+once per interval. On a temporary network error or 429 the last good reading stays on screen; when credentials are removed or 401 occurs, stale cached data is cleared immediately.
 
 **Codex** — parsed from the local helper `.ai-usage-barometer/codex-usage.sh`.
-Its windows are dynamic: a 5-hour window appears only when Codex returns one.
+It always emits both `5h` and `1w` (`7d`) windows in `5h → 1w` order (synthesising `5h` at `0% used` / `100% left` when the API returns only the weekly window).
 
 **Gemini (Antigravity)** — parsed from the local helper `.ai-usage-barometer/gemini-usage.sh`.
-It supports both Antigravity Desktop App 2.0 and Antigravity IDE without network calls or credential modifications via 3 tiers:
-1. Live language_server Connect RPC (`GetUserStatus`)
+It supports both Antigravity Desktop App 2.0 and Antigravity IDE without external network calls or credential modifications via 3 tiers:
+1. Live language_server Connect RPC (`RetrieveUserQuotaSummary` + `GetUserStatus` for both `5h` and `1w` weekly quotas)
 2. Read-only SQLite query (`antigravityUnifiedStateSync.userStatus` in `state.vscdb`)
 3. Cached usage (`~/.cache/gemini-usage-barometer/usage.json`)
 

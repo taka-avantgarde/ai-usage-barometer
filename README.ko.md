@@ -66,6 +66,9 @@ Codex는 시안을 사용합니다. 잔여량이 11–30%이면 경고색에 오
 | Codex 첫 번째 한도 퍼센트 | 해당 퍼센트 표시/숨김 |
 | Codex 두 번째 한도 표시 | 두 번째 한도가 있으면 표시/숨김 (e.g. Codex 7d) |
 | Codex 두 번째 한도 퍼센트 | 해당 퍼센트 표시/숨김 |
+| Gemini 표시 | Gemini 전체 표시/숨기기 |
+| Gemini 5h / % 표시 | 5시간 창 및 백분율 표시/숨기기 |
+| Gemini 1w / % 표시 | 1주(7d) 창 및 백분율 표시/숨기기 |
 | 새로고침 간격 | 1분, 3분, 5분 |
 
 모든 게이지를 숨겨도 설정을 열 수 있도록 중립적인 `AI …` 항목이 남습니다. 색은 실제로 표시 중인 막대만으로 결정됩니다. 설정은 `~/.cache/claude-codex-bar/`에 저장되어 업데이트 후에도 유지됩니다.
@@ -120,6 +123,8 @@ cd ai-usage-barometer/app && swift run
 결과는 새로고침 간격 동안 캐시되므로 간격당 최대 한 번만 조회합니다. 실패해도 마지막 정상 값이 그대로 표시됩니다.
 
 **Codex**는 설치 프로그램이 `~/SwiftBar/.ai-usage-barometer/`에 배치한 로컬 헬퍼 `codex-usage.sh`의 출력에서 읽습니다. 한도 창은 개수와 이름 모두 동적입니다 — 요금제가 바뀌면 `5h`/`7d`가 `30d`처럼 바뀔 수 있습니다 — 그래서 위 두 토글은 Codex가 실제로 반환하는 첫 번째·두 번째 한도를 그대로 따라가며, 설정 화면의 표기도 실제 이름에 맞춰 자동으로 바뀝니다.
+
+**Gemini**는 `~/SwiftBar/.ai-usage-barometer/`에 설치된 로컬 헬퍼 `gemini-usage.sh`에서 읽습니다. 로컬 Language Server Connect RPC(`RetrieveUserQuotaSummary` / `GetUserStatus`), 읽기 전용 SQLite(`state.vscdb`) 및 캐시를 통해 Antigravity Desktop App 2.0과 Antigravity IDE의 `5h` 및 `1w`(`7d`) 할당량을 모두 추적합니다.
 
 ## 문제 해결
 

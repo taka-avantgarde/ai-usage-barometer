@@ -66,6 +66,9 @@ Antarmuka plugin hanya tersedia dalam bahasa Inggris. Dokumentasi GitHub ini tet
 | Persentase jendela Codex 1 | Tampilkan atau sembunyikan persentasenya |
 | Tampilkan jendela Codex 2 | Tampilkan atau sembunyikan jendela kedua, jika ada (e.g. Codex 7d) |
 | Persentase jendela Codex 2 | Tampilkan atau sembunyikan persentasenya |
+| Tampilkan Gemini | Tampilkan atau sembunyikan Gemini |
+| Tampilkan Gemini 5h / % | Tampilkan atau sembunyikan jendela 5h dan persentasenya |
+| Tampilkan Gemini 1w / % | Tampilkan atau sembunyikan jendela 1 minggu (7d) dan persentasenya |
 | Interval penyegaran | 1, 3, atau 5 menit |
 
 Saat semua meter disembunyikan, item netral `AI …` tetap tersedia untuk membuka pengaturan. Warna hanya ditentukan oleh bilah yang tampil. Pengaturan tersimpan di `~/.cache/claude-codex-bar/` dan bertahan setelah pembaruan.
@@ -121,6 +124,8 @@ Pengaturan dipakai bersama plugin SwiftBar, jadi keduanya tidak pernah berbeda.
 Hasil disimpan sementara selama interval, jadi endpoint dipanggil paling banyak sekali per interval. Jika gagal, nilai valid terakhir tetap ditampilkan.
 
 **Codex** dibaca dari pembantu lokal `codex-usage.sh` yang ditempatkan pemasang di `~/SwiftBar/.ai-usage-barometer/`. Jendelanya dinamis baik jumlah maupun namanya — perubahan paket bisa mengubah `5h`/`7d` menjadi sesuatu seperti `30d` — jadi kedua sakelar di atas mengikuti jendela pertama dan kedua yang benar-benar dikembalikan Codex, dan panel pengaturan akan mengganti namanya agar sesuai.
+
+**Gemini** dibaca dari pembantu lokal `gemini-usage.sh` di `~/SwiftBar/.ai-usage-barometer/`. Ini melacak kuota `5h` dan `1w` (`7d`) di Antigravity Desktop App 2.0 dan Antigravity IDE melalui Connect RPC lokal (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`), dan cache.
 
 ## Pemecahan masalah
 

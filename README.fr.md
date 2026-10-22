@@ -66,6 +66,9 @@ L’interface du module est uniquement en anglais. Cette documentation GitHub re
 | Pourcentage fenêtre 1 de Codex | Afficher ou masquer son pourcentage |
 | Afficher fenêtre 2 de Codex | Afficher ou masquer la seconde, si elle existe (e.g. Codex 7d) |
 | Pourcentage fenêtre 2 de Codex | Afficher ou masquer son pourcentage |
+| Afficher Gemini | Afficher ou masquer Gemini |
+| Afficher Gemini 5h / % | Afficher ou masquer la fenêtre 5h et son pourcentage |
+| Afficher Gemini 1w / % | Afficher ou masquer la fenêtre 1 semaine (7d) et son pourcentage |
 | Intervalle d’actualisation | 1, 3 ou 5 minutes |
 
 Si toutes les jauges sont masquées, un élément neutre `AI …` reste disponible pour ouvrir les réglages. La couleur ne dépend que des jauges affichées. Les réglages sont dans `~/.cache/claude-codex-bar/` et survivent aux mises à jour.
@@ -122,6 +125,8 @@ Les réglages sont partagés avec le plugin SwiftBar : les deux ne divergent jam
 Les résultats sont mis en cache pendant l’intervalle : le point de terminaison n’est interrogé qu’une fois par intervalle. En cas d’échec, la dernière valeur valide reste affichée.
 
 **Codex** est lu depuis l’assistant local `codex-usage.sh` placé par l’installateur dans `~/SwiftBar/.ai-usage-barometer/`. Ses fenêtres sont dynamiques en nombre et en nom — un changement de forfait peut transformer `5h`/`7d` en quelque chose comme `30d` — donc les deux interrupteurs suivent la première et la seconde fenêtre réellement renvoyées par Codex, et le panneau de réglages se renomme en conséquence.
+
+**Gemini** est lu depuis l'assistant local `gemini-usage.sh` dans `~/SwiftBar/.ai-usage-barometer/`. Il suit les quotas `5h` et `1w` (`7d`) d'Antigravity Desktop App 2.0 et d'Antigravity IDE via Connect RPC local (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) et le cache.
 
 ## Dépannage
 

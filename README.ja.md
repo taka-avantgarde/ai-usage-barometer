@@ -6,9 +6,9 @@
 
 | AIサービス | カラー | 対応ソース |
 |:---|:---|:---|
-| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code（公式ステータスライン連携） |
-| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI・Webトークン |
-| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE セッション枠 |
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code（OAuth Usage API・キーチェーン自動読取） |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI・Webトークン（`5h` & `1w`） |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE（`5h` & `1w`） |
 
 <img src="assets/hero.svg" alt="メニューバー・Dockアイコン・フローティングバーに表示した AI Usage Barometer" width="725">
 
