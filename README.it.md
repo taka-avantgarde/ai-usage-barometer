@@ -59,8 +59,8 @@ L’interfaccia del plugin è disponibile solo in inglese. Questa documentazione
 | Mostra Claude | Mostra o nascondi Claude |
 | Mostra Claude 5h | Mostra o nascondi la finestra di 5 ore |
 | Percentuale di Claude 5h | Mostra o nascondi la relativa percentuale |
-| Mostra Claude 7d | Mostra o nascondi la finestra di 7 giorni |
-| Percentuale di Claude 7d | Mostra o nascondi la relativa percentuale |
+| Mostra Claude 1w (7d) | Mostra o nascondi la finestra di 7 giorni |
+| Percentuale di Claude 1w (7d) | Mostra o nascondi la relativa percentuale |
 | Mostra Codex | Mostra o nascondi Codex |
 | Mostra finestra 1 di Codex | Mostra o nascondi la prima finestra restituita da Codex (e.g. Codex 5h) |
 | Percentuale finestra 1 di Codex | Mostra o nascondi la relativa percentuale (e.g. Codex 5h) |
@@ -134,6 +134,8 @@ I risultati sono memorizzati per la durata dell’intervallo, quindi l’endpoin
 **Compare un avviso di Claude.** Apri il menu a tendina per vedere il motivo. *Sign in to Claude Code again* significa che il token OAuth è scaduto — accedi di nuovo tramite la CLI di Claude Code o l’estensione IDE. **Non è l’app desktop Claude**: accedere a Claude.app non rinnova questo token. *Rate limited* si risolve da solo; il plugin attende 15 minuti e mostra il tempo rimanente.
 
 **Compare un avviso di Codex.** L’helper manca o Codex non ha ancora prodotto dati. Riesegui l’installer e usa Codex CLI una volta.
+
+**Gemini mostra un avviso.** Antigravity non è ancora stato avviato o l'helper locale è in attesa di dati. Avvia Antigravity Desktop o Antigravity IDE.
 
 **I colori differiscono tra barra e menu.** macOS può trattare una barra traslucida come chiara mentre i menu sono scuri. Il renderer vettoriale a due colori viene usato quando Python è disponibile; il testo a un colore è solo il fallback quando Python non è disponibile.
 

@@ -6,9 +6,9 @@
 
 | Service IA | Couleur | Sources compatibles |
 |:---|:---|:---|
-| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (ligne d'état officielle) |
-| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI et jetons web |
-| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Quotas de session Google Antigravity Desktop & IDE |
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (API d'utilisation OAuth et trousseau) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI et jetons web (`5h` et `1w`) |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE (`5h` et `1w`) |
 
 <img src="assets/hero.svg" alt="AI Usage Barometer dans la barre de menus, l'icône du Dock et une barre flottante" width="725">
 
@@ -59,8 +59,8 @@ L’interface du module est uniquement en anglais. Cette documentation GitHub re
 | Afficher Claude | Afficher ou masquer Claude |
 | Afficher Claude 5h | Afficher ou masquer la fenêtre 5 heures |
 | Pourcentage de Claude 5h | Afficher ou masquer son pourcentage |
-| Afficher Claude 7d | Afficher ou masquer la fenêtre 7 jours |
-| Pourcentage de Claude 7d | Afficher ou masquer son pourcentage |
+| Afficher Claude 1w (7d) | Afficher ou masquer la fenêtre 7 jours |
+| Pourcentage de Claude 1w (7d) | Afficher ou masquer son pourcentage |
 | Afficher Codex | Afficher ou masquer Codex |
 | Afficher fenêtre 1 de Codex | Afficher ou masquer la première fenêtre renvoyée par Codex (e.g. Codex 5h) |
 | Pourcentage fenêtre 1 de Codex | Afficher ou masquer son pourcentage |
@@ -133,6 +133,8 @@ Les résultats sont mis en cache pendant l’intervalle : le point de terminaiso
 **Un avertissement Claude s’affiche.** Ouvrez le menu déroulant pour connaître la raison. *Sign in to Claude Code again* signifie que le jeton OAuth a expiré — reconnectez-vous via la CLI Claude Code ou l’extension IDE. **Ce n’est pas l’application de bureau Claude** : se connecter à Claude.app ne renouvelle pas ce jeton. *Rate limited* se résout tout seul ; le plugin patiente 15 minutes et affiche le temps restant.
 
 **Un avertissement Codex s’affiche.** L’assistant manque ou Codex n’a pas encore produit de données. Relancez l’installateur puis utilisez Codex CLI une fois.
+
+**Gemini affiche un avertissement.** Antigravity n'a pas encore été lancé ou l'assistant local attend des données. Lancez Antigravity Desktop ou Antigravity IDE.
 
 **Les couleurs diffèrent entre la barre et le menu.** macOS peut considérer une barre translucide comme claire alors que les menus sont sombres. Le rendu vectoriel en deux couleurs est utilisé lorsque Python est disponible ; le texte en une couleur ne sert que de solution de secours si Python manque.
 

@@ -59,8 +59,8 @@ Die Plugin-Oberfläche ist ausschließlich auf Englisch. Diese GitHub-Dokumentat
 | Claude anzeigen | Claude ein-/ausblenden |
 | Claude 5h anzeigen | 5-Stunden-Fenster ein-/ausblenden |
 | Prozent von Claude 5h | Dessen Prozentwert ein-/ausblenden |
-| Claude 7d anzeigen | 7-Tage-Fenster ein-/ausblenden |
-| Prozent von Claude 7d | Dessen Prozentwert ein-/ausblenden |
+| Claude 1w (7d) anzeigen | 7-Tage-Fenster ein-/ausblenden |
+| Prozent von Claude 1w (7d) | Dessen Prozentwert ein-/ausblenden |
 | Codex anzeigen | Codex ein-/ausblenden |
 | Codex-Fenster 1 anzeigen | Das erste von Codex gemeldete Fenster ein-/ausblenden (e.g. Codex 5h) |
 | Prozent von Codex-Fenster 1 | Dessen Prozentwert ein-/ausblenden |
@@ -133,6 +133,8 @@ Ergebnisse werden für das Intervall zwischengespeichert, der Endpunkt wird also
 **Eine Claude-Warnung erscheint.** Öffne das Dropdown, um den Grund zu sehen. *Sign in to Claude Code again* bedeutet, dass das OAuth-Token abgelaufen ist — melde dich über die Claude-Code-CLI oder die IDE-Erweiterung neu an. **Das ist nicht die Claude-Desktop-App**: Ein Login in Claude.app erneuert dieses Token nicht. *Rate limited* löst sich von selbst; das Plugin wartet 15 Minuten und zeigt die verbleibende Zeit an.
 
 **Eine Codex-Warnung erscheint.** Der Helfer fehlt oder Codex hat noch keine Daten geliefert. Installer erneut ausführen und Codex CLI einmal nutzen.
+
+**Gemini zeigt eine Warnung.** Antigravity wurde noch nicht gestartet oder das lokale Hilfsskript wartet auf Daten. Starten Sie Antigravity Desktop oder Antigravity IDE.
 
 **Farben unterscheiden sich zwischen Menüleiste und Menü.** macOS kann eine transluzente Menüleiste als hell behandeln, während Menüs dunkel sind. Genau deshalb gibt es nur eine Farbe pro Stufe; andernfalls die Zweifarbdarstellung abschalten.
 

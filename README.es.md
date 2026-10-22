@@ -6,9 +6,9 @@
 
 | Servicio AI | Color | Fuentes compatibles |
 |:---|:---|:---|
-| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (línea de estado oficial) |
-| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI y tokens web |
-| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Cuotas de sesión de Google Antigravity Desktop e IDE |
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (API de uso OAuth y llavero) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI y tokens web (`5h` y `1w`) |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop e IDE (`5h` y `1w`) |
 
 <img src="assets/hero.svg" alt="AI Usage Barometer en la barra de menús, el icono del Dock y una barra flotante" width="725">
 
@@ -59,8 +59,8 @@ La interfaz del complemento está disponible solo en inglés. Esta documentació
 | Mostrar Claude | Mostrar u ocultar Claude |
 | Mostrar Claude 5h | Mostrar u ocultar la ventana de 5 horas |
 | Porcentaje de Claude 5h | Mostrar u ocultar su porcentaje |
-| Mostrar Claude 7d | Mostrar u ocultar la ventana de 7 días |
-| Porcentaje de Claude 7d | Mostrar u ocultar su porcentaje |
+| Mostrar Claude 1w (7d) | Mostrar u ocultar la ventana de 7 días |
+| Porcentaje de Claude 1w (7d) | Mostrar u ocultar su porcentaje |
 | Mostrar Codex | Mostrar u ocultar Codex |
 | Mostrar ventana 1 de Codex | Mostrar u ocultar la primera ventana que reporte Codex (e.g. Codex 5h) |
 | Porcentaje de ventana 1 de Codex | Mostrar u ocultar su porcentaje |
@@ -133,6 +133,8 @@ Los resultados se guardan en caché durante el intervalo, así que solo se consu
 **Aparece un aviso de Claude.** Abre el menú desplegable para ver el motivo. *Sign in to Claude Code again* significa que el token OAuth caducó — vuelve a autenticarte con la CLI de Claude Code o la extensión del IDE. **No es la app de escritorio Claude**: iniciar sesión en Claude.app no renueva este token. *Rate limited* se resuelve solo; el plugin espera 15 minutos y muestra el tiempo restante.
 
 **Aparece un aviso de Codex.** Falta el asistente o Codex aún no ha generado datos. Reinstala y usa Codex CLI una vez.
+
+**Aparece un aviso de Gemini.** Antigravity aún no se ha iniciado o el asistente local espera datos. Abre Antigravity Desktop o Antigravity IDE.
 
 **Los colores difieren entre la barra y el menú.** macOS puede tratar una barra translúcida como clara aunque los menús sean oscuros. El renderizador vectorial de dos colores se usa cuando Python está disponible; el texto de un color solo se usa como alternativa cuando Python no está disponible.
 

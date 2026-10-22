@@ -59,8 +59,8 @@ Codex는 시안을 사용합니다. 잔여량이 11–30%이면 경고색에 오
 | Claude 표시 | Claude 전체 표시/숨김 |
 | Claude 5h 표시 | 5시간 한도 표시/숨김 |
 | Claude 5h 퍼센트 | 해당 퍼센트 표시/숨김 |
-| Claude 7d 표시 | 7일 한도 표시/숨김 |
-| Claude 7d 퍼센트 | 해당 퍼센트 표시/숨김 |
+| Claude 1w (7d) 표시 | 7일 한도 표시/숨김 |
+| Claude 1w (7d) 퍼센트 | 해당 퍼센트 표시/숨김 |
 | Codex 표시 | Codex 전체 표시/숨김 |
 | Codex 첫 번째 한도 표시 | Codex가 처음 반환하는 한도 표시/숨김 (e.g. Codex 5h) |
 | Codex 첫 번째 한도 퍼센트 | 해당 퍼센트 표시/숨김 |
@@ -131,6 +131,8 @@ cd ai-usage-barometer/app && swift run
 **Claude 경고가 표시됨** — 드롭다운을 열어 원인을 확인하세요. *Sign in to Claude Code again*은 OAuth 토큰이 만료되었다는 뜻으로, Claude Code CLI나 IDE 확장에서 다시 로그인해야 합니다. **Claude 데스크톱 앱이 아닙니다**: Claude.app에 로그인해도 이 토큰은 갱신되지 않습니다. *Rate limited*는 시간이 지나면 자동으로 해소됩니다. 플러그인이 15분 대기하며 남은 시간을 표시합니다.
 
 **Codex 경고가 표시됨** — 헬퍼가 없거나 Codex 데이터가 아직 없습니다. 설치 프로그램을 다시 실행하고 Codex CLI를 한 번 사용하세요.
+
+**Gemini에 경고가 표시됨** — Antigravity가 아직 실행되지 않았거나 로컬 헬퍼가 데이터를 기다리는 중입니다. Antigravity Desktop 또는 Antigravity IDE를 실행하세요.
 
 **메뉴 막대와 드롭다운의 색이 다름** — macOS는 반투명 메뉴 막대를 밝게 처리할 수 있습니다. Python을 사용할 수 있으면 항상 2색 벡터 렌더러를 사용하고, Python이 없을 때만 1색 텍스트로 대체합니다.
 

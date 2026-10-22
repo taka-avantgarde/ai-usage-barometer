@@ -6,9 +6,9 @@
 
 | Layanan AI | Warna | Sumber yang didukung |
 |:---|:---|:---|
-| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (baris status resmi) |
-| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI & token web |
-| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Kuota sesi Google Antigravity Desktop & IDE |
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (API penggunaan OAuth & Rantai Kunci) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI & token web (`5h` & `1w`) |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE (`5h` & `1w`) |
 
 <img src="assets/hero.svg" alt="AI Usage Barometer di bilah menu, ikon Dock, dan bilah mengambang" width="725">
 
@@ -59,8 +59,8 @@ Antarmuka plugin hanya tersedia dalam bahasa Inggris. Dokumentasi GitHub ini tet
 | Tampilkan Claude | Tampilkan atau sembunyikan Claude |
 | Tampilkan Claude 5h | Tampilkan atau sembunyikan jendela 5 jam |
 | Persentase Claude 5h | Tampilkan atau sembunyikan persentasenya |
-| Tampilkan Claude 7d | Tampilkan atau sembunyikan jendela 7 hari |
-| Persentase Claude 7d | Tampilkan atau sembunyikan persentasenya |
+| Tampilkan Claude 1w (7d) | Tampilkan atau sembunyikan jendela 7 hari |
+| Persentase Claude 1w (7d) | Tampilkan atau sembunyikan persentasenya |
 | Tampilkan Codex | Tampilkan atau sembunyikan Codex |
 | Tampilkan jendela Codex 1 | Tampilkan atau sembunyikan jendela pertama yang dilaporkan Codex (e.g. Codex 5h) |
 | Persentase jendela Codex 1 | Tampilkan atau sembunyikan persentasenya |
@@ -132,6 +132,8 @@ Hasil disimpan sementara selama interval, jadi endpoint dipanggil paling banyak 
 **Muncul peringatan Claude.** Buka menu dropdown untuk melihat alasannya. *Sign in to Claude Code again* berarti token OAuth kedaluwarsa — masuk ulang lewat CLI Claude Code atau ekstensi IDE. **Ini bukan aplikasi desktop Claude**: masuk ke Claude.app tidak memperbarui token ini. *Rate limited* akan hilang sendiri; plugin menunggu 15 menit dan menampilkan sisa waktu.
 
 **Muncul peringatan Codex.** Pembantu tidak ada atau Codex belum menghasilkan data. Jalankan ulang pemasang lalu gunakan Codex CLI sekali.
+
+**Gemini menampilkan peringatan.** Antigravity belum dijalankan atau pembantu lokal sedang menunggu data. Buka Antigravity Desktop atau Antigravity IDE.
 
 **Warna berbeda antara bilah menu dan menu.** macOS bisa memperlakukan bilah menu transparan sebagai terang meski menu gelap. Renderer vektor dua warna digunakan saat Python tersedia; teks satu warna hanya digunakan sebagai fallback saat Python tidak tersedia.
 

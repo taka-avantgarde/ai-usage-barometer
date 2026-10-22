@@ -6,9 +6,9 @@
 
 | AI 服务 | 颜色 | 支持来源 |
 |:---|:---|:---|
-| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code（官方状态行关联） |
-| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI 与网页 Token |
-| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE 会话配额 |
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code（OAuth 用量 API 与钥匙串） |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI 与网页 Token（`5h` 与 `1w`） |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE（`5h` 与 `1w`） |
 
 <img src="assets/hero.svg" alt="菜单栏、Dock 图标与浮动条上的 AI Usage Barometer" width="725">
 
@@ -57,8 +57,8 @@ Claude、Codex 与 Gemini 共用一项，中间以细线分隔。进度条为电
 | 显示 Claude | 显示或隐藏 Claude |
 | 显示 Claude 5h | 显示或隐藏 5 小时额度 |
 | Claude 5h 百分比 | 显示或隐藏其百分比 |
-| 显示 Claude 7d | 显示或隐藏 7 天额度 |
-| Claude 7d 百分比 | 显示或隐藏其百分比 |
+| 显示 Claude 1w (7d) | 显示或隐藏 7 天额度 |
+| Claude 1w (7d) 百分比 | 显示或隐藏其百分比 |
 | 显示 Codex | 显示或隐藏 Codex |
 | 显示 Codex 第1个额度 | 显示/隐藏 Codex 返回的第一个额度窗口 (e.g. Codex 5h) |
 | Codex 第1个额度百分比 | 显示或隐藏其百分比 (e.g. Codex 5h) |
@@ -128,6 +128,8 @@ cd ai-usage-barometer/app && swift run
 **出现 Claude 警告** — 打开下拉菜单查看具体原因。*Sign in to Claude Code again* 表示 OAuth 令牌已过期，请通过 Claude Code 的 CLI 或 IDE 扩展重新登录。**这不是 Claude 桌面应用**：登录 Claude.app 不会刷新此令牌。*Rate limited* 会自行解除；插件会等待 15 分钟并显示剩余时间。
 
 **出现 Codex 警告** — 助手缺失或 Codex 尚未产生数据。重新运行安装程序，并使用一次 Codex CLI。
+
+**出现 Gemini 警告** — Antigravity 尚未启动，或本地助手正在等待数据。请启动 Antigravity Desktop 或 Antigravity IDE。
 
 **菜单栏与下拉菜单颜色不一致** — macOS 可能把半透明菜单栏视为浅色而菜单为深色。Python 可用时始终使用双色矢量绘制；只有在缺少 Python 时才回退到单色文本。
 

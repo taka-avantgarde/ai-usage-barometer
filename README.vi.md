@@ -58,8 +58,8 @@ Giao diện plugin chỉ hiển thị bằng tiếng Anh. Tài liệu GitHub nà
 | Hiện Claude | Hiện hoặc ẩn Claude |
 | Hiện Claude 5h | Hiện hoặc ẩn khung 5 giờ |
 | Phần trăm Claude 5h | Hiện hoặc ẩn phần trăm tương ứng |
-| Hiện Claude 7d | Hiện hoặc ẩn khung 7 ngày |
-| Phần trăm Claude 7d | Hiện hoặc ẩn phần trăm tương ứng |
+| Hiện Claude 1w (7d) | Hiện hoặc ẩn khung 7 ngày |
+| Phần trăm Claude 1w (7d) | Hiện hoặc ẩn phần trăm tương ứng |
 | Hiện Codex | Hiện hoặc ẩn Codex |
 | Hiện khung Codex 1 | Hiện hoặc ẩn khung đầu tiên mà Codex trả về (e.g. Codex 5h) |
 | Phần trăm khung Codex 1 | Hiện hoặc ẩn phần trăm tương ứng |
@@ -130,6 +130,8 @@ Kết quả được lưu đệm trong khoảng làm mới, nên mỗi khoảng 
 **Hiện cảnh báo Claude.** Mở menu thả xuống để xem lý do. *Sign in to Claude Code again* nghĩa là token OAuth đã hết hạn — hãy đăng nhập lại qua Claude Code CLI hoặc tiện ích IDE. **Đây không phải ứng dụng Claude trên desktop**: đăng nhập vào Claude.app không làm mới token này. *Rate limited* sẽ tự hết; plugin sẽ chờ 15 phút và hiển thị thời gian còn lại.
 
 **Hiện cảnh báo Codex.** Thiếu trợ lý hoặc Codex chưa tạo dữ liệu. Chạy lại trình cài đặt rồi dùng Codex CLI một lần.
+
+**Gemini hiển thị cảnh báo.** Antigravity chưa được khởi chạy hoặc trình trợ giúp cục bộ đang chờ dữ liệu. Hãy mở Antigravity Desktop hoặc Antigravity IDE.
 
 **Màu khác nhau giữa thanh menu và menu thả xuống.** macOS có thể coi thanh menu trong suốt là sáng dù menu tối. Khi có Python, trình vẽ vector hai màu luôn được dùng; văn bản một màu chỉ là phương án dự phòng khi thiếu Python.
 

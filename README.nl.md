@@ -59,8 +59,8 @@ De plugininterface is uitsluitend in het Engels. Deze GitHub-documentatie blijft
 | Claude tonen | Claude tonen of verbergen |
 | Claude 5h tonen | Venster van 5 uur tonen of verbergen |
 | Percentage van Claude 5h | Bijbehorend percentage tonen of verbergen |
-| Claude 7d tonen | Venster van 7 dagen tonen of verbergen |
-| Percentage van Claude 7d | Bijbehorend percentage tonen of verbergen |
+| Claude 1w (7d) tonen | Venster van 7 dagen tonen of verbergen |
+| Percentage van Claude 1w (7d) | Bijbehorend percentage tonen of verbergen |
 | Codex tonen | Codex tonen of verbergen |
 | Codex venster 1 tonen | Het eerste venster dat Codex meldt tonen of verbergen (e.g. Codex 5h) |
 | Percentage van Codex venster 1 | Dat percentage tonen of verbergen |
@@ -133,6 +133,8 @@ Resultaten worden gecachet gedurende het interval, dus het eindpunt wordt hoogst
 **Er verschijnt een Claude-waarschuwing.** Open het dropdownmenu voor de reden. *Sign in to Claude Code again* betekent dat het OAuth-token is verlopen — meld je opnieuw aan via de Claude Code CLI of de IDE-extensie. **Dit is niet de Claude-desktopapp**: inloggen bij Claude.app vernieuwt dit token niet. *Rate limited* lost zichzelf op; de plugin wacht 15 minuten en toont de resterende tijd.
 
 **Er verschijnt een Codex-waarschuwing.** De helper ontbreekt of Codex heeft nog geen gegevens. Voer het installatieprogramma opnieuw uit en gebruik Codex CLI één keer.
+
+**Gemini toont een waarschuwing.** Antigravity is nog niet gestart of de lokale helper wacht op gegevens. Start Antigravity Desktop of Antigravity IDE.
 
 **Kleuren verschillen tussen menubalk en menu.** macOS kan een doorschijnende menubalk als licht behandelen terwijl menu’s donker zijn. De tweekleurige vectorweergave wordt gebruikt als Python beschikbaar is; tekst in één kleur is alleen de fallback wanneer Python ontbreekt.
 
