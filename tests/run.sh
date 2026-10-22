@@ -260,7 +260,8 @@ READMES=(
 )
 for readme in "${READMES[@]}"; do
   [[ -f "$ROOT/$readme" ]]
-  grep -q 'raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh' "$ROOT/$readme"
+  grep -q 'raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh' "$ROOT/$readme"
+  ! grep -qi 'SwiftBar' "$ROOT/$readme"
   grep -q 'Claude' "$ROOT/$readme"
   grep -q 'Codex' "$ROOT/$readme"
   grep -q 'Gemini' "$ROOT/$readme"

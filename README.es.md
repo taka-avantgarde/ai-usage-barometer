@@ -18,13 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-Esa es la app. Sin Homebrew, sin Xcode, sin SwiftBar. macOS 13 o posterior. La primera vez que se ejecuta pregunta dónde quieres que viva —barra de menús, icono del Dock o barra flotante— y puedes cambiarlo desde su menú cuando quieras.
-
-¿Ya usas SwiftBar, o lo prefieres ahí? Esta línea instala el plugin en su lugar, añadiendo Homebrew y SwiftBar solo si faltan. Volver a ejecutarla es seguro, así que úsala también para actualizar.
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
-```
+Esa es la app. Sin Homebrew, sin Xcode. macOS 13 o posterior. La primera vez que se ejecuta pregunta dónde quieres que viva —barra de menús, icono del Dock o barra flotante— y puedes cambiarlo desde su menú cuando quieras.
 
 ## Un solo elemento en la barra de menús
 
@@ -116,17 +110,13 @@ git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
 cd ai-usage-barometer/app && swift run
 ```
 
-Los ajustes se comparten con el plugin de SwiftBar, así que nunca discrepan.
-
 ## Fuentes de datos
 
 **Claude** se lee del endpoint OAuth `api.anthropic.com/api/oauth/usage`, con el token que Claude Code ya guarda en el llavero de macOS (`Claude Code-credentials`, o `~/.claude/.credentials.json`). No se escribe en ninguno de los dos y el token solo sale del Mac en la petición a Anthropic. La primera vez, elige **Permitir siempre**.
 
 Los resultados se guardan en caché durante el intervalo, así que solo se consulta una vez por intervalo. Si falla, se mantiene la última lectura válida.
 
-**Codex** se lee del asistente local `codex-usage.sh` que el instalador coloca en `~/SwiftBar/.ai-usage-barometer/`. Sus ventanas son dinámicas en número y nombre — un cambio de plan puede convertir `5h`/`7d` en algo como `30d` — así que los dos interruptores siguen a la primera y segunda ventana que Codex realmente devuelva, y el panel de ajustes se renombra para coincidir.
-
-**Gemini** se lee del asistente local `gemini-usage.sh` en `~/SwiftBar/.ai-usage-barometer/`. Supervisa las cuotas de `5h` y `1w` (`7d`) de Antigravity Desktop App 2.0 y Antigravity IDE mediante Connect RPC local (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) y caché.
+**Codex** se lee del asistente local `codex-usage.sh` que el instalador coloca en `.ai-usage-barometer/`. Sus ventanas son dinámicas en número y nombre — un cambio de plan puede convertir `5h`/`7d` en algo como `30d` — así que los dos interruptores siguen a la primera y segunda ventana que Codex realmente devuelva, y el panel de ajustes se renombra para coincidir.
 
 ## Solución de problemas
 

@@ -18,13 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-这就是应用版。不需要 Homebrew，不需要 Xcode，也不需要 SwiftBar。macOS 13 及以上。首次运行时会问你希望它待在哪里——菜单栏、Dock 图标或浮动条——之后随时可以在它的菜单里改。
-
-已经在用 SwiftBar，或者就想放在那里？这一行改为安装插件版（仅在缺少时才安装 Homebrew 与 SwiftBar）。重复执行是安全的，更新也用同一行。
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
-```
+这就是应用版。不需要 Homebrew，不需要 Xcode。macOS 13 及以上。首次运行时会问你希望它待在哪里——菜单栏、Dock 图标或浮动条——之后随时可以在它的菜单里改。
 
 ## 菜单栏只占一项
 
@@ -111,17 +105,13 @@ git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
 cd ai-usage-barometer/app && swift run
 ```
 
-设置与 SwiftBar 插件共享，两者永远不会出现分歧。
-
 ## 数据来源
 
 **Claude** 读取 OAuth 用量端点 `api.anthropic.com/api/oauth/usage`，使用 Claude Code 已保存在 macOS 钥匙串 `Claude Code-credentials`（或 `~/.claude/.credentials.json`）中的令牌。不会写入这两处，令牌除发往 Anthropic 的请求外不会离开本机。首次运行请选择 **始终允许**。
 
 结果会在刷新间隔内缓存，因此每个间隔最多请求一次。若刷新失败，将继续显示上一次的正常数值。
 
-**Codex** 读取安装程序放在 `~/SwiftBar/.ai-usage-barometer/` 的本地助手 `codex-usage.sh` 的输出。其额度窗口的数量和名称都是动态的——套餐变化可能让 `5h`/`7d` 变成类似 `30d` 的名称——因此上面两个开关分别跟随 Codex 实际返回的第一、第二个窗口，设置面板也会自动更新为对应的名称。
-
-**Gemini** 读取自安装器放置在 `~/SwiftBar/.ai-usage-barometer/` 中的本地助手 `gemini-usage.sh`。它通过本地 Language Server Connect RPC（`RetrieveUserQuotaSummary` / `GetUserStatus`）、只读 SQLite（`state.vscdb`）与缓存，同时追踪 Antigravity Desktop App 2.0 和 Antigravity IDE 的 `5h` 与 `1w`（`7d`）配额。
+**Codex** 读取安装程序放在 `.ai-usage-barometer/` 的本地助手 `codex-usage.sh` 的输出。其额度窗口的数量和名称都是动态的——套餐变化可能让 `5h`/`7d` 变成类似 `30d` 的名称——因此上面两个开关分别跟随 Codex 实际返回的第一、第二个窗口，设置面板也会自动更新为对应的名称。
 
 ## 疑难排解
 

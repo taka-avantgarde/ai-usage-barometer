@@ -18,13 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-Dat is de app. Geen Homebrew, geen Xcode, geen SwiftBar. macOS 13 of nieuwer. Bij de eerste start vraagt hij waar hij moet wonen — menubalk, Dock-icoon of zwevende balk — en via zijn menu verander je dat wanneer je wilt.
-
-Zit je al op SwiftBar, of wil je hem daar? Deze regel installeert in plaats daarvan de plugin en haalt Homebrew en SwiftBar alleen binnen als ze ontbreken. Opnieuw uitvoeren kan geen kwaad: gebruik dezelfde regel om bij te werken.
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
-```
+Dat is de app. Geen Homebrew, geen Xcode. macOS 13 of nieuwer. Bij de eerste start vraagt hij waar hij moet wonen — menubalk, Dock-icoon of zwevende balk — en via zijn menu verander je dat wanneer je wilt.
 
 ## Eén item in de menubalk
 
@@ -115,18 +109,13 @@ git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
 cd ai-usage-barometer/app && swift run
 ```
 
-De instellingen worden gedeeld met de SwiftBar-plugin, dus de twee spreken
-elkaar nooit tegen.
-
 ## Gegevensbronnen
 
 **Claude** wordt gelezen van het OAuth-eindpunt `api.anthropic.com/api/oauth/usage`, met het token dat Claude Code al bewaart in de macOS-sleutelhanger (`Claude Code-credentials`, anders `~/.claude/.credentials.json`). Er wordt niets naar geschreven en het token verlaat je Mac alleen in het verzoek aan Anthropic. Kies bij de eerste keer **Altijd toestaan**.
 
 Resultaten worden gecachet gedurende het interval, dus het eindpunt wordt hoogstens één keer per interval bevraagd. Mislukt dat, dan blijft de laatste geldige waarde staan.
 
-**Codex** wordt gelezen uit de lokale helper `codex-usage.sh` die het installatieprogramma in `~/SwiftBar/.ai-usage-barometer/` plaatst. De vensters zijn dynamisch in aantal en naam — een planwijziging kan `5h`/`7d` veranderen in iets als `30d` — dus de twee schakelaars hierboven volgen het eerste en tweede venster dat Codex daadwerkelijk teruggeeft, en het instellingenpaneel hernoemt zichzelf om dit te weerspiegelen.
-
-**Gemini** wordt gelezen uit de lokale helper `gemini-usage.sh` in `~/SwiftBar/.ai-usage-barometer/`. Het volgt zowel de `5h`- als `1w`-quota (`7d`) van Antigravity Desktop App 2.0 en Antigravity IDE via lokale Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) en cache.
+**Codex** wordt gelezen uit de lokale helper `codex-usage.sh` die het installatieprogramma in `.ai-usage-barometer/` plaatst. De vensters zijn dynamisch in aantal en naam — een planwijziging kan `5h`/`7d` veranderen in iets als `30d` — dus de twee schakelaars hierboven volgen het eerste en tweede venster dat Codex daadwerkelijk teruggeeft, en het instellingenpaneel hernoemt zichzelf om dit te weerspiegelen.
 
 ## Problemen oplossen
 

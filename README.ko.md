@@ -18,13 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-이것이 앱 버전입니다. Homebrew도 Xcode도 SwiftBar도 필요 없습니다. macOS 13 이상. 처음 실행하면 어디에 둘지(메뉴 막대, Dock 아이콘, 플로팅 바) 묻고, 이후에는 메뉴에서 언제든 바꿀 수 있습니다.
-
-이미 SwiftBar를 쓰고 있거나 거기에 두고 싶다면, 이 한 줄이 플러그인을 대신 설치합니다(Homebrew와 SwiftBar는 없을 때만 설치). 다시 실행해도 안전하므로 업데이트에도 같은 줄을 쓰세요.
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
-```
+이것이 앱 버전입니다. Homebrew도 Xcode도 필요 없습니다. macOS 13 이상. 처음 실행하면 어디에 둘지(메뉴 막대, Dock 아이콘, 플로팅 바) 묻고, 이후에는 메뉴에서 언제든 바꿀 수 있습니다.
 
 ## 메뉴 막대 항목은 하나
 
@@ -114,17 +108,13 @@ git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
 cd ai-usage-barometer/app && swift run
 ```
 
-설정은 SwiftBar 플러그인과 공유하므로 둘의 표시가 어긋나지 않습니다.
-
 ## 데이터 출처
 
 **Claude**는 OAuth 사용량 엔드포인트 `api.anthropic.com/api/oauth/usage`에서 읽습니다. 인증에는 Claude Code가 macOS 키체인 `Claude Code-credentials`(없으면 `~/.claude/.credentials.json`)에 저장해 둔 토큰을 사용합니다. 두 위치에 쓰지 않으며, 토큰은 Anthropic 요청 외에는 Mac을 벗어나지 않습니다. 첫 실행 시 **항상 허용**을 선택하세요.
 
 결과는 새로고침 간격 동안 캐시되므로 간격당 최대 한 번만 조회합니다. 실패해도 마지막 정상 값이 그대로 표시됩니다.
 
-**Codex**는 설치 프로그램이 `~/SwiftBar/.ai-usage-barometer/`에 배치한 로컬 헬퍼 `codex-usage.sh`의 출력에서 읽습니다. 한도 창은 개수와 이름 모두 동적입니다 — 요금제가 바뀌면 `5h`/`7d`가 `30d`처럼 바뀔 수 있습니다 — 그래서 위 두 토글은 Codex가 실제로 반환하는 첫 번째·두 번째 한도를 그대로 따라가며, 설정 화면의 표기도 실제 이름에 맞춰 자동으로 바뀝니다.
-
-**Gemini**는 `~/SwiftBar/.ai-usage-barometer/`에 설치된 로컬 헬퍼 `gemini-usage.sh`에서 읽습니다. 로컬 Language Server Connect RPC(`RetrieveUserQuotaSummary` / `GetUserStatus`), 읽기 전용 SQLite(`state.vscdb`) 및 캐시를 통해 Antigravity Desktop App 2.0과 Antigravity IDE의 `5h` 및 `1w`(`7d`) 할당량을 모두 추적합니다.
+**Codex**는 설치 프로그램이 `.ai-usage-barometer/`에 배치한 로컬 헬퍼 `codex-usage.sh`의 출력에서 읽습니다. 한도 창은 개수와 이름 모두 동적입니다 — 요금제가 바뀌면 `5h`/`7d`가 `30d`처럼 바뀔 수 있습니다 — 그래서 위 두 토글은 Codex가 실제로 반환하는 첫 번째·두 번째 한도를 그대로 따라가며, 설정 화면의 표기도 실제 이름에 맞춰 자동으로 바뀝니다.
 
 ## 문제 해결
 

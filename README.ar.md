@@ -18,13 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-هذا هو التطبيق. بلا Homebrew وبلا Xcode وبلا SwiftBar. يتطلب macOS 13 أو أحدث. في أول تشغيل يسألك أين يريد أن يستقر — شريط القوائم أو أيقونة Dock أو شريط عائم — ويمكنك تغيير ذلك من قائمته في أي وقت.
-
-تستخدم SwiftBar بالفعل أو تفضّله؟ يثبّت هذا السطر الإضافة بدلًا من ذلك، ويضيف Homebrew و SwiftBar فقط إن لم يكونا موجودين. إعادة التشغيل آمنة، فاستخدم السطر نفسه للتحديث.
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
-```
+هذا هو التطبيق. بلا Homebrew وبلا Xcode. يتطلب macOS 13 أو أحدث. في أول تشغيل يسألك أين يريد أن يستقر — شريط القوائم أو أيقونة Dock أو شريط عائم — ويمكنك تغيير ذلك من قائمته في أي وقت.
 
 ## عنصر واحد في شريط القوائم
 
@@ -113,17 +107,13 @@ git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
 cd ai-usage-barometer/app && swift run
 ```
 
-تتشارك الإعدادات مع إضافة SwiftBar، فلا يختلف العرضان أبدًا.
-
 ## مصادر البيانات
 
 تُقرأ بيانات **Claude** من نقطة OAuth `api.anthropic.com/api/oauth/usage` باستخدام الرمز الذي يحفظه Claude Code في سلسلة مفاتيح macOS (`Claude Code-credentials`، وإلا `~/.claude/.credentials.json`). لا يُكتب شيء في أي منهما، ولا يغادر الرمز جهازك إلا في الطلب المرسل إلى Anthropic. عند أول تشغيل اختر **السماح دائمًا**.
 
 تُخزَّن النتائج مؤقتًا طوال الفاصل، فلا تُستدعى النقطة أكثر من مرة واحدة لكل فاصل. وإذا فشل التحديث تبقى آخر قراءة صحيحة معروضة.
 
-يُقرأ **Codex** من المساعد المحلي `codex-usage.sh` الذي يضعه المثبّت في `~/SwiftBar/.ai-usage-barometer/`. نوافذه ديناميكية في العدد والاسم — فتغيير الخطة قد يحوّل `5h`/`7d` إلى شيء مثل `30d` — لذا يتبع المفتاحان أعلاه أول وثاني نافذة يُعيدها Codex فعليًا، وتُعاد تسمية لوحة الإعدادات لتطابق ذلك.
-
-يُقرأ **Gemini** من المساعد المحلي `gemini-usage.sh` في `~/SwiftBar/.ai-usage-barometer/`. يتتبع حصص `5h` و`1w` (`7d`) في Antigravity Desktop App 2.0 وAntigravity IDE عبر Connect RPC المحلي (`RetrieveUserQuotaSummary` / `GetUserStatus`) وقاعدة بيانات SQLite (`state.vscdb`) وذاكرة التخزين المؤقت.
+يُقرأ **Codex** من المساعد المحلي `codex-usage.sh` الذي يضعه المثبّت في `.ai-usage-barometer/`. نوافذه ديناميكية في العدد والاسم — فتغيير الخطة قد يحوّل `5h`/`7d` إلى شيء مثل `30d` — لذا يتبع المفتاحان أعلاه أول وثاني نافذة يُعيدها Codex فعليًا، وتُعاد تسمية لوحة الإعدادات لتطابق ذلك.
 
 ## حل المشكلات
 

@@ -18,13 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-これらはアプリ版です。Homebrew も Xcode も SwiftBar も要りません。macOS 13 以降。初回起動時に置き場所（メニューバー・Dockアイコン・フローティングバー）を聞かれ、あとからメニューでいつでも変えられます。
-
-すでに SwiftBar を使っている、あるいは SwiftBar に出したい場合は、こちらの1行でプラグイン版が入ります（Homebrew と SwiftBar は無いときだけ導入）。何度実行しても安全なので、更新にも同じ1行を使えます。
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
-```
+これらはアプリ版です。Homebrew も Xcode も要りません。macOS 13 以降。初回起動時に置き場所（メニューバー・Dockアイコン・フローティングバー）を聞かれ、あとからメニューでいつでも変えられます。
 
 ## メニューバーは1項目
 
@@ -105,15 +99,13 @@ git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
 cd ai-usage-barometer/app && swift run
 ```
 
-設定は SwiftBar プラグインと共有なので、両者の表示が食い違いません。
-
 ## データの取得元
 
 **Claude** は OAuth の使用量エンドポイント `api.anthropic.com/api/oauth/usage` から取得します。認証には、Claude Code が macOS キーチェーンの `Claude Code-credentials` に保存済みのアクセストークンを使います（見つからない場合は `~/.claude/.credentials.json`）。どちらにも書き込みは行わず、トークンが Mac の外に出るのは Anthropic へのリクエストのときだけです。初回にキーチェーンへのアクセス許可を求められたら **常に許可** を選んでください。
 
 取得結果は更新間隔のあいだキャッシュされるため、エンドポイントへの問い合わせは1間隔につき最大1回です。一時的な通信エラーや429のときは直前の正常値を維持し、解約・ログアウト等で認証情報が消えた場合は古いキャッシュを即座に破棄します。
 
-**Codex** は、インストーラが `~/SwiftBar/.ai-usage-barometer/` に配置するローカルヘルパー `codex-usage.sh` の出力から読み取ります。`5h`（5時間枠）が未使用（残り100%）のときも省略せず、常に **`5h` → `1w` (`7d`)** の順で2本とも取得・表示します。
+**Codex** は、インストーラが `.ai-usage-barometer/` に配置するローカルヘルパー `codex-usage.sh` の出力から読み取ります。`5h`（5時間枠）が未使用（残り100%）のときも省略せず、常に **`5h` → `1w` (`7d`)** の順で2本とも取得・表示します。
 
 **Gemini** は、インストーラが配置するローカルヘルパー `gemini-usage.sh` の出力から読み取ります。Antigravity Desktop App 2.0 および Antigravity IDE の両方に対応し、外部API呼び出しや認証情報の書き換えなしに、ローカル Language Server の Connect RPC（`RetrieveUserQuotaSummary` / `GetUserStatus`）・SQLite (`state.vscdb`)・キャッシュの3段階フォールバックで **`5h`（5時間枠）と `1w`（週間枠）の両方**を安全に取得します。
 

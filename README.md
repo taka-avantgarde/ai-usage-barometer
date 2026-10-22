@@ -18,13 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-That is the app. No Homebrew, no Xcode, no SwiftBar. macOS 13 or later. The first time it runs it asks where it should live — menu bar, Dock icon or floating bar — and you can change your mind from its menu at any time.
-
-Already on SwiftBar, or want it there? This line installs the plugin instead, adding Homebrew and SwiftBar only if they are missing. Re-running is safe, so use the same line to update.
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
-```
+That is the app. No Homebrew, no Xcode. macOS 13 or later. The first time it runs it asks where it should live — menu bar, Dock icon or floating bar — and you can change your mind from its menu at any time.
 
 ## One menu-bar item
 
@@ -106,17 +100,13 @@ git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
 cd ai-usage-barometer/app && swift run
 ```
 
-Settings are shared with the SwiftBar plugin, so the two never disagree.
-
 ## Data sources
 
 **Claude** is read from the OAuth usage endpoint `api.anthropic.com/api/oauth/usage`, using the access token Claude Code already stores in the macOS Keychain item `Claude Code-credentials` (falling back to `~/.claude/.credentials.json`). Nothing is written to either location, and the token never leaves your Mac except in the request to Anthropic. macOS may ask you to allow Keychain access on first run — choose **Always Allow**.
 
 Results are cached for the refresh interval, so the endpoint is polled at most once per interval. If a temporary network error or 429 occurs, the last good reading stays on screen; if credentials are removed or logged out, stale cached data is cleared immediately.
 
-**Codex** is read from the local helper `codex-usage.sh` that the installer places in `~/SwiftBar/.ai-usage-barometer/`. It tracks both `5h` and `1w` (`7d`) windows in `5h → 1w` order (even when the 5-hour burst window has not been consumed yet).
-
-**Gemini** is read from the local helper `gemini-usage.sh` in `~/SwiftBar/.ai-usage-barometer/`. It tracks both `5h` (Five Hour Limit) and `1w` (Weekly Limit) quotas across Antigravity Desktop App 2.0 and Antigravity IDE without credentials or external API calls via local language server Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), read-only SQLite state fallback, and caching.
+**Codex** is read from the local helper `codex-usage.sh` that the installer places in `.ai-usage-barometer/`. It tracks both `5h` and `1w` (`7d`) windows in `5h → 1w` order (even when the 5-hour burst window has not been consumed yet).
 
 ## Troubleshooting
 

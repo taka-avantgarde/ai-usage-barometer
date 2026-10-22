@@ -18,13 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-Itu aplikasinya. Tanpa Homebrew, tanpa Xcode, tanpa SwiftBar. macOS 13 atau lebih baru. Saat pertama dijalankan ia menanyakan mau ditaruh di mana — bilah menu, ikon Dock, atau bilah mengambang — dan Anda bisa mengubahnya kapan saja dari menunya.
-
-Sudah memakai SwiftBar, atau memang ingin di sana? Baris ini memasang versi plugin, dan hanya menambahkan Homebrew serta SwiftBar bila belum ada. Menjalankannya lagi aman, jadi pakai baris yang sama untuk memperbarui.
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
-```
+Itu aplikasinya. Tanpa Homebrew, tanpa Xcode. macOS 13 atau lebih baru. Saat pertama dijalankan ia menanyakan mau ditaruh di mana — bilah menu, ikon Dock, atau bilah mengambang — dan Anda bisa mengubahnya kapan saja dari menunya.
 
 ## Satu item di bilah menu
 
@@ -115,17 +109,13 @@ git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
 cd ai-usage-barometer/app && swift run
 ```
 
-Pengaturan dipakai bersama plugin SwiftBar, jadi keduanya tidak pernah berbeda.
-
 ## Sumber data
 
 **Claude** dibaca dari endpoint OAuth `api.anthropic.com/api/oauth/usage`, memakai token yang sudah disimpan Claude Code di Keychain macOS (`Claude Code-credentials`, atau `~/.claude/.credentials.json`). Tidak ada penulisan ke keduanya, dan token hanya meninggalkan Mac dalam permintaan ke Anthropic. Saat pertama kali, pilih **Selalu Izinkan**.
 
 Hasil disimpan sementara selama interval, jadi endpoint dipanggil paling banyak sekali per interval. Jika gagal, nilai valid terakhir tetap ditampilkan.
 
-**Codex** dibaca dari pembantu lokal `codex-usage.sh` yang ditempatkan pemasang di `~/SwiftBar/.ai-usage-barometer/`. Jendelanya dinamis baik jumlah maupun namanya — perubahan paket bisa mengubah `5h`/`7d` menjadi sesuatu seperti `30d` — jadi kedua sakelar di atas mengikuti jendela pertama dan kedua yang benar-benar dikembalikan Codex, dan panel pengaturan akan mengganti namanya agar sesuai.
-
-**Gemini** dibaca dari pembantu lokal `gemini-usage.sh` di `~/SwiftBar/.ai-usage-barometer/`. Ini melacak kuota `5h` dan `1w` (`7d`) di Antigravity Desktop App 2.0 dan Antigravity IDE melalui Connect RPC lokal (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`), dan cache.
+**Codex** dibaca dari pembantu lokal `codex-usage.sh` yang ditempatkan pemasang di `.ai-usage-barometer/`. Jendelanya dinamis baik jumlah maupun namanya — perubahan paket bisa mengubah `5h`/`7d` menjadi sesuatu seperti `30d` — jadi kedua sakelar di atas mengikuti jendela pertama dan kedua yang benar-benar dikembalikan Codex, dan panel pengaturan akan mengganti namanya agar sesuai.
 
 ## Pemecahan masalah
 

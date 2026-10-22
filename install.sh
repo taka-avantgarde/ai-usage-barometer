@@ -18,28 +18,17 @@ CONFIG_FILE="$CACHE_DIR/config"
 TEST_MODE="${AI_USAGE_TEST_MODE:-0}"
 
 if [[ "$TEST_MODE" != "1" && "$(uname -s)" != "Darwin" ]]; then
-  echo "This installer supports macOS with SwiftBar." >&2
+  echo "This installer supports macOS." >&2
   exit 1
 fi
 
 echo "▶ AI Usage Barometer installer v$VERSION"
 
 if [[ "$TEST_MODE" != "1" ]]; then
-  if ! command -v brew >/dev/null 2>&1; then
-    echo "→ Homebrew is not installed; installing it now…"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    if [[ -x /opt/homebrew/bin/brew ]]; then
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-    elif [[ -x /usr/local/bin/brew ]]; then
-      eval "$(/usr/local/bin/brew shellenv)"
-    fi
-  fi
-
-  command -v brew >/dev/null 2>&1 || { echo "Homebrew installation could not be detected." >&2; exit 1; }
-  command -v jq >/dev/null 2>&1 || { echo "→ Installing jq…"; brew install jq; }
-  if [[ ! -d /Applications/SwiftBar.app && ! -d "$HOME/Applications/SwiftBar.app" ]]; then
-    echo "→ Installing SwiftBar…"
-    brew install --cask swiftbar
+  if [[ -n "${AI_USAGE_LOCAL_SOURCE:-}" && -f "${AI_USAGE_LOCAL_SOURCE}/install-app.sh" ]]; then
+    exec /bin/bash "${AI_USAGE_LOCAL_SOURCE}/install-app.sh"
+  else
+    exec /bin/bash -c "$(curl -fsSL "$RAW_BASE/install-app.sh")"
   fi
 else
   command -v jq >/dev/null 2>&1 || { echo "jq is required for tests." >&2; exit 1; }
@@ -130,20 +119,7 @@ if [[ -r "$CLAUDE_DIR/settings.json" ]] && jq -e '.disableAllHooks == true' "$CL
 fi
 
 if [[ "$TEST_MODE" != "1" && "${AI_USAGE_SKIP_APP_LAUNCH:-0}" != "1" ]]; then
-  if [[ -d "/Applications/AI Usage Barometer.app" ]]; then
-    if [[ -n "${AI_USAGE_LOCAL_SOURCE:-}" && -f "${AI_USAGE_LOCAL_SOURCE}/install-app.sh" ]]; then
-      /bin/bash "${AI_USAGE_LOCAL_SOURCE}/install-app.sh" 2>/dev/null || true
-    else
-      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/$REPO/$BRANCH/install-app.sh)" 2>/dev/null || true
-    fi
-  fi
   rm -f "$HOME/.cache/claude-codex-bar/latest_release" 2>/dev/null || true
-  defaults write com.ameba.SwiftBar PluginDirectory "$PLUGIN_DIR" >/dev/null 2>&1 || true
-  killall SwiftBar >/dev/null 2>&1 || true
-  sleep 1
-  open -a SwiftBar >/dev/null 2>&1 || open /Applications/SwiftBar.app >/dev/null 2>&1 || true
-  sleep 1
-  open -g "swiftbar://refreshallplugins" >/dev/null 2>&1 || true
   osascript -e "display notification \"Updated to v0.9.0 — Claude, Codex & Gemini (5h & 1w) ready.\" with title \"AI Usage Barometer\"" 2>/dev/null || true
 fi
 
@@ -153,12 +129,10 @@ cat <<DONE
 
 Menu-bar behaviour:
 • Claude, Codex and Gemini share one menu-bar item; service names appear only in the dropdown
-• Every 5h/7d window is coloured independently
+• Every 5h/1w window is coloured independently
 • Claude: #C66D28 → #B65A1E → #C52E22
 • Codex:  #1A8BA6 → #52768A → #783F78
 • Gemini: #158F6A → #5E7B3A → #8C3B5A
 • If Codex returns a real 300-minute window, its 5h bar appears automatically
 • If one provider has no usable window, the other provider remains visible
-
-If SwiftBar asks for its plugin folder, choose: $PLUGIN_DIR
 DONE

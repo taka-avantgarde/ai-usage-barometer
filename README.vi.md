@@ -18,13 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-Đó là ứng dụng. Không cần Homebrew, không cần Xcode, không cần SwiftBar. macOS 13 trở lên. Lần chạy đầu tiên nó sẽ hỏi bạn muốn đặt nó ở đâu — thanh menu, biểu tượng Dock hay thanh nổi — và bạn đổi ý lúc nào cũng được từ menu của nó.
-
-Đang dùng SwiftBar, hoặc muốn đặt ở đó? Dòng này cài bản plugin thay thế, chỉ thêm Homebrew và SwiftBar khi còn thiếu. Chạy lại vẫn an toàn, nên dùng chính dòng này để cập nhật.
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
-```
+Đó là ứng dụng. Không cần Homebrew, không cần Xcode. macOS 13 trở lên. Lần chạy đầu tiên nó sẽ hỏi bạn muốn đặt nó ở đâu — thanh menu, biểu tượng Dock hay thanh nổi — và bạn đổi ý lúc nào cũng được từ menu của nó.
 
 ## Chỉ một mục trên thanh menu
 
@@ -113,17 +107,13 @@ git clone https://github.com/taka-avantgarde/ai-usage-barometer.git
 cd ai-usage-barometer/app && swift run
 ```
 
-Cài đặt dùng chung với plugin SwiftBar nên hai bên không bao giờ lệch nhau.
-
 ## Nguồn dữ liệu
 
 **Claude** được đọc từ endpoint OAuth `api.anthropic.com/api/oauth/usage`, dùng token mà Claude Code đã lưu trong Keychain của macOS (`Claude Code-credentials`, hoặc `~/.claude/.credentials.json`). Không ghi vào hai nơi đó, và token chỉ rời máy trong yêu cầu gửi tới Anthropic. Lần đầu chạy hãy chọn **Luôn cho phép**.
 
 Kết quả được lưu đệm trong khoảng làm mới, nên mỗi khoảng chỉ gọi endpoint tối đa một lần. Nếu thất bại, giá trị hợp lệ gần nhất vẫn hiển thị.
 
-**Codex** được đọc từ trợ lý cục bộ `codex-usage.sh` mà trình cài đặt đặt tại `~/SwiftBar/.ai-usage-barometer/`. Các khung của nó động cả về số lượng lẫn tên gọi — khi đổi gói, `5h`/`7d` có thể trở thành thứ như `30d` — nên hai công tắc trên bám theo khung thứ nhất và thứ hai mà Codex thực sự trả về, và bảng cài đặt sẽ tự đổi tên cho khớp.
-
-**Gemini** được đọc từ trình trợ giúp cục bộ `gemini-usage.sh` trong `~/SwiftBar/.ai-usage-barometer/`. Công cụ theo dõi cả hạn mức `5h` và `1w` (`7d`) trên Antigravity Desktop App 2.0 và Antigravity IDE thông qua Connect RPC cục bộ (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) và bộ nhớ đệm.
+**Codex** được đọc từ trợ lý cục bộ `codex-usage.sh` mà trình cài đặt đặt tại `.ai-usage-barometer/`. Các khung của nó động cả về số lượng lẫn tên gọi — khi đổi gói, `5h`/`7d` có thể trở thành thứ như `30d` — nên hai công tắc trên bám theo khung thứ nhất và thứ hai mà Codex thực sự trả về, và bảng cài đặt sẽ tự đổi tên cho khớp.
 
 ## Khắc phục sự cố
 
