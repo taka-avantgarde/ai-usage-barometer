@@ -64,6 +64,10 @@ for r in readmes:
     if "30d" in text:
         print(f"✘ {r}: 30d の旧記述が残っています", file=sys.stderr)
         sys.exit(1)
+    for legacy in ["The plugin interface is English-only", "プラグイン本体の画面表示", "whenever Python is available", "Python が使える場合は常に2色"]:
+        if legacy in text:
+            print(f"✘ {r}: 旧プラグイン時代の記述 '{legacy}' が残っています", file=sys.stderr)
+            sys.exit(1)
     if "Menu bar" not in text and "Menüleiste" not in text and "Barra de menús" not in text and "Barre des menus" not in text and "메뉴" not in text and "菜单栏" not in text and "メニューバー" not in text:
         print(f"✘ {r}: Menu bar の記述が見つかりません", file=sys.stderr)
         sys.exit(1)
