@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # <xbar.title>Gemini Usage Barometer</xbar.title>
-# <xbar.version>v0.1.0</xbar.version>
+# <xbar.version>v0.10.1</xbar.version>
 # <xbar.author>Takayuki Miyano / Atlas Associates Inc.</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>Shows Gemini usage limits for Antigravity in the macOS menu bar.</xbar.desc>
@@ -12,7 +12,7 @@
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 set -u
 
-VERSION="0.1.0"
+VERSION="0.10.1"
 WARN="${WARN:-70}"
 DANGER="${DANGER:-90}"
 OK_COLOR="${OK_COLOR:-#158F6A}"
@@ -508,23 +508,37 @@ if [[ -z "$DATA" || "$DATA" == "null" ]]; then
   exit 0
 fi
 
-P_LABEL="$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print((d.get('primary') or {}).get('label') or '5h')" "$DATA")"
-P_USED="$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print((d.get('primary') or {}).get('used_percent', 0))" "$DATA")"
-P_RESET="$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print((d.get('primary') or {}).get('resets_at', 0))" "$DATA")"
-
-HAS_SEC="$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print('true' if d.get('secondary') else 'false')" "$DATA")"
-S_LABEL=""
-S_USED=0
-S_RESET=0
-if [[ "$HAS_SEC" == "true" ]]; then
-  S_LABEL="$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d['secondary'].get('label') or 'Flash')" "$DATA")"
-  S_USED="$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d['secondary'].get('used_percent', 0))" "$DATA")"
-  S_RESET="$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d['secondary'].get('resets_at', 0))" "$DATA")"
-fi
-
-PLAN="$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d.get('plan') or '')" "$DATA")"
-SOURCE="$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d.get('source') or 'unknown')" "$DATA")"
-FETCHED_AT="$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d.get('fetched_at') or 0)" "$DATA")"
+{
+  read -r P_LABEL
+  read -r P_USED
+  read -r P_RESET
+  read -r HAS_SEC
+  read -r S_LABEL
+  read -r S_USED
+  read -r S_RESET
+  read -r PLAN
+  read -r SOURCE
+  read -r FETCHED_AT
+} < <(python3 -c "
+import json, sys
+try:
+    d = json.loads(sys.argv[1])
+except Exception:
+    d = {}
+p = d.get('primary') or {}
+s = d.get('secondary') or {}
+has_sec = bool(s)
+print(p.get('label') or '5h')
+print(p.get('used_percent', 0))
+print(p.get('resets_at', 0))
+print('true' if has_sec else 'false')
+print(s.get('label') or 'Flash' if has_sec else '')
+print(s.get('used_percent', 0) if has_sec else 0)
+print(s.get('resets_at', 0) if has_sec else 0)
+print(d.get('plan') or '')
+print(d.get('source') or 'unknown')
+print(d.get('fetched_at') or 0)
+" "$DATA")
 
 P_USED_I="$(clamp_percent "$P_USED")"
 S_USED_I="$(clamp_percent "$S_USED")"

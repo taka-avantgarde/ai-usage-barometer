@@ -53,7 +53,8 @@ rm -rf "$HOME/SwiftBar/.ai-usage-barometer" 2>/dev/null || true
 rm -f "$HOME/.cache/claude-codex-bar/latest_release" 2>/dev/null || true
 
 echo "✔ $DEST"
-osascript -e 'display notification "Updated to v0.10.0 — Claude, Codex & Gemini (5h & 1w) native app ready." with title "AI Usage Barometer"' 2>/dev/null || true
+VER=$(defaults read "$DEST/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo "latest")
+osascript -e "display notification \"Updated to v$VER — Claude, Codex & Gemini (5h & 1w) native app ready.\" with title \"AI Usage Barometer\"" 2>/dev/null || true
 ( killall AIUsageBarometer 2>/dev/null || true; sleep 0.5; open "$DEST" ) >/dev/null 2>&1 &
 echo
 echo "右クリックで設定（表示するサービス／％／置き場所）。"

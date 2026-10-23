@@ -50,20 +50,17 @@ Antarmuka plugin hanya tersedia dalam bahasa Inggris. Dokumentasi GitHub ini tet
 
 | Pengaturan | Efek |
 |---|---|
-| Tampilkan Claude | Tampilkan atau sembunyikan Claude |
-| Tampilkan Claude 5h | Tampilkan atau sembunyikan jendela 5 jam |
-| Persentase Claude 5h | Tampilkan atau sembunyikan persentasenya |
-| Tampilkan Claude 1w (7d) | Tampilkan atau sembunyikan jendela 7 hari |
-| Persentase Claude 1w (7d) | Tampilkan atau sembunyikan persentasenya |
-| Tampilkan Codex | Tampilkan atau sembunyikan Codex |
-| Tampilkan jendela Codex 1 | Tampilkan atau sembunyikan jendela pertama yang dilaporkan Codex (e.g. Codex 5h) |
-| Persentase jendela Codex 1 | Tampilkan atau sembunyikan persentasenya |
-| Tampilkan jendela Codex 2 | Tampilkan atau sembunyikan jendela kedua, jika ada (e.g. Codex 7d) |
-| Persentase jendela Codex 2 | Tampilkan atau sembunyikan persentasenya |
-| Tampilkan Gemini | Tampilkan atau sembunyikan Gemini |
-| Tampilkan Gemini 5h / % | Tampilkan atau sembunyikan jendela 5h dan persentasenya |
-| Tampilkan Gemini 1w / % | Tampilkan atau sembunyikan jendela 1 minggu (7d) dan persentasenya |
-| Interval penyegaran | 1, 3, atau 5 menit |
+| **Claude** (`ON` / `OFF`) | Tampilkan atau sembunyikan Claude sepenuhnya (berlaku untuk `5h` dan `1w`) |
+| **Claude `5h`** + **`%`** | Tampilkan atau sembunyikan jendela 5 jam dan persentasenya |
+| **Claude `1w`** + **`%`** | Tampilkan atau sembunyikan jendela 1 minggu (7d) dan persentasenya |
+| **Codex** (`ON` / `OFF`) | Tampilkan atau sembunyikan Codex sepenuhnya (berlaku untuk `5h` dan `1w`) |
+| **Codex `5h`** + **`%`** | Tampilkan atau sembunyikan jendela 5 jam (Codex 5h) dan persentasenya |
+| **Codex `1w`** + **`%`** | Tampilkan atau sembunyikan jendela 1 minggu (Codex 7d) dan persentasenya |
+| **Gemini** (`ON` / `OFF`) | Tampilkan atau sembunyikan Gemini sepenuhnya (berlaku untuk `5h` dan `1w`) |
+| **Gemini `5h`** + **`%`** | Tampilkan atau sembunyikan jendela 5 jam (`5h`) dan persentasenya |
+| **Gemini `1w`** + **`%`** | Tampilkan atau sembunyikan jendela 1 minggu (`1w` / 7d) dan persentasenya |
+| **Penempatan** (`Menu bar` / `Dock icon` / `Floating bar`) | Pilih kombinasi apa pun dari ketiga lokasi tampilan |
+| **Interval pembaruan** (`1m` / `3m` / `5m`) | 1 menit, 3 menit, atau 5 menit |
 
 Saat semua meter disembunyikan, item netral `AI …` tetap tersedia untuk membuka pengaturan. Warna hanya ditentukan oleh bilah yang tampil. Pengaturan tersimpan di `~/.cache/claude-codex-bar/` dan bertahan setelah pembaruan.
 
@@ -71,7 +68,7 @@ Saat Claude atau Codex dinonaktifkan, pembaruan data untuk layanan tersebut dihe
 
 Jika jendela 5 jam dan 7 hari suatu layanan sama-sama tidak dicentang, layanan beserta galatnya disembunyikan sepenuhnya dan sumber datanya tidak diakses.
 
-Plugin memeriksa GitHub Releases paling banyak sekali sehari. Jika ada pembaruan dari operator, menu dan pengaturan menampilkan pemberitahuan, catatan rilis, dan **Perbarui sekarang**.
+Aplikasi dan plugin memeriksa GitHub Releases secara otomatis setiap 15 menit dan memperbarui di latar belakang saat rilis baru diterbitkan.
 
 ## Aplikasinya — pilih tempatnya
 
@@ -115,7 +112,9 @@ cd ai-usage-barometer/app && swift run
 
 Hasil disimpan sementara selama interval, jadi endpoint dipanggil paling banyak sekali per interval. Jika gagal, nilai valid terakhir tetap ditampilkan.
 
-**Codex** dibaca dari pembantu lokal `codex-usage.sh` yang ditempatkan pemasang di `.ai-usage-barometer/`. Jendelanya dinamis baik jumlah maupun namanya — perubahan paket bisa mengubah `5h`/`7d` menjadi sesuatu seperti `30d` — jadi kedua sakelar di atas mengikuti jendela pertama dan kedua yang benar-benar dikembalikan Codex, dan panel pengaturan akan mengganti namanya agar sesuai.
+**Codex** dibaca dari pembantu lokal `codex-usage.sh` di `.ai-usage-barometer/`. Ini melacak jendela `5h` dan `1w` (`7d`) dalam urutan `5h → 1w` (bahkan saat jendela 5 jam belum digunakan).
+
+**Gemini** dibaca dari pembantu lokal `gemini-usage.sh` yang dibundel dengan aplikasi. Ini mendukung Antigravity Desktop App 2.0 dan Antigravity IDE, membaca jendela `5h` dan `1w` secara lokal melalui Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`), dan fallback cache tanpa panggilan API eksternal atau penulisan kredensial.
 
 ## Pemecahan masalah
 

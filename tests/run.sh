@@ -132,7 +132,7 @@ assert_spec_line "$SPEC" "#666666" "  │  "
 assert_spec_line "$SPEC" "#4F7FA8" "7d ███░░"
 grep -q '^5h  .*1% used.*color=#B54F02' <<< "$OUT"
 grep -q '^7d  .*97% used.*color=#FF7045' <<< "$OUT"
-grep -q '^Version v0.2.7' <<< "$OUT"
+grep -q '^Version v0.10.1' <<< "$OUT"
 
 # No official Claude data: omit Claude from the macOS header while keeping its
 # setup guidance inside the dropdown. Do not show a misleading warning gauge.

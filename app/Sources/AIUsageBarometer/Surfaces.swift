@@ -37,6 +37,7 @@ final class FloatPanel: NSPanel {
         f.origin.y += f.size.height - s.height
         f.size = s
         setFrame(f, display: true)
+        clampToVisibleScreen()
     }
 
     @objc private func savePosition() {
@@ -64,14 +65,32 @@ final class FloatPanel: NSPanel {
         }
     }
 
+    func clampToVisibleScreen() {
+        let screens = NSScreen.screens
+        guard !screens.isEmpty else { return }
+        let inAnyScreen = screens.contains { $0.visibleFrame.intersects(frame) }
+        if !inAnyScreen {
+            let targetScreen = NSScreen.main ?? screens[0]
+            let v = targetScreen.visibleFrame
+            var f = frame
+            f.origin.x = min(max(f.origin.x, v.minX + 12), v.maxX - f.width - 12)
+            f.origin.y = min(max(f.origin.y, v.minY + 12), v.maxY - f.height - 12)
+            setFrameOrigin(f.origin)
+            Settings.write("float_x", String(format: "%.0f", f.origin.x))
+            Settings.write("float_y", String(format: "%.0f", f.origin.y))
+        }
+    }
+
     private func restorePosition() {
         if let x = Double(Settings.read("float_x", "")), let y = Double(Settings.read("float_y", "")) {
             setFrameOrigin(NSPoint(x: x, y: y))
+            clampToVisibleScreen()
             return
         }
         if let screen = NSScreen.main {
             let v = screen.visibleFrame
             setFrameOrigin(NSPoint(x: v.maxX - frame.width - 24, y: v.maxY - frame.height - 24))
+            clampToVisibleScreen()
         }
     }
 }
@@ -117,10 +136,12 @@ final class MenuBarSurface {
     func update() {
         let size = gauge.desiredSize
         gauge.frame = NSRect(origin: .zero, size: size)
-        guard let rep = gauge.bitmapImageRepForCachingDisplay(in: gauge.bounds) else { return }
-        gauge.cacheDisplay(in: gauge.bounds, to: rep)
-        let image = NSImage(size: size)
-        image.addRepresentation(rep)
+        let image = NSImage(size: size, flipped: false) { [weak self] rect in
+            guard let self = self else { return false }
+            self.gauge.frame = rect
+            self.gauge.draw(rect)
+            return true
+        }
         image.isTemplate = false
         item.button?.image = image
         item.button?.imagePosition = .imageOnly

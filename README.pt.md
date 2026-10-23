@@ -50,20 +50,17 @@ A interface do plugin está disponível somente em inglês. Esta documentação 
 
 | Ajuste | Efeito |
 |---|---|
-| Mostrar Claude | Mostrar ou ocultar o Claude |
-| Mostrar Claude 5h | Mostrar ou ocultar a janela de 5 horas |
-| Porcentagem de Claude 5h | Mostrar ou ocultar sua porcentagem |
-| Mostrar Claude 1w (7d) | Mostrar ou ocultar a janela de 7 dias |
-| Porcentagem de Claude 1w (7d) | Mostrar ou ocultar sua porcentagem |
-| Mostrar Codex | Mostrar ou ocultar o Codex |
-| Mostrar janela 1 do Codex | Mostrar ou ocultar a primeira janela relatada pelo Codex (e.g. Codex 5h) |
-| Porcentagem da janela 1 do Codex | Mostrar ou ocultar sua porcentagem |
-| Mostrar janela 2 do Codex | Mostrar ou ocultar a segunda janela, se houver (e.g. Codex 7d) |
-| Porcentagem da janela 2 do Codex | Mostrar ou ocultar sua porcentagem |
-| Mostrar Gemini | Mostrar ou ocultar o Gemini |
-| Mostrar Gemini 5h / % | Mostrar ou ocultar a janela de 5h e sua porcentagem |
-| Mostrar Gemini 1w / % | Mostrar ou ocultar a janela de 1 semana (7d) e sua porcentagem |
-| Intervalo de atualização | 1, 3 ou 5 minutos |
+| **Claude** (`ON` / `OFF`) | Mostrar ou ocultar o Claude totalmente (aplica-se a `5h` e `1w`) |
+| **Claude `5h`** + **`%`** | Mostrar ou ocultar a janela de 5 horas e sua porcentagem |
+| **Claude `1w`** + **`%`** | Mostrar ou ocultar a janela de 1 semana (7d) e sua porcentagem |
+| **Codex** (`ON` / `OFF`) | Mostrar ou ocultar o Codex totalmente (aplica-se a `5h` e `1w`) |
+| **Codex `5h`** + **`%`** | Mostrar ou ocultar a janela de 5 horas (Codex 5h) e sua porcentagem |
+| **Codex `1w`** + **`%`** | Mostrar ou ocultar a janela de 1 semana (Codex 7d) e sua porcentagem |
+| **Gemini** (`ON` / `OFF`) | Mostrar ou ocultar o Gemini totalmente (aplica-se a `5h` e `1w`) |
+| **Gemini `5h`** + **`%`** | Mostrar ou ocultar a janela de 5 horas (`5h`) e sua porcentagem |
+| **Gemini `1w`** + **`%`** | Mostrar ou ocultar a janela de 1 semana (`1w` / 7d) e sua porcentagem |
+| **Posicionamento** (`Menu bar` / `Dock icon` / `Floating bar`) | Escolher qualquer combinação dos três locais de exibição |
+| **Intervalo de atualização** (`1m` / `3m` / `5m`) | 1 minuto, 3 minutos ou 5 minutos |
 
 Quando todos os medidores estão ocultos, um item neutro `AI …` permanece para abrir as configurações. A cor considera apenas as barras visíveis. As configurações ficam em `~/.cache/claude-codex-bar/` e sobrevivem a atualizações.
 
@@ -71,7 +68,7 @@ Ao desativar o Claude ou o Codex, a atualização de dados desse serviço é int
 
 Se as janelas de 5h e 7d de um serviço estiverem desmarcadas, o serviço e seus erros ficam totalmente ocultos e sua fonte de dados não é consultada.
 
-O plugin verifica o GitHub Releases no máximo uma vez por dia. Se houver atualização do operador, o menu e as configurações mostram o aviso, as notas e **Atualizar agora**.
+O aplicativo e o plug-in verificam o GitHub Releases automaticamente a cada 15 minutos e atualizam em segundo plano quando uma nova versão é publicada.
 
 ## O app — escolha onde ele mora
 
@@ -115,7 +112,9 @@ cd ai-usage-barometer/app && swift run
 
 Os resultados ficam em cache durante o intervalo, então o endpoint é consultado no máximo uma vez por intervalo. Se falhar, a última leitura válida permanece.
 
-**Codex** é lido do auxiliar local `codex-usage.sh` que o instalador coloca em `.ai-usage-barometer/`. Suas janelas são dinâmicas em número e nome — uma mudança de plano pode transformar `5h`/`7d` em algo como `30d` — então as duas chaves acima seguem a primeira e a segunda janela que o Codex realmente retornar, e o painel de configurações se renomeia de acordo.
+**Codex** é lido a partir do auxiliar local `codex-usage.sh` colocado em `.ai-usage-barometer/`. Ele rastreia as janelas de `5h` e `1w` (`7d`) na ordem `5h → 1w` (mesmo quando a janela de 5 horas ainda não tiver sido consumida).
+
+**Gemini** é lido a partir do auxiliar local `gemini-usage.sh` empacotado com o aplicativo. Ele suporta tanto o Antigravity Desktop App 2.0 quanto o Antigravity IDE, lendo com segurança as janelas de `5h` e `1w` localmente via Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) e fallback de cache, sem chamadas de API externas ou gravação de credenciais.
 
 ## Solução de problemas
 

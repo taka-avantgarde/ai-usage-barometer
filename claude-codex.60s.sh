@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.10.0</xbar.version>
+# <xbar.version>v0.10.1</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude, Codex and Gemini usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.10.0"
+VERSION="v0.10.1"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
@@ -35,7 +35,7 @@ SETTINGS_PAGE="${AI_USAGE_SETTINGS_PAGE:-$SELF_DIR/.ai-usage-barometer/settings.
 UPDATER="${AI_USAGE_UPDATER:-$SELF_DIR/.ai-usage-barometer/update.sh}"
 
 # ── 表示設定 ──
-CFG="$HOME/.cache/claude-codex-bar"; mkdir -p "$CFG" 2>/dev/null
+CFG="$HOME/.cache/claude-codex-bar"; mkdir -p "$CFG" 2>/dev/null; chmod 700 "$CFG" 2>/dev/null || true
 rd() { local v=1; [ -f "$CFG/$1" ] && read -r v < "$CFG/$1" 2>/dev/null; case "$v" in 0|1) ;; *) v=1 ;; esac; printf '%s' "$v"; }
 # jq があれば使う。無い環境でも動くよう、必要な取り出しだけ代替を用意する。
 # アプリ単体で入れた人に Homebrew を強いないため。読むのは3種類の決まった形
@@ -169,6 +169,7 @@ T_SET="Display settings"; T_REFRESH="Refresh now"; T_UPDATED="Updated {v}"
 T_LEFT="{v} left"; T_RESET="recovers in {v}"; T_SOON="soon"
 T_NOCRED="Credentials not found"; T_BADFMT="Unexpected API format"
 T_CXWAIT="Waiting for Codex data (run Codex CLI once)"; T_CXMISS="Codex helper not found"
+T_GMWAIT="Waiting for Gemini data (open Antigravity once)"; T_GMMISS="Gemini helper not found"
 T_REAUTH="Sign in to Claude Code again"; T_RATELIMIT="Rate limited — retrying soon"
 # 両サービスがオフでも後段の「AI …」ヘッダーがクリック可能な項目を残す。
 
@@ -199,7 +200,7 @@ latest_release_version() {
     latest=$(jpick "$(curl -fsSL --connect-timeout 3 --max-time 6 \
       -H 'Accept: application/vnd.github+json' \
       https://api.github.com/repos/taka-avantgarde/ai-usage-barometer/releases/latest 2>/dev/null)" tag_name)
-    [ -n "$latest" ] && printf '%s\n' "$latest" > "$file"
+    [ -n "$latest" ] && { tmpf="$file.tmp.$$"; printf '%s\n' "$latest" > "$tmpf" && chmod 600 "$tmpf" 2>/dev/null && mv -f "$tmpf" "$file"; }
   fi
   [ -n "$latest" ] && printf '%s\n' "$latest"
 }
@@ -209,7 +210,7 @@ UPDATE_AVAILABLE=0
 
 SELF_PATH="${SWIFTBAR_PLUGIN_PATH:-$0}"
 if [ "$UPDATE_AVAILABLE" = 1 ]; then
-  if [ "${AI_USAGE_AUTO_UPDATE:-1}" = 1 ] && [ -z "${AI_USAGE_UPDATE_CHECK:-}" ] && [ -n "${SWIFTBAR_PLUGIN_PATH:-}" ]; then
+  if [ "${AI_USAGE_AUTO_UPDATE:-1}" = 1 ] && [ "${AIBAR_NATIVE_APP:-0}" != 1 ] && [ -z "${AI_USAGE_UPDATE_CHECK:-}" ] && [ -n "${SWIFTBAR_PLUGIN_PATH:-}" ]; then
     LAST_AUTO_UPDATED=""
     [ -f "$CFG/auto_updated_version" ] && read -r LAST_AUTO_UPDATED < "$CFG/auto_updated_version" 2>/dev/null || true
     if [ "$LAST_AUTO_UPDATED" != "$LATEST_VERSION" ]; then
@@ -372,13 +373,14 @@ elif [ "$CL_ACTIVE" = 1 ]; then
       R7=$(jpick "$BODY" resets_at seven_day)
       [ -z "$U5" ] && [ -z "$U7" ] && CL_ERR="$T_BADFMT"
       P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
-      [ -z "$CL_ERR" ] && printf '%s\t%s\t%s\t%s\t%s\n' "$NOW" "$U5" "$U7" "$R5" "$R7" > "$CACHEF"
+      [ -z "$CL_ERR" ] && { tmpf="$CACHEF.tmp.$$"; printf '%s\t%s\t%s\t%s\t%s\n' "$NOW" "$U5" "$U7" "$R5" "$R7" > "$tmpf" && chmod 600 "$tmpf" 2>/dev/null && mv -f "$tmpf" "$CACHEF"; }
     fi
   fi
   if [ -n "$CL_ERR" ]; then
     BO=$(( IV * 60 ))
     case "$CL_ERR" in *"$T_RATELIMIT"*) BO=900 ;; esac
-    printf '%s\t%s\n' "$(( NOW + BO ))" "$CL_ERR" > "$ATT"
+    tmpf="$ATT.tmp.$$"
+    printf '%s\t%s\n' "$(( NOW + BO ))" "$CL_ERR" > "$tmpf" && chmod 600 "$tmpf" 2>/dev/null && mv -f "$tmpf" "$ATT"
   else
     rm -f "$ATT"
   fi
@@ -501,68 +503,8 @@ gm_window_percentage() {
   esac
 }
 
-# ── メニューバー ──
-# 1項目=1色の制約があるため、Claude 表示中は Claude の色、
-# Claude 非表示のときだけ Codex / Gemini の色を使う（各サービスの最悪値で段階が決まる）。
-CL_WORST=-1; CX_WORST=-1; GM_WORST=-1
-if [ "$CL_ACTIVE" = 1 ] && [ -z "$CL_ERR" ]; then
-  [ "$C5" = 1 ] && (( P5 > CL_WORST )) && CL_WORST=$P5
-  [ "$C7" = 1 ] && (( P7 > CL_WORST )) && CL_WORST=$P7
-fi
-if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
-  cx_window_enabled 1 && (( CX_U1 > CX_WORST )) && CX_WORST=$CX_U1
-  cx_window_enabled 2 && (( CX_U2 > CX_WORST )) && CX_WORST=$CX_U2
-fi
-if [ "$GM_ACTIVE" = 1 ] && [ -z "$GM_ERR" ]; then
-  gm_window_enabled 1 && (( GM_U1 > GM_WORST )) && GM_WORST=$GM_U1
-  gm_window_enabled 2 && (( GM_U2 > GM_WORST )) && GM_WORST=$GM_U2
-fi
-if [ "$CL_ACTIVE" = 1 ]; then
-  (( CL_WORST<0 )) && CL_WORST=0
-  MB_COLOR=$(clcol $CL_WORST)
-elif [ "$CX_ACTIVE" = 1 ]; then
-  (( CX_WORST<0 )) && CX_WORST=0
-  MB_COLOR=$(cxcol $CX_WORST)
-else
-  (( GM_WORST<0 )) && GM_WORST=0
-  MB_COLOR=$(gmcol $GM_WORST)
-fi
-
 disp_lbl() { [ "$1" = "7d" ] && printf '1w' || printf '%s' "$1"; }
-MB=""
-if [ "$CL_ACTIVE" = 1 ]; then
-  if [ -n "$CL_ERR" ]; then MB="Claude ⚠"
-  else
-    [ "$C5" = 1 ] && MB="5h $(bar $REM5 $MBAR_W)$([ "$C5P" = 1 ] && printf ' %s' "$(fmt $REM5)")"
-    [ "$C7" = 1 ] && MB="${MB:+$MB  }1w $(bar $REM7 $MBAR_W)$([ "$C7P" = 1 ] && printf ' %s' "$(fmt $REM7)")"
-  fi
-fi
-if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ] && [ -n "$CX_L1" ]; then
-  CXMB=""
-  if cx_window_enabled 1; then
-    CXMB="$(disp_lbl "$CX_L1") $(bar $CX_R1 $MBAR_W)$([ "$(cx_window_percentage 1)" = 1 ] && printf ' %s' "$(fmt $CX_R1)")"
-  fi
-  if [ -n "$CX_L2" ] && cx_window_enabled 2; then
-    CXMB="${CXMB:+$CXMB  }$(disp_lbl "$CX_L2") $(bar $CX_R2 $MBAR_W)$([ "$(cx_window_percentage 2)" = 1 ] && printf ' %s' "$(fmt $CX_R2)")"
-  fi
-  [ -n "$CXMB" ] && MB="${MB:+$MB │ }$CXMB"
-fi
-[ "$CX_ACTIVE" = 1 ] && [ -n "$CX_ERR" ] && MB="${MB:+$MB │ }Codex ⚠"
 
-if [ "$GM_ACTIVE" = 1 ] && [ -z "$GM_ERR" ] && [ -n "$GM_L1" ]; then
-  GMMB=""
-  if gm_window_enabled 1; then
-    GMMB="$(disp_lbl "$GM_L1") $(bar $GM_R1 $MBAR_W)$([ "$(gm_window_percentage 1)" = 1 ] && printf ' %s' "$(fmt $GM_R1)")"
-  fi
-  if [ -n "$GM_L2" ] && gm_window_enabled 2; then
-    GMMB="${GMMB:+$GMMB  }$(disp_lbl "$GM_L2") $(bar $GM_R2 $MBAR_W)$([ "$(gm_window_percentage 2)" = 1 ] && printf ' %s' "$(fmt $GM_R2)")"
-  fi
-  [ -n "$GMMB" ] && MB="${MB:+$MB │ }$GMMB"
-fi
-[ "$GM_ACTIVE" = 1 ] && [ -n "$GM_ERR" ] && MB="${MB:+$MB │ }Gemini ⚠"
-[ -z "$MB" ] && MB="AI …"
-
-# メニューバー: PDF なら Claude/Codex/Gemini を別色で描ける（テキストは1項目1色まで）
 # ── --json：他のフロントエンド（フローティング版アプリ等）向けの機械可読出力 ──
 # 認証・バックオフ・設定・Codex解析はこのスクリプトが唯一の実装。
 # 描画側はここから先を読むだけで、判断を二重に持たない。
@@ -616,6 +558,67 @@ if [ "${1:-}" = "--json" ]; then
   exit 0
 fi
 
+# ── メニューバー ──
+# 1項目=1色の制約があるため、Claude 表示中は Claude の色、
+# Claude 非表示のときだけ Codex / Gemini の色を使う（各サービスの最悪値で段階が決まる）。
+CL_WORST=-1; CX_WORST=-1; GM_WORST=-1
+if [ "$CL_ACTIVE" = 1 ] && [ -z "$CL_ERR" ]; then
+  [ "$C5" = 1 ] && (( P5 > CL_WORST )) && CL_WORST=$P5
+  [ "$C7" = 1 ] && (( P7 > CL_WORST )) && CL_WORST=$P7
+fi
+if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ]; then
+  cx_window_enabled 1 && (( CX_U1 > CX_WORST )) && CX_WORST=$CX_U1
+  cx_window_enabled 2 && (( CX_U2 > CX_WORST )) && CX_WORST=$CX_U2
+fi
+if [ "$GM_ACTIVE" = 1 ] && [ -z "$GM_ERR" ]; then
+  gm_window_enabled 1 && (( GM_U1 > GM_WORST )) && GM_WORST=$GM_U1
+  gm_window_enabled 2 && (( GM_U2 > GM_WORST )) && GM_WORST=$GM_U2
+fi
+if [ "$CL_ACTIVE" = 1 ]; then
+  (( CL_WORST<0 )) && CL_WORST=0
+  MB_COLOR=$(clcol $CL_WORST)
+elif [ "$CX_ACTIVE" = 1 ]; then
+  (( CX_WORST<0 )) && CX_WORST=0
+  MB_COLOR=$(cxcol $CX_WORST)
+else
+  (( GM_WORST<0 )) && GM_WORST=0
+  MB_COLOR=$(gmcol $GM_WORST)
+fi
+
+MB=""
+if [ "$CL_ACTIVE" = 1 ]; then
+  if [ -n "$CL_ERR" ]; then MB="Claude ⚠"
+  else
+    [ "$C5" = 1 ] && MB="5h $(bar $REM5 $MBAR_W)$([ "$C5P" = 1 ] && printf ' %s' "$(fmt $REM5)")"
+    [ "$C7" = 1 ] && MB="${MB:+$MB  }1w $(bar $REM7 $MBAR_W)$([ "$C7P" = 1 ] && printf ' %s' "$(fmt $REM7)")"
+  fi
+fi
+if [ "$CX_ACTIVE" = 1 ] && [ -z "$CX_ERR" ] && [ -n "$CX_L1" ]; then
+  CXMB=""
+  if cx_window_enabled 1; then
+    CXMB="$(disp_lbl "$CX_L1") $(bar $CX_R1 $MBAR_W)$([ "$(cx_window_percentage 1)" = 1 ] && printf ' %s' "$(fmt $CX_R1)")"
+  fi
+  if [ -n "$CX_L2" ] && cx_window_enabled 2; then
+    CXMB="${CXMB:+$CXMB  }$(disp_lbl "$CX_L2") $(bar $CX_R2 $MBAR_W)$([ "$(cx_window_percentage 2)" = 1 ] && printf ' %s' "$(fmt $CX_R2)")"
+  fi
+  [ -n "$CXMB" ] && MB="${MB:+$MB │ }$CXMB"
+fi
+[ "$CX_ACTIVE" = 1 ] && [ -n "$CX_ERR" ] && MB="${MB:+$MB │ }Codex ⚠"
+
+if [ "$GM_ACTIVE" = 1 ] && [ -z "$GM_ERR" ] && [ -n "$GM_L1" ]; then
+  GMMB=""
+  if gm_window_enabled 1; then
+    GMMB="$(disp_lbl "$GM_L1") $(bar $GM_R1 $MBAR_W)$([ "$(gm_window_percentage 1)" = 1 ] && printf ' %s' "$(fmt $GM_R1)")"
+  fi
+  if [ -n "$GM_L2" ] && gm_window_enabled 2; then
+    GMMB="${GMMB:+$GMMB  }$(disp_lbl "$GM_L2") $(bar $GM_R2 $MBAR_W)$([ "$(gm_window_percentage 2)" = 1 ] && printf ' %s' "$(fmt $GM_R2)")"
+  fi
+  [ -n "$GMMB" ] && MB="${MB:+$MB │ }$GMMB"
+fi
+[ "$GM_ACTIVE" = 1 ] && [ -n "$GM_ERR" ] && MB="${MB:+$MB │ }Gemini ⚠"
+[ -z "$MB" ] && MB="AI …"
+
+# メニューバー: PDF なら Claude/Codex/Gemini を別色で描ける（テキストは1項目1色まで）
 PDF_SPEC=""
 if [ "$CL_ACTIVE" = 1 ] && [ -z "$CL_ERR" ]; then
   [ "$C5" = 1 ] && [ "$REM5" -ge 0 ] && PDF_SPEC="${PDF_SPEC:+$PDF_SPEC;}5h,$REM5,$(clcol $P5),$C5P"
@@ -722,8 +725,6 @@ fi
 if [ -n "$B64" ]; then
   echo "| image=$B64 dropdown=false"
 else
-  UPDATE_BADGE=""
-  [ "$UPDATE_AVAILABLE" = 1 ] && UPDATE_BADGE="⬆ "
   UPDATE_BADGE=""
   [ "$UPDATE_AVAILABLE" = 1 ] && UPDATE_BADGE="⬆ "
   echo "${UPDATE_BADGE}$MB | $FONT color=$MB_COLOR"

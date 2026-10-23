@@ -49,20 +49,17 @@ Giao diện plugin chỉ hiển thị bằng tiếng Anh. Tài liệu GitHub nà
 
 | Tùy chọn | Tác dụng |
 |---|---|
-| Hiện Claude | Hiện hoặc ẩn Claude |
-| Hiện Claude 5h | Hiện hoặc ẩn khung 5 giờ |
-| Phần trăm Claude 5h | Hiện hoặc ẩn phần trăm tương ứng |
-| Hiện Claude 1w (7d) | Hiện hoặc ẩn khung 7 ngày |
-| Phần trăm Claude 1w (7d) | Hiện hoặc ẩn phần trăm tương ứng |
-| Hiện Codex | Hiện hoặc ẩn Codex |
-| Hiện khung Codex 1 | Hiện hoặc ẩn khung đầu tiên mà Codex trả về (e.g. Codex 5h) |
-| Phần trăm khung Codex 1 | Hiện hoặc ẩn phần trăm tương ứng |
-| Hiện khung Codex 2 | Hiện hoặc ẩn khung thứ hai, nếu có (e.g. Codex 7d) |
-| Phần trăm khung Codex 2 | Hiện hoặc ẩn phần trăm tương ứng |
-| Hiện Gemini | Hiện hoặc ẩn Gemini |
-| Hiện Gemini 5h / % | Hiện hoặc ẩn khung 5h và phần trăm |
-| Hiện Gemini 1w / % | Hiện hoặc ẩn khung 1 tuần (7d) và phần trăm |
-| Khoảng làm mới | 1, 3 hoặc 5 phút |
+| **Claude** (`ON` / `OFF`) | Hiện hoặc ẩn hoàn toàn Claude (áp dụng cho cả `5h` và `1w`) |
+| **Claude `5h`** + **`%`** | Hiện hoặc ẩn khung 5 giờ và phần trăm |
+| **Claude `1w`** + **`%`** | Hiện hoặc ẩn khung 1 tuần (7d) và phần trăm |
+| **Codex** (`ON` / `OFF`) | Hiện hoặc ẩn hoàn toàn Codex (áp dụng cho cả `5h` và `1w`) |
+| **Codex `5h`** + **`%`** | Hiện hoặc ẩn khung 5 giờ (Codex 5h) và phần trăm |
+| **Codex `1w`** + **`%`** | Hiện hoặc ẩn khung 1 tuần (Codex 7d) và phần trăm |
+| **Gemini** (`ON` / `OFF`) | Hiện hoặc ẩn hoàn toàn Gemini (áp dụng cho cả `5h` và `1w`) |
+| **Gemini `5h`** + **`%`** | Hiện hoặc ẩn khung 5 giờ (`5h`) và phần trăm |
+| **Gemini `1w`** + **`%`** | Hiện hoặc ẩn khung 1 tuần (`1w` / 7d) và phần trăm |
+| **Vị trí** (`Menu bar` / `Dock icon` / `Floating bar`) | Chọn bất kỳ sự kết hợp nào trong ba vị trí hiển thị |
+| **Khoảng thời gian làm mới** (`1m` / `3m` / `5m`) | 1 phút, 3 phút hoặc 5 phút |
 
 Khi ẩn mọi đồng hồ, mục trung tính `AI …` vẫn còn để mở cài đặt. Màu chỉ do các thanh đang hiển thị quyết định. Cài đặt nằm ở `~/.cache/claude-codex-bar/` và được giữ qua các bản cập nhật.
 
@@ -70,7 +67,7 @@ Khi tắt Claude hoặc Codex, việc cập nhật dữ liệu của dịch vụ
 
 Nếu bỏ chọn cả khung 5h và 7d của một dịch vụ, dịch vụ cùng các lỗi của nó sẽ bị ẩn hoàn toàn và nguồn dữ liệu sẽ không được truy vấn.
 
-Tiện ích kiểm tra GitHub Releases nhiều nhất một lần mỗi ngày. Khi có bản cập nhật từ nhà vận hành, menu và cài đặt sẽ hiện thông báo, ghi chú và **Cập nhật ngay**.
+Ứng dụng và plugin tự động kiểm tra GitHub Releases mỗi 15 phút và tự động cập nhật trong nền khi có bản phát hành mới.
 
 ## Ứng dụng — chọn nơi nó ở
 
@@ -113,7 +110,9 @@ cd ai-usage-barometer/app && swift run
 
 Kết quả được lưu đệm trong khoảng làm mới, nên mỗi khoảng chỉ gọi endpoint tối đa một lần. Nếu thất bại, giá trị hợp lệ gần nhất vẫn hiển thị.
 
-**Codex** được đọc từ trợ lý cục bộ `codex-usage.sh` mà trình cài đặt đặt tại `.ai-usage-barometer/`. Các khung của nó động cả về số lượng lẫn tên gọi — khi đổi gói, `5h`/`7d` có thể trở thành thứ như `30d` — nên hai công tắc trên bám theo khung thứ nhất và thứ hai mà Codex thực sự trả về, và bảng cài đặt sẽ tự đổi tên cho khớp.
+**Codex** được đọc từ trình hỗ trợ cục bộ `codex-usage.sh` trong `.ai-usage-barometer/`. Nó theo dõi cả hai khung `5h` và `1w` (`7d`) theo thứ tự `5h → 1w` (ngay cả khi khung 5 giờ chưa được sử dụng).
+
+**Gemini** được đọc từ trình hỗ trợ cục bộ `gemini-usage.sh` đi kèm với ứng dụng. Nó hỗ trợ cả Antigravity Desktop App 2.0 và Antigravity IDE, đọc an toàn cả hai khung `5h` và `1w` cục bộ qua Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) và dự phòng bộ nhớ đệm mà không cần gọi API bên ngoài hay ghi thông tin đăng nhập.
 
 ## Khắc phục sự cố
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # <xbar.title>Codex Usage Barometer</xbar.title>
-# <xbar.version>v0.1.1</xbar.version>
+# <xbar.version>v0.10.1</xbar.version>
 # <xbar.author>Takayuki Miyano / Atlas Associates Inc.</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>Shows Codex primary and secondary usage limits in the macOS menu bar.</xbar.desc>
@@ -12,7 +12,7 @@
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 set -u
 
-VERSION="0.1.1"
+VERSION="0.10.1"
 REPO="${REPO:-taka-avantgarde/codex-usage-barometer}"
 UPDATE_CHECK="${UPDATE_CHECK:-1}"
 UPDATE_INTERVAL="${UPDATE_INTERVAL:-86400}"

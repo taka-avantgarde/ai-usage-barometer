@@ -48,20 +48,17 @@ Claude、Codex 与 Gemini 共用一项，中间以细线分隔。进度条为电
 
 | 设置项 | 作用 |
 |---|---|
-| 显示 Claude | 显示或隐藏 Claude |
-| 显示 Claude 5h | 显示或隐藏 5 小时额度 |
-| Claude 5h 百分比 | 显示或隐藏其百分比 |
-| 显示 Claude 1w (7d) | 显示或隐藏 7 天额度 |
-| Claude 1w (7d) 百分比 | 显示或隐藏其百分比 |
-| 显示 Codex | 显示或隐藏 Codex |
-| 显示 Codex 第1个额度 | 显示/隐藏 Codex 返回的第一个额度窗口 (e.g. Codex 5h) |
-| Codex 第1个额度百分比 | 显示或隐藏其百分比 (e.g. Codex 5h) |
-| 显示 Codex 第2个额度 | 若存在则显示或隐藏第二个额度窗口 (e.g. Codex 7d) |
-| Codex 第2个额度百分比 | 显示或隐藏其百分比 (e.g. Codex 7d) |
-| 显示 Gemini | 显示或隐藏 Gemini |
-| 显示 Gemini 5h / % | 显示或隐藏 5 小时窗口及其百分比 |
-| 显示 Gemini 1w / % | 显示或隐藏 1 周 (7d) 窗口及其百分比 |
-| 刷新间隔 | 1、3 或 5 分钟 |
+| **Claude** (`ON` / `OFF`) | 完全显示或隐藏 Claude（级联至 `5h` 和 `1w`） |
+| **Claude `5h`** + **`%`** | 显示或隐藏 5 小时窗口及其百分比 |
+| **Claude `1w`** + **`%`** | 显示或隐藏 1 周 (7d) 窗口及其百分比 |
+| **Codex** (`ON` / `OFF`) | 完全显示或隐藏 Codex（级联至 `5h` 和 `1w`） |
+| **Codex `5h`** + **`%`** | 显示或隐藏 5 小时窗口 (Codex 5h) 及其百分比 |
+| **Codex `1w`** + **`%`** | 显示或隐藏 1 周窗口 (Codex 7d) 及其百分比 |
+| **Gemini** (`ON` / `OFF`) | 完全显示或隐藏 Gemini（级联至 `5h` 和 `1w`） |
+| **Gemini `5h`** + **`%`** | 显示或隐藏 5 小时窗口 (`5h`) 及其百分比 |
+| **Gemini `1w`** + **`%`** | 显示或隐藏 1 周窗口 (`1w` / 7d) 及其百分比 |
+| **显示位置** (`Menu bar` / `Dock icon` / `Floating bar`) | 自由选择三种显示位置的任意组合 |
+| **刷新间隔** (`1m` / `3m` / `5m`) | 1 分钟、3 分钟或 5 分钟 |
 
 即使隐藏全部进度条，也会保留中性的 `AI …` 项以便打开设置。颜色只由实际显示的进度条决定。设置保存在 `~/.cache/claude-codex-bar/`，升级后仍保留。
 
@@ -69,7 +66,7 @@ Claude、Codex 与 Gemini 共用一项，中间以细线分隔。进度条为电
 
 如果某项服务的 5 小时和 7 天窗口均未勾选，该服务及其错误将完全隐藏，并且不会查询其数据源。
 
-插件每天最多检查一次 GitHub Releases。运营方有更新时，菜单和显示设置会显示通知、更新说明及 **立即更新** 按钮。
+应用和插件每 15 分钟自动检查一次 GitHub Releases，并在发布新版本时在后台自动更新。
 
 ## 应用版 —— 自己选择它待在哪里
 
@@ -111,7 +108,9 @@ cd ai-usage-barometer/app && swift run
 
 结果会在刷新间隔内缓存，因此每个间隔最多请求一次。若刷新失败，将继续显示上一次的正常数值。
 
-**Codex** 读取安装程序放在 `.ai-usage-barometer/` 的本地助手 `codex-usage.sh` 的输出。其额度窗口的数量和名称都是动态的——套餐变化可能让 `5h`/`7d` 变成类似 `30d` 的名称——因此上面两个开关分别跟随 Codex 实际返回的第一、第二个窗口，设置面板也会自动更新为对应的名称。
+**Codex** 从安装在 `.ai-usage-barometer/` 中的本地辅助脚本 `codex-usage.sh` 读取。它按 `5h → 1w` 顺序同时追踪 `5h` 和 `1w` (`7d`) 两个窗口（即使 5 小时突发窗口尚未被使用）。
+
+**Gemini** 从应用自带的本地辅助脚本 `gemini-usage.sh` 读取。它同时支持 Antigravity Desktop App 2.0 和 Antigravity IDE，通过本地 Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`)、SQLite (`state.vscdb`) 以及缓存回退三级机制安全获取 `5h` 和 `1w` 窗口，无需外部 API 调用或凭据写入。
 
 ## 疑难排解
 

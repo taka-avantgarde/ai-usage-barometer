@@ -50,20 +50,17 @@ L’interfaccia del plugin è disponibile solo in inglese. Questa documentazione
 
 | Impostazione | Effetto |
 |---|---|
-| Mostra Claude | Mostra o nascondi Claude |
-| Mostra Claude 5h | Mostra o nascondi la finestra di 5 ore |
-| Percentuale di Claude 5h | Mostra o nascondi la relativa percentuale |
-| Mostra Claude 1w (7d) | Mostra o nascondi la finestra di 7 giorni |
-| Percentuale di Claude 1w (7d) | Mostra o nascondi la relativa percentuale |
-| Mostra Codex | Mostra o nascondi Codex |
-| Mostra finestra 1 di Codex | Mostra o nascondi la prima finestra restituita da Codex (e.g. Codex 5h) |
-| Percentuale finestra 1 di Codex | Mostra o nascondi la relativa percentuale (e.g. Codex 5h) |
-| Mostra finestra 2 di Codex | Mostra o nascondi la seconda, se presente (e.g. Codex 7d) |
-| Percentuale finestra 2 di Codex | Mostra o nascondi la relativa percentuale (e.g. Codex 7d) |
-| Mostra Gemini | Mostra o nasconde Gemini |
-| Mostra Gemini 5h / % | Mostra o nasconde la finestra 5h e la sua percentuale |
-| Mostra Gemini 1w / % | Mostra o nasconde la finestra 1 settimana (7d) e la sua percentuale |
-| Intervallo di aggiornamento | 1, 3 o 5 minuti |
+| **Claude** (`ON` / `OFF`) | Mostra o nascondi Claude completamente (si applica a `5h` e `1w`) |
+| **Claude `5h`** + **`%`** | Mostra o nascondi la finestra di 5 ore e la sua percentuale |
+| **Claude `1w`** + **`%`** | Mostra o nascondi la finestra di 1 settimana (7d) e la sua percentuale |
+| **Codex** (`ON` / `OFF`) | Mostra o nascondi Codex completamente (si applica a `5h` e `1w`) |
+| **Codex `5h`** + **`%`** | Mostra o nascondi la finestra di 5 ore (Codex 5h) e la sua percentuale |
+| **Codex `1w`** + **`%`** | Mostra o nascondi la finestra di 1 settimana (Codex 7d) e la sua percentuale |
+| **Gemini** (`ON` / `OFF`) | Mostra o nascondi Gemini completamente (si applica a `5h` e `1w`) |
+| **Gemini `5h`** + **`%`** | Mostra o nascondi la finestra di 5 ore (`5h`) e la sua percentuale |
+| **Gemini `1w`** + **`%`** | Mostra o nascondi la finestra di 1 settimana (`1w` / 7d) e la sua percentuale |
+| **Posizionamento** (`Menu bar` / `Dock icon` / `Floating bar`) | Scegli una combinazione qualsiasi delle tre posizioni di visualizzazione |
+| **Intervallo di aggiornamento** (`1m` / `3m` / `5m`) | 1 minuto, 3 minuti o 5 minuti |
 
 Quando tutti gli indicatori sono nascosti, rimane una voce neutra `AI …` per aprire le impostazioni. Il colore dipende solo dalle barre visibili. Le impostazioni sono in `~/.cache/claude-codex-bar/` e sopravvivono agli aggiornamenti.
 
@@ -71,7 +68,7 @@ Disattivando Claude o Codex, l’aggiornamento dei dati di quel servizio viene s
 
 Se le finestre 5h e 7d di un servizio sono entrambe deselezionate, il servizio e i relativi errori vengono nascosti completamente e la sua origine dati non viene interrogata.
 
-Il plugin controlla GitHub Releases al massimo una volta al giorno. Se è disponibile un aggiornamento dell’operatore, menu e impostazioni mostrano avviso, note e **Aggiorna ora**.
+L'app e il plug-in controllano automaticamente GitHub Releases ogni 15 minuti e si aggiornano in background quando viene pubblicata una nuova versione.
 
 ## L'app — scegli dove abita
 
@@ -116,7 +113,9 @@ cd ai-usage-barometer/app && swift run
 
 I risultati sono memorizzati per la durata dell’intervallo, quindi l’endpoint viene interrogato al massimo una volta per intervallo. Se un aggiornamento fallisce, resta l’ultimo valore valido.
 
-**Codex** viene letto dall’helper locale `codex-usage.sh` che l’installer colloca in `.ai-usage-barometer/`. Le sue finestre sono dinamiche per numero e nome — un cambio di piano può trasformare `5h`/`7d` in qualcosa come `30d` — quindi i due interruttori sopra seguono la prima e la seconda finestra effettivamente restituite da Codex, e il pannello impostazioni si rinomina di conseguenza.
+**Codex** viene letto dall'helper locale `codex-usage.sh` posizionato in `.ai-usage-barometer/`. Monitora sia le finestre di `5h` che di `1w` (`7d`) nell'ordine `5h → 1w` (anche quando la finestra di 5 ore non è stata ancora consumata).
+
+**Gemini** viene letto dall'helper locale `gemini-usage.sh` fornito con l'app. Supporta sia Antigravity Desktop App 2.0 che Antigravity IDE, leggendo in modo sicuro le finestre di `5h` e `1w` localmente tramite Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) e fallback della cache, senza chiamate API esterne o scrittura di credenziali.
 
 ## Risoluzione dei problemi
 

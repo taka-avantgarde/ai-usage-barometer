@@ -50,20 +50,17 @@ De plugininterface is uitsluitend in het Engels. Deze GitHub-documentatie blijft
 
 | Instelling | Effect |
 |---|---|
-| Claude tonen | Claude tonen of verbergen |
-| Claude 5h tonen | Venster van 5 uur tonen of verbergen |
-| Percentage van Claude 5h | Bijbehorend percentage tonen of verbergen |
-| Claude 1w (7d) tonen | Venster van 7 dagen tonen of verbergen |
-| Percentage van Claude 1w (7d) | Bijbehorend percentage tonen of verbergen |
-| Codex tonen | Codex tonen of verbergen |
-| Codex venster 1 tonen | Het eerste venster dat Codex meldt tonen of verbergen (e.g. Codex 5h) |
-| Percentage van Codex venster 1 | Dat percentage tonen of verbergen |
-| Codex venster 2 tonen | Het tweede venster tonen of verbergen, indien aanwezig (e.g. Codex 7d) |
-| Percentage van Codex venster 2 | Dat percentage tonen of verbergen |
-| Gemini tonen | Gemini tonen of verbergen |
-| Gemini 5h / % tonen | 5-uursvenster en percentage tonen of verbergen |
-| Gemini 1w / % tonen | 1-weeksvenster (7d) en percentage tonen of verbergen |
-| Vernieuwingsinterval | 1, 3 of 5 minuten |
+| **Claude** (`ON` / `OFF`) | Claude volledig weergeven of verbergen (werkt door naar `5h` en `1w`) |
+| **Claude `5h`** + **`%`** | Het venster van 5 uur en het percentage weergeven of verbergen |
+| **Claude `1w`** + **`%`** | Het venster van 1 week (7d) en het percentage weergeven of verbergen |
+| **Codex** (`ON` / `OFF`) | Codex volledig weergeven of verbergen (werkt door naar `5h` en `1w`) |
+| **Codex `5h`** + **`%`** | Het venster van 5 uur (Codex 5h) en het percentage weergeven of verbergen |
+| **Codex `1w`** + **`%`** | Het venster van 1 week (Codex 7d) en het percentage weergeven of verbergen |
+| **Gemini** (`ON` / `OFF`) | Gemini volledig weergeven of verbergen (werkt door naar `5h` en `1w`) |
+| **Gemini `5h`** + **`%`** | Het venster van 5 uur (`5h`) en het percentage weergeven of verbergen |
+| **Gemini `1w`** + **`%`** | Het venster van 1 week (`1w` / 7d) en het percentage weergeven of verbergen |
+| **Plaatsing** (`Menu bar` / `Dock icon` / `Floating bar`) | Kies elke gewenste combinatie van de drie weergavelocaties |
+| **Vernieuwingsinterval** (`1m` / `3m` / `5m`) | 1 minuut, 3 minuten of 5 minuten |
 
 Wanneer alle meters verborgen zijn, blijft een neutraal item `AI …` beschikbaar om de instellingen te openen. De kleur volgt alleen zichtbare balken. Instellingen staan in `~/.cache/claude-codex-bar/` en blijven behouden.
 
@@ -71,7 +68,7 @@ Wanneer Claude of Codex wordt uitgeschakeld, stopt het vernieuwen van de gegeven
 
 Als voor een dienst zowel 5h als 7d is uitgeschakeld, worden de dienst en de bijbehorende fouten volledig verborgen en wordt de gegevensbron niet geraadpleegd.
 
-De plugin controleert GitHub Releases maximaal eenmaal per dag. Bij een update van de beheerder tonen menu en instellingen een melding, release-opmerkingen en **Nu bijwerken**.
+De app en plug-in controleren GitHub Releases automatisch elke 15 minuten en werken op de achtergrond bij wanneer er een nieuwe release wordt gepubliceerd.
 
 ## De app — kies waar hij woont
 
@@ -115,7 +112,9 @@ cd ai-usage-barometer/app && swift run
 
 Resultaten worden gecachet gedurende het interval, dus het eindpunt wordt hoogstens één keer per interval bevraagd. Mislukt dat, dan blijft de laatste geldige waarde staan.
 
-**Codex** wordt gelezen uit de lokale helper `codex-usage.sh` die het installatieprogramma in `.ai-usage-barometer/` plaatst. De vensters zijn dynamisch in aantal en naam — een planwijziging kan `5h`/`7d` veranderen in iets als `30d` — dus de twee schakelaars hierboven volgen het eerste en tweede venster dat Codex daadwerkelijk teruggeeft, en het instellingenpaneel hernoemt zichzelf om dit te weerspiegelen.
+**Codex** wordt gelezen uit de lokale helper `codex-usage.sh` in `.ai-usage-barometer/`. Het volgt zowel de `5h`- als de `1w`-vensters (`7d`) in de volgorde `5h → 1w` (zelfs wanneer het 5-uursvenster nog niet is verbruikt).
+
+**Gemini** wordt gelezen uit de lokale helper `gemini-usage.sh` die bij de app wordt geleverd. Het ondersteunt zowel Antigravity Desktop App 2.0 als Antigravity IDE en leest zowel `5h`- als `1w`-vensters lokaal via Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) en cache-terugval, zonder externe API-aanroepen of het opslaan van inloggegevens.
 
 ## Problemen oplossen
 

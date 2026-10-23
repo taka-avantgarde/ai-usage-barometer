@@ -29,10 +29,10 @@ rm -rf "$CACHE_ROOT/gemini-usage-barometer"
 
 if [[ "${AI_USAGE_TEST_MODE:-0}" != "1" ]]; then
   killall AIUsageBarometer >/dev/null 2>&1 || true
+  osascript -e 'tell application "System Events" to delete (every login item whose name is "AI Usage Barometer")' 2>/dev/null || true
   rm -rf "/Applications/AI Usage Barometer.app" "$HOME/Applications/AI Usage Barometer.app" 2>/dev/null || true
-  open -g "swiftbar://refreshallplugins" >/dev/null 2>&1 || true
 fi
-echo "AI Usage Barometer (app and SwiftBar plugin) removed. Previous Claude Code status line restored when applicable."
+echo "AI Usage Barometer removed. Previous Claude Code status line restored when applicable."
 
 # Backups are the user's, so they are reported rather than deleted.
 shopt -s nullglob

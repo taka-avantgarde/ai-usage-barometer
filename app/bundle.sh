@@ -1,11 +1,9 @@
 #!/bin/bash
 # AI Usage Barometer — .app を組み立てて、任意で Release に添付する。
 #
-#   bash app/bundle.sh            → AI Usage Barometer.app と zip を作る
-#   bash app/bundle.sh v0.7.0     → さらに その Release に zip を添付する
+#   bash app/bundle.sh            → ワークスペース外で公証済み zip を dist/ に生成
+#   bash app/bundle.sh v0.10.1    → さらに その Release に zip を添付する
 #
-# 署名はしていない。公証（Developer ID）は別の話で、それまでは
-# install-app.sh 側で隔離属性を外す。
 set -e
 cd "$(dirname "$0")"
 
@@ -15,7 +13,16 @@ BIN="AIUsageBarometer"
 ID="io.atlasassociates.aiusagebarometer"
 SHORT="$(grep -m1 '^VERSION=' ../claude-codex.60s.sh | sed 's/.*"v\(.*\)"/\1/')"
 OUT="$PWD/dist"
-APP="$OUT/$NAME.app"
+
+AIB_SIGN_ID="${AIB_SIGN_ID:-Developer ID Application: Atlas Associates Inc (NCPKFUCRCS)}"
+AIB_NOTARY_PROFILE="${AIB_NOTARY_PROFILE:-aib}"
+
+# ワークスペース外隔離ビルド用一時領域
+STAGE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ai-usage-barometer-build.XXXXXX")"
+trap 'rm -rf "$STAGE_DIR"' EXIT
+
+APP="$STAGE_DIR/$NAME.app"
+ICONSET="$STAGE_DIR/icon.iconset"
 
 echo "── ビルド (release) ──"
 swift build -c release
@@ -23,8 +30,8 @@ BINPATH="$(swift build -c release --show-bin-path)/$BIN"
 [ -x "$BINPATH" ] || { echo "✘ 実行ファイルが見つかりません: $BINPATH"; exit 1; }
 
 echo "── アイコン ──"
-rm -rf "$OUT"; mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$OUT/icon.iconset"
-python3 - "$OUT/icon.iconset" <<'PY'
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$ICONSET"
+python3 - "$ICONSET" <<'PY'
 # 外部ライブラリ無しで PNG を書く。ダークな角丸に、バッテリー式のバーを3本。
 # Claude のオレンジ、Codex のシアン、Gemini のエメラルドグリーンで、中身が何かひと目で分かるようにする。
 import struct, sys, zlib, pathlib
@@ -73,7 +80,7 @@ for size in (16, 32, 64, 128, 256, 512):
     png(d / f"icon_{size}x{size}@2x.png", size * 2)
 print("  アイコン生成: 16〜512 (@2x 含む)")
 PY
-iconutil -c icns "$OUT/icon.iconset" -o "$APP/Contents/Resources/AppIcon.icns"
+iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 
 echo "── バンドル ──"
 cp "$BINPATH" "$APP/Contents/MacOS/$BIN"
@@ -106,33 +113,33 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </plist>
 PLIST
 
-# 署名と公証。環境変数が無ければ何もしない（未署名のまま出る）。
-#   AIB_SIGN_ID='Developer ID Application: 名前 (TEAMID)'
-#   AIB_NOTARY_PROFILE=<xcrun notarytool store-credentials で作った名前>
-if [ -n "${AIB_SIGN_ID:-}" ]; then
+# 署名と公証（デフォルト強制。CI等で AIB_SKIP_SIGN=1 が指定された場合のみスキップ）
+if [ "${AIB_SKIP_SIGN:-0}" != "1" ]; then
   echo "── 署名 ──"
-  # --deep は使わない。入れ子の実行ファイルは無く、Apple も推奨していない。
   codesign --force --options runtime --timestamp --sign "$AIB_SIGN_ID" "$APP"
   codesign --verify --strict "$APP" && echo "✔ 署名"
-  if [ -n "${AIB_NOTARY_PROFILE:-}" ]; then
+  if [ -n "$AIB_NOTARY_PROFILE" ]; then
     echo "── 公証（数分かかります）──"
-    ditto -c -k --keepParent "$APP" "$OUT/notarize.zip"
-    xcrun notarytool submit "$OUT/notarize.zip" --keychain-profile "$AIB_NOTARY_PROFILE" --wait
+    NOTARIZE_ZIP="$STAGE_DIR/notarize.zip"
+    ditto -c -k --keepParent "$APP" "$NOTARIZE_ZIP"
+    xcrun notarytool submit "$NOTARIZE_ZIP" --keychain-profile "$AIB_NOTARY_PROFILE" --wait
     xcrun stapler staple "$APP" && echo "✔ 公証"
     # 配る前に、配られた側と同じ判定を自分で通しておく
-    spctl --assess --type execute -vv "$APP" || echo "⚠ spctl が通りません"
+    spctl --assess --type execute -vv "$APP" || { echo "✘ spctl が通りません"; exit 1; }
   fi
 fi
 
+# ワークスペースには最終配布物 .zip のみを出力する（.app は残さない）
+mkdir -p "$OUT"
 ZIP="$OUT/AIUsageBarometer-v$SHORT.zip"
+rm -f "$ZIP"
 ditto -c -k --keepParent "$APP" "$ZIP"
-echo "✔ $APP"
+# 既存の app/dist 内の .app やゴミがあれば削除
+rm -rf "$OUT/$NAME.app" "$OUT/icon.iconset" "$OUT/notarize.zip" 2>/dev/null || true
+
 echo "✔ $ZIP  ($(du -h "$ZIP" | cut -f1))"
 
 if [ -n "$VERSION" ]; then
   echo "── Release に添付 ──"
   gh release upload "$VERSION" "$ZIP" --clobber && echo "✔ $VERSION に添付しました"
 fi
-
-echo
-echo "▶ 手元で試す:  open \"$APP\""

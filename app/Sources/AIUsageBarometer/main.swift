@@ -14,6 +14,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // 一度鳴らしたら、回復するまで黙る。鳴り続ける通知は無視されるだけ。
     var warned: Set<String> = []
     var latestVersion = ""
+    var lastUsage: Usage?
+    var isRefreshing = false
+    var isUpdating = false
 
     func applicationDidFinishLaunching(_ note: Notification) {
         floatPanel = FloatPanel()
@@ -49,6 +52,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                        name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
         wc.addObserver(self, selector: #selector(updateFloatVisibility),
                        name: NSWorkspace.didActivateApplicationNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(screensChanged),
+                                               name: NSApplication.didChangeScreenParametersNotification, object: nil)
+    }
+
+    @objc func screensChanged() {
+        floatPanel?.clampToVisibleScreen()
+        updateFloatVisibility()
     }
 
     // 更新間隔はプラグインと同じ iv（1/3/5分）に従う。ここだけ 60 秒固定にすると、
@@ -133,45 +143,102 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func statusClicked() {
         guard let item = menuBar?.item, let button = item.button else { return }
         let m = menu()
-        item.menu = m
-        button.performClick(nil)
         item.menu = nil
+        m.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height + 4), in: button)
     }
 
     func refresh() {
+        guard !isRefreshing else { return }
+        isRefreshing = true
         DispatchQueue.global(qos: .utility).async {
             let u = Plugin.fetch()
-            DispatchQueue.main.async { self.apply(u) }
+            DispatchQueue.main.async {
+                self.isRefreshing = false
+                self.apply(u)
+            }
         }
     }
 
+    static func semverIsNewer(_ candidate: String, than current: String) -> Bool {
+        let cleanCandidate = candidate.hasPrefix("v") ? String(candidate.dropFirst()) : candidate
+        let cleanCurrent = current.hasPrefix("v") ? String(current.dropFirst()) : current
+        let cParts = cleanCandidate.split(separator: ".").compactMap { Int($0) }
+        let curParts = cleanCurrent.split(separator: ".").compactMap { Int($0) }
+        for i in 0..<max(cParts.count, curParts.count) {
+            let c = i < cParts.count ? cParts[i] : 0
+            let cur = i < curParts.count ? curParts[i] : 0
+            if c > cur { return true }
+            if c < cur { return false }
+        }
+        return false
+    }
+
     func apply(_ u: Usage?) {
+        if let u = u { self.lastUsage = u }
         var rows: [Row] = []
         var errors: [String] = []
         var update = false
         if let u = u {
             update = u.update.available
             latestVersion = u.update.latest
-            if update && !latestVersion.isEmpty && Settings.read("auto_updated_version", "") != latestVersion {
+            if update && !latestVersion.isEmpty && Self.semverIsNewer(latestVersion, than: u.version) && !isUpdating && Settings.read("auto_updated_version", "") != latestVersion {
                 Settings.write("auto_updated_version", latestVersion)
                 post(title: "AI Usage Barometer " + latestVersion, body: "Updating automatically in the background…")
                 installUpdate()
             }
+
+            let clOn = Settings.read("claude_on", "1") == "1"
+            let c5 = clOn && Settings.read("c5", "1") == "1"
+            let c5p = Settings.read("c5p", "1") == "1"
+            let c7 = clOn && Settings.read("c7", "1") == "1"
+            let c7p = Settings.read("c7p", "1") == "1"
+
+            let cxOn = Settings.read("codex_on", "1") == "1"
+            let cx5 = cxOn && Settings.read("cx5", "1") == "1"
+            let cx5p = Settings.read("cx5p", "1") == "1"
+            let cx7 = cxOn && Settings.read("cx7", "1") == "1"
+            let cx7p = Settings.read("cx7p", "1") == "1"
+
+            let gmOn = Settings.read("gemini_on", "1") == "1"
+            let gm5 = gmOn && Settings.read("gm5", "1") == "1"
+            let gm5p = Settings.read("gm5p", "1") == "1"
+            let gm7 = gmOn && Settings.read("gm7", "1") == "1"
+            let gm7p = Settings.read("gm7p", "1") == "1"
+
             for s in u.services {
-                if !s.on { continue }
+                let sOn: Bool
+                switch s.name {
+                case "Claude": sOn = clOn
+                case "Codex": sOn = cxOn
+                case "Gemini": sOn = gmOn
+                default: sOn = s.on
+                }
+                if !sOn { continue }
                 if !s.error.isEmpty {
                     errors.append(s.name + ": " + s.error)
                     continue
                 }
                 let ordered = s.windows.sorted { ($0.label == "5h" ? 0 : 1) < ($1.label == "5h" ? 0 : 1) }
-                for w in ordered where w.show {
+                for w in ordered {
                     let dispLabel = (w.label == "7d" || w.label == "1w") ? "1w" : w.label
+                    let show: Bool
+                    let pct: Bool
+                    switch (s.name, dispLabel) {
+                    case ("Claude", "5h"): show = c5; pct = c5p
+                    case ("Claude", "1w"): show = c7; pct = c7p
+                    case ("Codex", "5h"): show = cx5; pct = cx5p
+                    case ("Codex", "1w"): show = cx7; pct = cx7p
+                    case ("Gemini", "5h"): show = gm5; pct = gm5p
+                    case ("Gemini", "1w"): show = gm7; pct = gm7p
+                    default: show = w.show; pct = w.pct
+                    }
+                    if !show { continue }
                     rows.append(Row(service: s.name,
                                     label: dispLabel,
                                     left: w.left,
                                     color: Gauge.color(w.color),
                                     resets: w.resets,
-                                    pct: w.pct))
+                                    pct: pct))
                 }
             }
             if rows.isEmpty && errors.isEmpty {
@@ -273,6 +340,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 self.applyPresence()
                 self.restartTimer()
+                if let last = self.lastUsage {
+                    self.apply(last)
+                }
                 DispatchQueue.global(qos: .userInitiated).async {
                     Plugin.set("iv", String(iv))
                     let u = Plugin.fetch()
@@ -298,9 +368,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func installUpdate() {
+        guard !isUpdating else { return }
+        isUpdating = true
         DispatchQueue.global(qos: .utility).async {
             Plugin.run(["--update"])
-            DispatchQueue.main.async { self.refresh() }
+            DispatchQueue.main.async {
+                self.isUpdating = false
+                self.refresh()
+            }
         }
     }
 }

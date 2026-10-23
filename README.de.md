@@ -50,20 +50,17 @@ Die Plugin-Oberfläche ist ausschließlich auf Englisch. Diese GitHub-Dokumentat
 
 | Einstellung | Wirkung |
 |---|---|
-| Claude anzeigen | Claude ein-/ausblenden |
-| Claude 5h anzeigen | 5-Stunden-Fenster ein-/ausblenden |
-| Prozent von Claude 5h | Dessen Prozentwert ein-/ausblenden |
-| Claude 1w (7d) anzeigen | 7-Tage-Fenster ein-/ausblenden |
-| Prozent von Claude 1w (7d) | Dessen Prozentwert ein-/ausblenden |
-| Codex anzeigen | Codex ein-/ausblenden |
-| Codex-Fenster 1 anzeigen | Das erste von Codex gemeldete Fenster ein-/ausblenden (e.g. Codex 5h) |
-| Prozent von Codex-Fenster 1 | Dessen Prozentwert ein-/ausblenden |
-| Codex-Fenster 2 anzeigen | Das zweite Fenster ein-/ausblenden, falls vorhanden (e.g. Codex 7d) |
-| Prozent von Codex-Fenster 2 | Dessen Prozentwert ein-/ausblenden |
-| Gemini anzeigen | Gemini ein- oder ausblenden |
-| Gemini 5h / % anzeigen | 5h-Fenster und Prozentsatz ein- oder ausblenden |
-| Gemini 1w / % anzeigen | 1-Wochen-Fenster (7d) und Prozentsatz ein- oder ausblenden |
-| Aktualisierungsintervall | 1, 3 oder 5 Minuten |
+| **Claude** (`ON` / `OFF`) | Claude vollständig ein- oder ausblenden (wirkt auf `5h` und `1w`) |
+| **Claude `5h`** + **`%`** | 5-Stunden-Fenster und Prozentangabe ein- oder ausblenden |
+| **Claude `1w`** + **`%`** | 1-Wochen-Fenster (7d) und Prozentangabe ein- oder ausblenden |
+| **Codex** (`ON` / `OFF`) | Codex vollständig ein- oder ausblenden (wirkt auf `5h` und `1w`) |
+| **Codex `5h`** + **`%`** | 5-Stunden-Fenster (Codex 5h) und Prozentangabe ein- oder ausblenden |
+| **Codex `1w`** + **`%`** | 1-Wochen-Fenster (Codex 7d) und Prozentangabe ein- oder ausblenden |
+| **Gemini** (`ON` / `OFF`) | Gemini vollständig ein- oder ausblenden (wirkt auf `5h` und `1w`) |
+| **Gemini `5h`** + **`%`** | 5-Stunden-Fenster (`5h`) und Prozentangabe ein- oder ausblenden |
+| **Gemini `1w`** + **`%`** | 1-Wochen-Fenster (`1w` / 7d) und Prozentangabe ein- oder ausblenden |
+| **Platzierung** (`Menu bar` / `Dock icon` / `Floating bar`) | Beliebige Kombination der drei Anzeigeorte wählen |
+| **Aktualisierungsintervall** (`1m` / `3m` / `5m`) | 1 Minute, 3 Minuten oder 5 Minuten |
 
 Sind alle Anzeigen ausgeblendet, bleibt ein neutraler Eintrag `AI …`, über den die Einstellungen erreichbar sind. Die Farbe richtet sich nur nach sichtbaren Balken. Einstellungen liegen in `~/.cache/claude-codex-bar/` und überstehen Updates.
 
@@ -71,7 +68,7 @@ Wenn Claude oder Codex deaktiviert wird, wird die Datenaktualisierung für diese
 
 Sind bei einem Dienst sowohl 5h als auch 7d abgewählt, werden der Dienst und seine Fehler vollständig ausgeblendet und seine Datenquelle nicht abgefragt.
 
-Das Plugin prüft GitHub Releases höchstens einmal täglich. Ist ein Betreiber-Update verfügbar, zeigen Menü und Einstellungen einen Hinweis, Versionshinweise und **Jetzt aktualisieren**.
+Die App und das Plugin prüfen GitHub Releases automatisch alle 15 Minuten und aktualisieren sich im Hintergrund, sobald eine neue Version veröffentlicht wird.
 
 ## Die App — wähle, wo sie wohnt
 
@@ -116,7 +113,9 @@ cd ai-usage-barometer/app && swift run
 
 Ergebnisse werden für das Intervall zwischengespeichert, der Endpunkt wird also höchstens einmal pro Intervall abgefragt. Schlägt eine Aktualisierung fehl, bleibt der letzte gültige Wert stehen.
 
-**Codex** wird aus dem lokalen Helfer `codex-usage.sh` gelesen, den der Installer nach `.ai-usage-barometer/` legt. Seine Fenster sind dynamisch in Anzahl und Name — ein Tarifwechsel kann `5h`/`7d` in etwas wie `30d` verwandeln —, daher folgen die beiden Schalter dem ersten und zweiten Fenster, das Codex tatsächlich liefert, und das Einstellungsfeld benennt sich entsprechend um.
+**Codex** wird aus dem lokalen Helfer `codex-usage.sh` in `.ai-usage-barometer/` gelesen. Es verfolgt die Fenster `5h` und `1w` (`7d`) in der Reihenfolge `5h → 1w` (selbst wenn das 5-Stunden-Fenster noch nicht verbraucht wurde).
+
+**Gemini** wird aus dem lokalen Helfer `gemini-usage.sh` gelesen, der mit der App gebündelt ist. Es unterstützt sowohl Antigravity Desktop App 2.0 als auch Antigravity IDE und liest die Fenster `5h` und `1w` lokal über Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) und Cache-Fallback sicher aus, ohne externe API-Aufrufe oder Schreibvorgänge von Anmeldedaten.
 
 ## Fehlerbehebung
 

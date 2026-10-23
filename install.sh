@@ -3,7 +3,7 @@
 # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install.sh)"
 set -euo pipefail
 
-VERSION="0.10.0"
+VERSION="0.10.1"
 REPO="${AI_USAGE_REPO:-taka-avantgarde/ai-usage-barometer}"
 BRANCH="${AI_USAGE_BRANCH:-main}"
 PLUGIN_DIR="${SWIFTBAR_PLUGIN_DIR:-$HOME/SwiftBar}"
@@ -111,7 +111,7 @@ rm -f "$CACHE_DIR/claude-recovery.json" \
 
 FIRST_HEADER="$(AI_USAGE_CACHE_DIR="$CACHE_DIR" "$TARGET" 2>/dev/null | head -n 1 || true)"
 if [[ "$FIRST_HEADER" != *" image="* ]]; then
-  echo "⚠ Exact-colour header is not available yet; SwiftBar will use a text fallback until usage data is available." >&2
+  echo "⚠ Exact-colour header is not available yet; a text fallback will be used until usage data is available." >&2
 fi
 
 if [[ -r "$CLAUDE_DIR/settings.json" ]] && jq -e '.disableAllHooks == true' "$CLAUDE_DIR/settings.json" >/dev/null 2>&1; then
@@ -120,7 +120,7 @@ fi
 
 if [[ "$TEST_MODE" != "1" && "${AI_USAGE_SKIP_APP_LAUNCH:-0}" != "1" ]]; then
   rm -f "$HOME/.cache/claude-codex-bar/latest_release" 2>/dev/null || true
-  osascript -e "display notification \"Updated to v0.10.0 — Claude, Codex & Gemini (5h & 1w) ready.\" with title \"AI Usage Barometer\"" 2>/dev/null || true
+  osascript -e "display notification \"Updated to v$VERSION — Claude, Codex & Gemini (5h & 1w) ready.\" with title \"AI Usage Barometer\"" 2>/dev/null || true
 fi
 
 cat <<DONE

@@ -1,0 +1,17 @@
+name: Verify Release Gate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verify:
+    runs-on: macos-14
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Release Gate
+        run: bash scripts/verify-release.sh

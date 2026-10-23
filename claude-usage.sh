@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
+# <xbar.title>Claude Usage Barometer</xbar.title>
+# <xbar.version>v0.10.1</xbar.version>
 # Render Claude Code's official statusLine rate_limits cache in SwiftBar format.
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 set -u
+
+VERSION="0.10.1"
 
 CACHE_DIR="${AI_USAGE_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/ai-usage-barometer}"
 CACHE_FILE="${AI_USAGE_CLAUDE_STATUS_CACHE:-$CACHE_DIR/claude-statusline.json}"

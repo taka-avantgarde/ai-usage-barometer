@@ -45,7 +45,7 @@ less, critical shades mix in vivid red. Codex keeps blue in both blends:
 
 Right-click the gauge (or open the dropdown and choose **⚙ Display settings**). It opens a persistent settings panel with macOS/iOS-style ON/OFF toggle switches and a **Save** button, so you can toggle multiple options without the panel closing after each click.
 
-The plugin interface is English-only. This GitHub documentation remains available in 14 languages.
+The app interface is English-only. This GitHub documentation remains available in 14 languages.
 
 | Setting | Effect |
 |---|---|
@@ -58,8 +58,8 @@ The plugin interface is English-only. This GitHub documentation remains availabl
 | **Gemini** (`ON` / `OFF`) | Show or hide Gemini entirely (cascades to both `5h` and `1w`) |
 | **Gemini `5h`** + **`%`** | Show or hide the 5-hour window (`5h`) and its percentage |
 | **Gemini `1w`** + **`%`** | Show or hide the 1-week window (`1w` / 7d) and its percentage |
-| **Placement** (`Menu bar` / `Dock icon` / `Floating bar`) | Choose any combination of the 3 macOS surfaces |
-| **Refresh interval** (`1m` / `3m` / `5m`) | Poll interval in minutes |
+| **Placement** (`Menu bar` / `Dock icon` / `Floating bar`) | Choose any combination of the three display surfaces |
+| **Refresh interval** (`1m` / `3m` / `5m`) | 1 minute, 3 minutes, or 5 minutes |
 
 Windows are always displayed in **`5h` → `1w`** order. Turning a parent service (`Claude`, `Codex`, or `Gemini`) OFF automatically turns off both its `5h` and `1w` switches and skips its data refresh; turning both `5h` and `1w` OFF automatically turns the parent service OFF. When every gauge is hidden, a neutral `AI …` item remains so settings stay clickable. Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
 
@@ -108,6 +108,8 @@ Results are cached for the refresh interval, so the endpoint is polled at most o
 
 **Codex** is read from the local helper `codex-usage.sh` that the installer places in `.ai-usage-barometer/`. It tracks both `5h` and `1w` (`7d`) windows in `5h → 1w` order (even when the 5-hour burst window has not been consumed yet).
 
+**Gemini** is read from the local helper `gemini-usage.sh` bundled with the app. It supports both Antigravity Desktop App 2.0 and Antigravity IDE, reading both `5h` and `1w` windows locally via the language server Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`), and cache fallback without external API calls or credential writes.
+
 ## Troubleshooting
 
 **The bar shows `Claude ⚠`.** Open the dropdown for the reason. *Sign in to Claude Code again* means the OAuth token expired — re-authenticate with the Claude Code CLI or IDE extension. This is **not** the Claude desktop app: signing into Claude.app does not refresh this token. *Rate limited* clears on its own; the plugin backs off 15 minutes and shows the remaining wait. The Keychain item was not found. Sign in with Claude Code on this Mac, then click **Refresh now**.
@@ -116,7 +118,7 @@ Results are cached for the refresh interval, so the endpoint is polled at most o
 
 **Gemini shows a warning.** Antigravity has not been launched yet or the local helper is waiting for data. Launch Antigravity Desktop or Antigravity IDE.
 
-**Colours differ between the menu bar and the dropdown.** macOS can treat a translucent menu bar as light while menus render dark. The menu bar uses the two-colour vector renderer whenever Python is available; it falls back to one-colour text only when Python is unavailable.
+**Colours differ between the menu bar and the dropdown.** macOS can treat a translucent menu bar as light while menus render dark. The app renders crisp Retina gauges natively on a dark charcoal #20252B backdrop so service colours stay consistent across light and dark wallpapers.
 
 ## Uninstall
 

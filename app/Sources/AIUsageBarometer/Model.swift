@@ -51,14 +51,28 @@ enum Plugin {
         var env = ProcessInfo.processInfo.environment
         // ヘルパー解決と更新チェックはこの変数の有無で決まる
         env["SWIFTBAR_PLUGIN_PATH"] = script
+        env["AIBAR_NATIVE_APP"] = "1"
         p.environment = env
         let out = Pipe()
         p.standardOutput = out
         p.standardError = FileHandle.nullDevice
         do { try p.run() } catch { return nil }
-        let data = out.fileHandleForReading.readDataToEndOfFile()
+
+        var outputData = Data()
+        let group = DispatchGroup()
+        group.enter()
+        DispatchQueue.global().async {
+            outputData = out.fileHandleForReading.readDataToEndOfFile()
+            group.leave()
+        }
+
+        let timeoutResult = group.wait(timeout: .now() + 15.0)
+        if timeoutResult == .timedOut {
+            p.terminate()
+            return nil
+        }
         p.waitUntilExit()
-        return data
+        return outputData
     }
 
     static func fetch() -> Usage? {
@@ -82,7 +96,13 @@ enum Settings {
     }
 
     static func write(_ key: String, _ value: String) {
-        try? FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+        let fm = FileManager.default
+        if !fm.fileExists(atPath: dir) {
+            try? fm.createDirectory(atPath: dir, withIntermediateDirectories: true,
+                                    attributes: [.posixPermissions: 0o700])
+        } else {
+            try? fm.setAttributes([.posixPermissions: 0o700], ofItemAtPath: dir)
+        }
         try? (value + "\n").write(to: URL(fileURLWithPath: dir + "/" + key),
                                   atomically: true, encoding: .utf8)
     }
