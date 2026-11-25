@@ -18,7 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-That is the app. No Homebrew, no Xcode. macOS 13 or later. The first time it runs it asks where it should live — menu bar, Dock icon or floating bar — and you can change your mind from its menu at any time.
+That is the app (Universal Binary for Apple Silicon & Intel, macOS 13 or later — no Homebrew, no Xcode). The first time it runs it asks where it should live — menu bar, Dock icon or floating bar — and you can change your mind from its menu at any time.
 
 ## One menu-bar item
 
@@ -61,9 +61,9 @@ The app interface is English-only. This GitHub documentation remains available i
 | **Placement** (`Menu bar` / `Dock icon` / `Floating bar`) | Choose any combination of the three display surfaces |
 | **Refresh interval** (`1m` / `3m` / `5m`) | 1 minute, 3 minutes, or 5 minutes |
 
-Windows are always displayed in **`5h` → `1w`** order. Turning a parent service (`Claude`, `Codex`, or `Gemini`) OFF automatically turns off both its `5h` and `1w` switches and skips its data refresh; turning both `5h` and `1w` OFF automatically turns the parent service OFF. When every gauge is hidden, a neutral `AI …` item remains so settings stay clickable. Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
+Windows are always displayed in **`5h` → `1w`** order. Turning a parent service (`Claude`, `Codex`, or `Gemini`) OFF automatically turns off both its `5h` and `1w` switches and skips its data refresh; turning both `5h` and `1w` OFF automatically turns the parent service OFF. Clicking **Save** or **Refresh now** immediately bypasses the local cache TTL (`--force`) for instant live readings. When every gauge is hidden, a neutral `AI …` item remains so settings stay clickable. Settings live in `~/.cache/claude-codex-bar/` and survive upgrades.
 
-The app and plugin check GitHub Releases automatically every 15 minutes and update in the background when a new release is published.
+The app checks GitHub Releases automatically every 15 minutes and updates seamlessly in the background when a new release is published.
 
 ## The app — pick where it lives
 
@@ -108,11 +108,11 @@ Results are cached for the refresh interval, so the endpoint is polled at most o
 
 **Codex** is read from the local helper `codex-usage.sh` that the installer places in `.ai-usage-barometer/`. It tracks both `5h` and `1w` (`7d`) windows in `5h → 1w` order (even when the 5-hour burst window has not been consumed yet).
 
-**Gemini** is read from the local helper `gemini-usage.sh` bundled with the app. It supports both Antigravity Desktop App 2.0 and Antigravity IDE, reading both `5h` and `1w` windows locally via the language server Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`), and cache fallback without external API calls or credential writes.
+**Gemini** is read from the local helper `gemini-usage.sh` bundled with the app. It supports both Antigravity 2.x Desktop (`~/.gemini/antigravity/daemon/*.json`) and Antigravity IDE across Gemini 4 & 3.8 models, reading both `5h` and `1w` windows locally in `5h → 1w` order via Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`), and atomic cache fallback without external API calls or credential writes.
 
 ## Troubleshooting
 
-**The bar shows `Claude ⚠`.** Open the dropdown for the reason. *Sign in to Claude Code again* means the OAuth token expired — re-authenticate with the Claude Code CLI or IDE extension. This is **not** the Claude desktop app: signing into Claude.app does not refresh this token. *Rate limited* clears on its own; the plugin backs off 15 minutes and shows the remaining wait. The Keychain item was not found. Sign in with Claude Code on this Mac, then click **Refresh now**.
+**The bar shows `Claude ⚠`.** Open the dropdown for the reason. *Sign in to Claude Code again* means the OAuth token expired — re-authenticate with the Claude Code CLI or IDE extension. This is **not** the Claude desktop app: signing into Claude.app does not refresh this token. *Rate limited* clears on its own; the app backs off 15 minutes and shows the remaining wait. If Keychain credentials were missing, sign in with Claude Code on this Mac, then click **Refresh now** for an immediate live check.
 
 **Codex shows a warning.** The helper is missing or Codex has not produced data yet. Re-run the installer, then use Codex CLI once.
 

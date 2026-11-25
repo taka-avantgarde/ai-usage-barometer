@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.10.2</xbar.version>
+# <xbar.version>v0.10.3</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude, Codex and Gemini usage, with per-window toggles.</xbar.desc>
@@ -19,7 +19,7 @@
 #
 # License: MIT
 #
-VERSION="v0.10.2"
+VERSION="v0.10.3"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 FORCE_REFRESH=0
 if [ "${AIBAR_FORCE_REFRESH:-0}" = 1 ] || [ "${1:-}" = "--force" ] || [ "${2:-}" = "--force" ]; then

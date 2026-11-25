@@ -31,8 +31,7 @@ Claude、Codex 与 Gemini 共用一项，中间以细线分隔。进度条为电
 
 菜单栏以矢量图绘制，因此同一项内每个服务都能保留各自的颜色。无法绘制时会自动改用纯文本。
 
-两套配色都采用高饱和度、高对比度颜色：Claude 使用橙色，Codex 使用青色。
-剩余11–30%时，警告色会混入橙色；剩余10%或更少时，紧张色会混入鲜红色。Codex在两种混色中都保留较强的蓝色：
+三套配色均采用高饱和度、高对比度颜色：Claude 使用橙色，Codex 使用青色，Gemini 使用翡翠绿。剩余 11–30% 时警告色混入橙色；剩余 10% 或更少时紧张色混入鲜红色。Codex 在两种混色中都保留清晰的蓝色调：
 
 | 阶段 | 使用量 | Claude | Codex | Gemini |
 |---|---:|---|---|---|
@@ -42,9 +41,9 @@ Claude、Codex 与 Gemini 共用一项，中间以细线分隔。进度条为电
 
 ## 设置
 
-点击进度条并选择 **⚙ Display settings**。设置面板会保持打开，可连续修改多个选项，无需每次点击后重新打开；更改会立即生效。
+右键进度条（或选择 **⚙ Display settings**）。设置面板会保持打开，提供 macOS/iOS 风格的开关与 **Save** 按钮，可连续修改多个选项而无需每次点击后重新打开。
 
-插件界面仅使用英语显示。本GitHub文档仍提供14种语言版本。
+应用界面仅使用英语显示。本 GitHub 文档仍提供 14 种语言版本。
 
 | 设置项 | 作用 |
 |---|---|
@@ -60,13 +59,9 @@ Claude、Codex 与 Gemini 共用一项，中间以细线分隔。进度条为电
 | **显示位置** (`Menu bar` / `Dock icon` / `Floating bar`) | 自由选择三种显示位置的任意组合 |
 | **刷新间隔** (`1m` / `3m` / `5m`) | 1 分钟、3 分钟或 5 分钟 |
 
-即使隐藏全部进度条，也会保留中性的 `AI …` 项以便打开设置。颜色只由实际显示的进度条决定。设置保存在 `~/.cache/claude-codex-bar/`，升级后仍保留。
+所有窗口始终按 **`5h` → `1w`** 顺序排列。关闭父开关（`Claude`、`Codex` 或 `Gemini`）会同时关闭旗下的 `5h` 与 `1w` 并停止数据拉取；点击 **Save** 或 **Refresh now** 会立即绕过本地缓存 TTL（`--force`）实时刷新。设置保存在 `~/.cache/claude-codex-bar/`，升级后自动保留。
 
-取消 Claude 或 Codex 的勾选后，该服务将停止更新数据。5 小时、7 天和百分比设置仍会以灰暗且不可操作的状态显示；重新启用服务时会恢复之前的设置值。
-
-如果某项服务的 5 小时和 7 天窗口均未勾选，该服务及其错误将完全隐藏，并且不会查询其数据源。
-
-应用和插件每 15 分钟自动检查一次 GitHub Releases，并在发布新版本时在后台自动更新。
+应用每 15 分钟自动检查一次 GitHub Releases，并在发布新版本时在后台无感自动更新。
 
 ## 应用版 —— 自己选择它待在哪里
 
@@ -110,17 +105,17 @@ cd ai-usage-barometer/app && swift run
 
 **Codex** 从安装在 `.ai-usage-barometer/` 中的本地辅助脚本 `codex-usage.sh` 读取。它按 `5h → 1w` 顺序同时追踪 `5h` 和 `1w` (`7d`) 两个窗口（即使 5 小时突发窗口尚未被使用）。
 
-**Gemini** 从应用自带的本地辅助脚本 `gemini-usage.sh` 读取。它同时支持 Antigravity Desktop App 2.0 和 Antigravity IDE，通过本地 Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`)、SQLite (`state.vscdb`) 以及缓存回退三级机制安全获取 `5h` 和 `1w` 窗口，无需外部 API 调用或凭据写入。
+**Gemini** 从应用自带的本地辅助脚本 `gemini-usage.sh` 读取。它同时支持 Antigravity 2.x Desktop（`~/.gemini/antigravity/daemon/*.json`）和 Antigravity IDE（覆盖 Gemini 4 与 3.8 系列模型），通过本地 Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`)、SQLite (`state.vscdb`) 以及原子缓存回退安全获取 `5h → 1w` 双窗口数据，无需外部 API 调用或凭据写入。
 
 ## 疑难排解
 
-**出现 Claude 警告** — 打开下拉菜单查看具体原因。*Sign in to Claude Code again* 表示 OAuth 令牌已过期，请通过 Claude Code 的 CLI 或 IDE 扩展重新登录。**这不是 Claude 桌面应用**：登录 Claude.app 不会刷新此令牌。*Rate limited* 会自行解除；插件会等待 15 分钟并显示剩余时间。
+**出现 Claude 警告** — 打开下拉菜单查看具体原因。*Sign in to Claude Code again* 表示 OAuth 令牌已过期，请通过 Claude Code 的 CLI 或 IDE 扩展重新登录。**这不是 Claude 桌面应用**：登录 Claude.app 不会刷新此令牌。*Rate limited* 会自行解除；应用会退避等待 15 分钟并显示剩余时间。
 
 **出现 Codex 警告** — 助手缺失或 Codex 尚未产生数据。重新运行安装程序，并使用一次 Codex CLI。
 
 **出现 Gemini 警告** — Antigravity 尚未启动，或本地助手正在等待数据。请启动 Antigravity Desktop 或 Antigravity IDE。
 
-**菜单栏与下拉菜单颜色不一致** — macOS 可能把半透明菜单栏视为浅色而菜单为深色。Python 可用时始终使用双色矢量绘制；只有在缺少 Python 时才回退到单色文本。
+**菜单栏与下拉菜单颜色不一致** — macOS 可能把半透明菜单栏视为浅色而菜单为深色。应用在深炭黑 `#20252B` 底色上进行原生 Retina 2x 绘制，无论浅色或深色壁纸都能保持清晰一致的专属配色。
 
 ## 卸载
 

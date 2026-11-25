@@ -191,7 +191,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             update = u.update.available
             latestVersion = u.update.latest
             if update && !latestVersion.isEmpty && Self.semverIsNewer(latestVersion, than: u.version) && !isUpdating && Settings.read("auto_updated_version", "") != latestVersion {
-                Settings.write("auto_updated_version", latestVersion)
                 post(title: "AI Usage Barometer " + latestVersion, body: "Updating automatically in the background…")
                 installUpdate()
             }

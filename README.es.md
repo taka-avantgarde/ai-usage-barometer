@@ -31,10 +31,7 @@ Claude, Codex y Gemini comparten un elemento, separados por una línea fina. Las
 
 La barra de menús se dibuja como imagen vectorial para que cada servicio conserve su color dentro de un mismo elemento. Si no es posible, se usa texto plano automáticamente.
 
-Ambas paletas usan colores saturados y de alto contraste: Claude usa naranja
-y Codex cian. Con un 11–30% restante, el aviso mezcla naranja; con un 10% o
-menos, el estado crítico mezcla rojo vivo. Codex conserva el azul en ambas
-mezclas:
+Las tres paletas usan colores saturados y de alto contraste: Claude usa naranja, Codex cian y Gemini verde esmeralda. Con un 11–30% restante, el aviso mezcla naranja; con un 10% o menos, el estado crítico mezcla rojo vivo. Codex conserva el azul en ambas mezclas:
 
 | Etapa | Uso | Claude | Codex | Gemini |
 |---|---:|---|---|---|
@@ -44,9 +41,9 @@ mezclas:
 
 ## Ajustes
 
-Abre el menú y elige **⚙ Display settings**. El panel permanece abierto para que puedas cambiar varias opciones seguidas sin que se cierre tras cada clic. Los cambios se aplican al instante.
+Abre el menú y elige **⚙ Display settings**. El panel permanece abierto con interruptores tipo macOS/iOS y botón **Save**, para que puedas cambiar varias opciones seguidas sin que se cierre tras cada clic.
 
-La interfaz del complemento está disponible solo en inglés. Esta documentación de GitHub sigue disponible en 14 idiomas.
+La interfaz de la app está disponible solo en inglés. Esta documentación de GitHub sigue disponible en 14 idiomas.
 
 | Ajuste | Efecto |
 |---|---|
@@ -62,13 +59,9 @@ La interfaz del complemento está disponible solo en inglés. Esta documentació
 | **Ubicación** (`Menu bar` / `Dock icon` / `Floating bar`) | Elegir cualquier combinación de los tres lugares de visualización |
 | **Intervalo de actualización** (`1m` / `3m` / `5m`) | 1 minuto, 3 minutos o 5 minutos |
 
-Si se ocultan todos los indicadores, queda un elemento neutro `AI …` para poder abrir los ajustes. El color depende solo de las barras visibles. Los ajustes están en `~/.cache/claude-codex-bar/` y se conservan al actualizar.
+Las ventanas se muestran siempre en orden **`5h` → `1w`**. Al desactivar un servicio principal (`Claude`, `Codex` o `Gemini`), se desactivan sus ventanas `5h` y `1w` y se detiene su actualización; al pulsar **Save** o **Refresh now**, se omite al instante la caché local (`--force`) para obtener datos en vivo. Los ajustes se guardan en `~/.cache/claude-codex-bar/` y se conservan al actualizar.
 
-Al desactivar Claude o Codex, se detiene la actualización de datos de ese servicio. Los ajustes de 5h, 7d y porcentaje permanecen atenuados y bloqueados; al volver a activarlo se restauran sus valores anteriores.
-
-Si se desmarcan las ventanas de 5h y 7d de un servicio, el servicio y sus errores se ocultan por completo y no se consulta su fuente de datos.
-
-La app y el complemento comprueban GitHub Releases automáticamente cada 15 minutos y se actualizan en segundo plano cuando se publica una nueva versión.
+La app comprueba GitHub Releases automáticamente cada 15 minutos y se actualiza en segundo plano cuando se publica una nueva versión.
 
 ## La app — elige dónde vive
 
@@ -115,17 +108,17 @@ Los resultados se guardan en caché durante el intervalo, así que solo se consu
 
 **Codex** se lee del asistente local `codex-usage.sh` que el instalador coloca en `.ai-usage-barometer/`. Rastrea tanto la ventana de `5h` como la de `1w` (`7d`) en orden `5h → 1w` (incluso cuando la ventana de 5 horas aún no se ha consumido).
 
-**Gemini** se lee del asistente local `gemini-usage.sh` incluido con la app. Es compatible tanto con Antigravity Desktop App 2.0 como con Antigravity IDE, leyendo de forma segura las ventanas de `5h` y `1w` localmente a través de Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) y respaldo en caché, sin llamadas a API externas ni escritura de credenciales.
+**Gemini** se lee del asistente local `gemini-usage.sh` incluido con la app. Es compatible con Antigravity 2.x Desktop (`~/.gemini/antigravity/daemon/*.json`) y Antigravity IDE (modelos Gemini 4 y 3.8), leyendo de forma segura las ventanas `5h` y `1w` localmente en orden `5h → 1w` mediante Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) y caché atómica, sin llamadas a API externas ni escritura de credenciales.
 
 ## Solución de problemas
 
-**Aparece un aviso de Claude.** Abre el menú desplegable para ver el motivo. *Sign in to Claude Code again* significa que el token OAuth caducó — vuelve a autenticarte con la CLI de Claude Code o la extensión del IDE. **No es la app de escritorio Claude**: iniciar sesión en Claude.app no renueva este token. *Rate limited* se resuelve solo; el plugin espera 15 minutos y muestra el tiempo restante.
+**Aparece un aviso de Claude.** Abre el menú desplegable para ver el motivo. *Sign in to Claude Code again* significa que el token OAuth caducó — vuelve a autenticarte con la CLI de Claude Code o la extensión del IDE. **No es la app de escritorio Claude**: iniciar sesión en Claude.app no renueva este token. *Rate limited* se resuelve solo; la app espera 15 minutos y muestra el tiempo restante.
 
 **Aparece un aviso de Codex.** Falta el asistente o Codex aún no ha generado datos. Reinstala y usa Codex CLI una vez.
 
 **Aparece un aviso de Gemini.** Antigravity aún no se ha iniciado o el asistente local espera datos. Abre Antigravity Desktop o Antigravity IDE.
 
-**Los colores difieren entre la barra y el menú.** macOS puede tratar una barra translúcida como clara aunque los menús sean oscuros. El renderizador vectorial de dos colores se usa cuando Python está disponible; el texto de un color solo se usa como alternativa cuando Python no está disponible.
+**Los colores difieren entre la barra y el menú.** macOS puede tratar una barra translúcida como clara aunque los menús sean oscuros. La app dibuja indicadores Retina 2x nítidos sobre un fondo carbón oscuro `#20252B` para mantener colores consistentes en cualquier fondo de pantalla.
 
 ## Desinstalar
 

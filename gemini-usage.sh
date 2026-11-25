@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # <xbar.title>Gemini Usage Barometer</xbar.title>
-# <xbar.version>v0.10.2</xbar.version>
+# <xbar.version>v0.10.3</xbar.version>
 # <xbar.author>Takayuki Miyano / Atlas Associates Inc.</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>Shows Gemini usage limits for Antigravity in the macOS menu bar.</xbar.desc>
@@ -12,7 +12,7 @@
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 set -u
 
-VERSION="0.10.2"
+VERSION="0.10.3"
 WARN="${WARN:-70}"
 DANGER="${DANGER:-90}"
 OK_COLOR="${OK_COLOR:-#158F6A}"

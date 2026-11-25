@@ -6,9 +6,9 @@
 
 | AI 서비스 | 색상 | 지원 소스 |
 |:---|:---|:---|
-| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (공식 상태줄 연동) |
-| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI 및 웹 토큰 |
-| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE 세션 한도 |
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (OAuth 사용량 API 및 키체인) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI 및 웹 토큰 (`5h` & `1w`) |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE (`5h` & `1w`) |
 
 <img src="assets/hero.svg" alt="메뉴 막대, Dock 아이콘, 플로팅 바에 표시된 AI Usage Barometer" width="725">
 
@@ -31,22 +31,19 @@ Claude, Codex, Gemini가 얇은 구분선을 사이에 두고 한 항목을 공�
 
 메뉴 막대는 벡터 이미지로 그려지므로 한 항목 안에서 서비스별 색을 유지합니다. 불가능한 환경에서는 자동으로 텍스트로 전환됩니다.
 
-두 팔레트 모두 채도와 대비가 높은 색을 사용합니다. Claude는 오렌지,
-Codex는 시안을 사용합니다. 잔여량이 11–30%이면 경고색에 오렌지가,
-10% 이하이면 위험색에 선명한 빨강이 섞입니다. Codex는 두 혼합색 모두
-파랑을 강하게 유지합니다:
+세 가지 팔레트 모두 채도와 대비가 높은 색을 사용합니다. Claude는 오렌지, Codex는 시안, Gemini는 에메랄드 그린을 사용합니다. 잔여량이 11–30%이면 경고색에 오렌지가, 10% 이하이면 위험색에 선명한 빨강이 섞입니다. Codex는 두 혼합색 모두 파랑을 강하게 유지합니다:
 
 | 단계 | 사용량 | Claude | Codex | Gemini |
 |---|---:|---|---|---|
 | 정상 | 0–69% 사용 | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` |
-| 경고 | 70–89% 사용 | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#5E7B3A` |
+| 경고 | 70–89% 사용 | ![#B65A1E](assets/colors/claude-warning.svg) `#B65A1E` | ![#52768A](assets/colors/codex-warning.svg) `#52768A` | ![#5E7B3A](assets/colors/gemini-warning.svg) `#52768A` |
 | 위험 | 90–100% 사용 | ![#C52E22](assets/colors/claude-critical.svg) `#C52E22` | ![#783F78](assets/colors/codex-critical.svg) `#783F78` | ![#8C3B5A](assets/colors/gemini-critical.svg) `#8C3B5A` |
 
 ## 설정
 
-막대를 클릭해 **⚙ Display settings**를 엽니다. 설정 패널은 계속 열린 상태로 유지되므로 클릭할 때마다 다시 열지 않고 여러 옵션을 연속으로 바꿀 수 있으며 변경 사항은 즉시 반영됩니다.
+막대를 우클릭해 **⚙ Display settings**를 엽니다. 설정 패널은 계속 열린 상태로 유지되며 macOS/iOS 스타일 토글 스위치와 **Save** 버튼으로 여러 옵션을 한 번에 편리하게 바꿀 수 있습니다.
 
-플러그인 화면은 영어로만 표시됩니다. 이 GitHub 문서는 계속 14개 언어로 제공합니다.
+앱 화면은 영어로만 표시됩니다. 이 GitHub 문서는 계속 14개 언어로 제공합니다.
 
 | 설정 | 효과 |
 |---|---|
@@ -62,13 +59,9 @@ Codex는 시안을 사용합니다. 잔여량이 11–30%이면 경고색에 오
 | **표시 위치** (`Menu bar` / `Dock icon` / `Floating bar`) | 세 가지 표시 위치의 모든 조합 선택 가능 |
 | **새로고침 간격** (`1m` / `3m` / `5m`) | 1분, 3분 또는 5분 |
 
-모든 게이지를 숨겨도 설정을 열 수 있도록 중립적인 `AI …` 항목이 남습니다. 색은 실제로 표시 중인 막대만으로 결정됩니다. 설정은 `~/.cache/claude-codex-bar/`에 저장되어 업데이트 후에도 유지됩니다.
+모든 윈도우는 항상 **`5h` → `1w`** 순서로 표시됩니다. 상위 서비스(`Claude`, `Codex`, `Gemini`)를 끄면 하위 `5h`·`1w`도 함께 꺼지고 조회가 중단되며, **Save** 또는 **Refresh now**를 누르면 로컬 캐시 TTL을 즉시 우회(`--force`)하여 실시간 데이터를 가져옵니다. 설정은 `~/.cache/claude-codex-bar/`에 저장되어 업데이트 후에도 유지됩니다.
 
-Claude 또는 Codex를 끄면 해당 서비스의 데이터 갱신이 중지됩니다. 5시간·7일·퍼센트 설정은 흐리게 표시되고 잠기며, 서비스를 다시 켜면 이전 설정값이 복원됩니다.
-
-한 서비스의 5시간과 7일 창을 모두 선택 해제하면 해당 서비스와 오류가 완전히 숨겨지고 데이터 원본을 조회하지 않습니다.
-
-앱과 플러그인은 15분마다 GitHub Releases를 자동으로 확인하고 새 버전이 출시되면 백그라운드에서 자동으로 업데이트됩니다.
+앱은 15분마다 GitHub Releases를 자동으로 확인하고 새 버전이 출시되면 백그라운드에서 자동으로 업데이트됩니다.
 
 ## 앱 버전 — 어디에 둘지 고르세요
 
@@ -113,17 +106,17 @@ cd ai-usage-barometer/app && swift run
 
 **Codex**는 설치 프로그램이 `.ai-usage-barometer/`에 배치하는 로컬 도우미 `codex-usage.sh`에서 읽습니다. 5시간 버스트 윈도우가 아직 사용되지 않은 경우에도 항상 `5h → 1w` 순서로 `5h` 및 `1w` (`7d`) 윈도우를 모두 추적합니다.
 
-**Gemini**는 앱에 번들된 로컬 도우미 `gemini-usage.sh`에서 읽습니다. Antigravity Desktop App 2.0 및 Antigravity IDE를 모두 지원하며, 외부 API 호출이나 자격 증명 쓰기 없이 Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`), 캐시 폴백을 통해 로컬에서 `5h` 및 `1w` 윈도우를 안전하게 가져옵니다.
+**Gemini**는 앱에 번들된 로컬 도우미 `gemini-usage.sh`에서 읽습니다. Antigravity 2.x Desktop(`~/.gemini/antigravity/daemon/*.json`) 및 Antigravity IDE(Gemini 4 & 3.8 모델)를 모두 지원하며, 외부 API 호출이나 자격 증명 쓰기 없이 Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`), 원자적 캐시 폴백을 통해 항상 `5h → 1w` 순서로 `5h` 및 `1w` 윈도우를 안전하게 가져옵니다.
 
 ## 문제 해결
 
-**Claude 경고가 표시됨** — 드롭다운을 열어 원인을 확인하세요. *Sign in to Claude Code again*은 OAuth 토큰이 만료되었다는 뜻으로, Claude Code CLI나 IDE 확장에서 다시 로그인해야 합니다. **Claude 데스크톱 앱이 아닙니다**: Claude.app에 로그인해도 이 토큰은 갱신되지 않습니다. *Rate limited*는 시간이 지나면 자동으로 해소됩니다. 플러그인이 15분 대기하며 남은 시간을 표시합니다.
+**Claude 경고가 표시됨** — 드롭다운을 열어 원인을 확인하세요. *Sign in to Claude Code again*은 OAuth 토큰이 만료되었다는 뜻으로, Claude Code CLI나 IDE 확장에서 다시 로그인해야 합니다. **Claude 데스크톱 앱이 아닙니다**: Claude.app에 로그인해도 이 토큰은 갱신되지 않습니다. *Rate limited*는 시간이 지나면 자동으로 해소됩니다. 앱이 15분 대기하며 남은 시간을 표시합니다.
 
 **Codex 경고가 표시됨** — 헬퍼가 없거나 Codex 데이터가 아직 없습니다. 설치 프로그램을 다시 실행하고 Codex CLI를 한 번 사용하세요.
 
 **Gemini에 경고가 표시됨** — Antigravity가 아직 실행되지 않았거나 로컬 헬퍼가 데이터를 기다리는 중입니다. Antigravity Desktop 또는 Antigravity IDE를 실행하세요.
 
-**메뉴 막대와 드롭다운의 색이 다름** — macOS는 반투명 메뉴 막대를 밝게 처리할 수 있습니다. Python을 사용할 수 있으면 항상 2색 벡터 렌더러를 사용하고, Python이 없을 때만 1색 텍스트로 대체합니다.
+**메뉴 막대와 드롭다운의 색이 다름** — macOS는 반투명 메뉴 막대를 밝게 처리할 수 있습니다. 앱은 다크 차콜 `#20252B` 배경 위에 네이티브 Retina 2x 렌더링을 수행하므로 밝은 배경화면과 어두운 배경화면 모두에서 선명한 고유 색상을 유지합니다.
 
 ## 제거
 

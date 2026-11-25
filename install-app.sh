@@ -14,7 +14,7 @@ command -v curl >/dev/null || { echo "✘ curl がありません"; exit 1; }
 
 echo "── 最新版を探しています ──"
 API="https://api.github.com/repos/$O/$R/releases/latest"
-URL=$(curl -fsSL "$API" | grep -o 'https://[^"]*AIUsageBarometer-v[^"]*\.zip' | head -1)
+URL=$(curl -fsSL --connect-timeout 5 --max-time 15 "$API" | grep -o 'https://[^"]*AIUsageBarometer-v[^"]*\.zip' | head -1)
 if [ -z "$URL" ]; then
   echo "✘ 配布用の .app がまだ公開されていません。"
   echo "  ソースから動かす場合:"
@@ -25,7 +25,7 @@ fi
 echo "  $URL"
 
 T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
-curl -fsSL "$URL" -o "$T/app.zip"
+curl -fsSL --connect-timeout 5 --max-time 30 "$URL" -o "$T/app.zip"
 ditto -x -k "$T/app.zip" "$T/x"
 SRC=$(find "$T/x" -maxdepth 1 -name '*.app' -print -quit)
 [ -n "$SRC" ] || { echo "✘ zip の中に .app がありません"; exit 1; }
@@ -51,11 +51,20 @@ mv "$STAGE" "$DEST"
 rm -f "$HOME/SwiftBar/claude-codex.60s.sh" "$HOME/SwiftBar/ai-usage.60s.sh" "$HOME/SwiftBar/claude-usage.60s.sh" 2>/dev/null || true
 rm -rf "$HOME/SwiftBar/.ai-usage-barometer" 2>/dev/null || true
 rm -f "$HOME/.cache/claude-codex-bar/latest_release" 2>/dev/null || true
+# Clear stale Gemini/Codex caches so the upgraded app immediately fetches live 5h & 1w data
+rm -f "$HOME/.cache/gemini-usage-barometer/usage.json" "$HOME/.cache/codex-usage-barometer/usage.json" 2>/dev/null || true
 
 echo "✔ $DEST"
 VER=$(defaults read "$DEST/Contents/Info" CFBundleShortVersionString 2>/dev/null || echo "latest")
-osascript -e "display notification \"Updated to v$VER — Claude, Codex & Gemini (5h & 1w) native app ready.\" with title \"AI Usage Barometer\"" 2>/dev/null || true
-( killall AIUsageBarometer 2>/dev/null || true; sleep 0.5; open "$DEST" ) >/dev/null 2>&1 &
+mkdir -p "$HOME/.cache/claude-codex-bar" 2>/dev/null || true
+chmod 700 "$HOME/.cache/claude-codex-bar" 2>/dev/null || true
+TMP_VER="$HOME/.cache/claude-codex-bar/auto_updated_version.tmp.$$"
+if printf 'v%s\n' "${VER#v}" > "$TMP_VER" 2>/dev/null; then
+  chmod 600 "$TMP_VER" 2>/dev/null || true
+  mv -f "$TMP_VER" "$HOME/.cache/claude-codex-bar/auto_updated_version" 2>/dev/null || rm -f "$TMP_VER" 2>/dev/null || true
+fi
+( osascript -e "display notification \"Updated to v${VER#v} — Claude, Codex & Gemini (5h & 1w) native app ready.\" with title \"AI Usage Barometer\"" 2>/dev/null || true ) >/dev/null 2>&1 &
+nohup /bin/sh -c 'sleep 0.4; killall AIUsageBarometer 2>/dev/null || true; sleep 0.5; open "/Applications/AI Usage Barometer.app"' >/dev/null 2>&1 </dev/null &
 echo
 echo "右クリックで設定（表示するサービス／％／置き場所）。"
 echo "置き場所は メニューバー・Dockアイコン・フローティングバー から選べます。"

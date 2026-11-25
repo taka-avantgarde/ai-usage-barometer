@@ -6,9 +6,9 @@
 
 | KI-Dienst | Farbe | Unterstützte Quellen |
 |:---|:---|:---|
-| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (offizielle Statuszeile) |
-| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI und Web-Token |
-| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Sitzungskontingente für Google Antigravity Desktop & IDE |
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (OAuth-Usage-API & Schlüsselbund) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI und Web-Token (`5h` & `1w`) |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE (`5h` & `1w`) |
 
 <img src="assets/hero.svg" alt="AI Usage Barometer in der Menüleiste, im Dock-Symbol und in einer schwebenden Leiste" width="725">
 
@@ -31,10 +31,7 @@ Claude, Codex und Gemini teilen sich ein Element, getrennt durch eine feine Lini
 
 Die Menüleiste wird als Vektorbild gezeichnet, damit jeder Dienst innerhalb eines Elements seine eigene Farbe behält. Andernfalls wird automatisch Text verwendet.
 
-Beide Paletten verwenden gesättigte, kontrastreiche Farben: Claude verwendet
-Orange, Codex Cyan. Bei 11–30% Restkapazität mischt die Warnfarbe Orange bei;
-bei höchstens 10% enthält die kritische Farbe kräftiges Rot. Codex behält in
-beiden Mischungen einen starken Blauanteil:
+Alle drei Paletten verwenden gesättigte, kontrastreiche Farben: Claude verwendet Orange, Codex Cyan und Gemini Smaragdgrün. Bei 11–30% Restkapazität mischt die Warnfarbe Orange bei; bei höchstens 10% enthält die kritische Farbe kräftiges Rot. Codex behält in beiden Mischungen einen starken Blauanteil:
 
 | Stufe | Nutzung | Claude | Codex | Gemini |
 |---|---:|---|---|---|
@@ -44,9 +41,9 @@ beiden Mischungen einen starken Blauanteil:
 
 ## Einstellungen
 
-Öffne das Menü und wähle **⚙ Display settings**. Das Einstellungsfenster bleibt geöffnet, sodass mehrere Optionen nacheinander geändert werden können, ohne dass es sich nach jedem Klick schließt. Änderungen wirken sofort.
+Öffne das Menü und wähle **⚙ Display settings**. Das Einstellungsfenster bleibt geöffnet (macOS/iOS-Schalter mit **Save**-Taste), sodass mehrere Optionen nacheinander geändert werden können, ohne dass es sich nach jedem Klick schließt.
 
-Die Plugin-Oberfläche ist ausschließlich auf Englisch. Diese GitHub-Dokumentation bleibt in 14 Sprachen verfügbar.
+Die App-Oberfläche ist ausschließlich auf Englisch. Diese GitHub-Dokumentation bleibt in 14 Sprachen verfügbar.
 
 | Einstellung | Wirkung |
 |---|---|
@@ -62,13 +59,9 @@ Die Plugin-Oberfläche ist ausschließlich auf Englisch. Diese GitHub-Dokumentat
 | **Platzierung** (`Menu bar` / `Dock icon` / `Floating bar`) | Beliebige Kombination der drei Anzeigeorte wählen |
 | **Aktualisierungsintervall** (`1m` / `3m` / `5m`) | 1 Minute, 3 Minuten oder 5 Minuten |
 
-Sind alle Anzeigen ausgeblendet, bleibt ein neutraler Eintrag `AI …`, über den die Einstellungen erreichbar sind. Die Farbe richtet sich nur nach sichtbaren Balken. Einstellungen liegen in `~/.cache/claude-codex-bar/` und überstehen Updates.
+Die Fenster werden stets in der Reihenfolge **`5h` → `1w`** angezeigt. Wird ein Hauptdienst (`Claude`, `Codex` oder `Gemini`) deaktiviert, werden seine `5h`- und `1w`-Fenster mit abgeschaltet; ein Klick auf **Save** oder **Refresh now** umgeht sofort den lokalen Cache (`--force`) für Live-Werte. Einstellungen liegen in `~/.cache/claude-codex-bar/` und überstehen Updates.
 
-Wenn Claude oder Codex deaktiviert wird, wird die Datenaktualisierung für diesen Dienst angehalten. Die Einstellungen für 5h, 7d und Prozent bleiben abgeblendet und gesperrt; beim erneuten Aktivieren werden ihre vorherigen Werte wiederhergestellt.
-
-Sind bei einem Dienst sowohl 5h als auch 7d abgewählt, werden der Dienst und seine Fehler vollständig ausgeblendet und seine Datenquelle nicht abgefragt.
-
-Die App und das Plugin prüfen GitHub Releases automatisch alle 15 Minuten und aktualisieren sich im Hintergrund, sobald eine neue Version veröffentlicht wird.
+Die App prüft GitHub Releases automatisch alle 15 Minuten und aktualisiert sich im Hintergrund, sobald eine neue Version veröffentlicht wird.
 
 ## Die App — wähle, wo sie wohnt
 
@@ -115,17 +108,17 @@ Ergebnisse werden für das Intervall zwischengespeichert, der Endpunkt wird also
 
 **Codex** wird aus dem lokalen Helfer `codex-usage.sh` in `.ai-usage-barometer/` gelesen. Es verfolgt die Fenster `5h` und `1w` (`7d`) in der Reihenfolge `5h → 1w` (selbst wenn das 5-Stunden-Fenster noch nicht verbraucht wurde).
 
-**Gemini** wird aus dem lokalen Helfer `gemini-usage.sh` gelesen, der mit der App gebündelt ist. Es unterstützt sowohl Antigravity Desktop App 2.0 als auch Antigravity IDE und liest die Fenster `5h` und `1w` lokal über Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) und Cache-Fallback sicher aus, ohne externe API-Aufrufe oder Schreibvorgänge von Anmeldedaten.
+**Gemini** wird aus dem lokalen Helfer `gemini-usage.sh` gelesen, der mit der App gebündelt ist. Es unterstützt Antigravity 2.x Desktop (`~/.gemini/antigravity/daemon/*.json`) sowie Antigravity IDE (Gemini 4 & 3.8 Modelle) und liest die Fenster `5h` und `1w` in der Reihenfolge `5h → 1w` lokal über Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) und atomaren Cache-Fallback sicher aus, ohne externe API-Aufrufe oder Schreibvorgänge von Anmeldedaten.
 
 ## Fehlerbehebung
 
-**Eine Claude-Warnung erscheint.** Öffne das Dropdown, um den Grund zu sehen. *Sign in to Claude Code again* bedeutet, dass das OAuth-Token abgelaufen ist — melde dich über die Claude-Code-CLI oder die IDE-Erweiterung neu an. **Das ist nicht die Claude-Desktop-App**: Ein Login in Claude.app erneuert dieses Token nicht. *Rate limited* löst sich von selbst; das Plugin wartet 15 Minuten und zeigt die verbleibende Zeit an.
+**Eine Claude-Warnung erscheint.** Öffne das Dropdown, um den Grund zu sehen. *Sign in to Claude Code again* bedeutet, dass das OAuth-Token abgelaufen ist — melde dich über die Claude-Code-CLI oder die IDE-Erweiterung neu an. **Das ist nicht die Claude-Desktop-App**: Ein Login in Claude.app erneuert dieses Token nicht. *Rate limited* löst sich von selbst; die App wartet 15 Minuten und zeigt die verbleibende Zeit an.
 
 **Eine Codex-Warnung erscheint.** Der Helfer fehlt oder Codex hat noch keine Daten geliefert. Installer erneut ausführen und Codex CLI einmal nutzen.
 
 **Gemini zeigt eine Warnung.** Antigravity wurde noch nicht gestartet oder das lokale Hilfsskript wartet auf Daten. Starten Sie Antigravity Desktop oder Antigravity IDE.
 
-**Farben unterscheiden sich zwischen Menüleiste und Menü.** macOS kann eine transluzente Menüleiste als hell behandeln, während Menüs dunkel sind. Genau deshalb gibt es nur eine Farbe pro Stufe; andernfalls die Zweifarbdarstellung abschalten.
+**Farben unterscheiden sich zwischen Menüleiste und Menü.** macOS kann eine transluzente Menüleiste als hell behandeln, während Menüs dunkel sind. Die App zeichnet scharfe Retina-2x-Balken nativ auf dunklem Anthrazit `#20252B`, sodass die Dienstfarben auf hellen und dunklen Hintergrundbildern konsistent bleiben.
 
 ## Deinstallation
 

@@ -18,7 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/taka-avantgarde/ai-usage-barometer/main/install-app.sh)"
 ```
 
-これらはアプリ版です。Homebrew も Xcode も要りません。macOS 13 以降。初回起動時に置き場所（メニューバー・Dockアイコン・フローティングバー）を聞かれ、あとからメニューでいつでも変えられます。
+これらはネイティブ Mac アプリ版（Apple Silicon & Intel 対応 Universal Binary・macOS 13 以降・Homebrew / Xcode 不要）です。初回起動時に置き場所（メニューバー・Dockアイコン・フローティングバー）を聞かれ、あとからメニューでいつでも変えられます。
 
 ## メニューバーは1項目
 
@@ -60,7 +60,7 @@ Claude・Codex・Gemini を細い区切り線で分けて1項目にまとめて�
 | **置き場所** (`Menu bar` / `Dock icon` / `Floating bar`) | 3つの表示場所の任意の組み合わせを選択 |
 | **更新間隔** (`1m` / `3m` / `5m`) | 1分・3分・5分 |
 
-枠の並び順は常に **`5h` → `1w`** で統一されています。親（`Claude` / `Codex` / `Gemini`）をオフにすると傘下の `5h`・`1w` もすべてオフになりデータ取得を停止します。逆に `5h` と `1w` の両方をオフにすると親も自動でオフになります。設定は `~/.cache/claude-codex-bar/` に保存され、アップデートしても引き継がれます。
+枠の並び順は常に **`5h` → `1w`** で統一されています。親（`Claude` / `Codex` / `Gemini`）をオフにすると傘下の `5h`・`1w` もすべてオフになりデータ取得を停止します。逆に `5h` と `1w` の両方をオフにすると親も自動でオフになります。**Save** または **Refresh now** を押すと3分キャッシュ（TTL）を即時バイパス（`--force`）して最新のライブ残量を取得します。設定は `~/.cache/claude-codex-bar/` に保存され、アップデートしても引き継がれます。
 
 GitHub Releases を15分ごとに自動確認し、新しいリリースが公開されるとバックグラウンドで自動アップデートされます。
 
@@ -107,7 +107,7 @@ cd ai-usage-barometer/app && swift run
 
 **Codex** は、インストーラが `.ai-usage-barometer/` に配置するローカルヘルパー `codex-usage.sh` の出力から読み取ります。`5h`（5時間枠）が未使用（残り100%）のときも省略せず、常に **`5h` → `1w` (`7d`)** の順で2本とも取得・表示します。
 
-**Gemini** は、インストーラが配置するローカルヘルパー `gemini-usage.sh` の出力から読み取ります。Antigravity Desktop App 2.0 および Antigravity IDE の両方に対応し、外部API呼び出しや認証情報の書き換えなしに、ローカル Language Server の Connect RPC（`RetrieveUserQuotaSummary` / `GetUserStatus`）・SQLite (`state.vscdb`)・キャッシュの3段階フォールバックで **`5h`（5時間枠）と `1w`（週間枠）の両方**を安全に取得します。
+**Gemini** は、アプリ同梱のローカルヘルパー `gemini-usage.sh` の出力から読み取ります。Antigravity 2.x Desktop（`~/.gemini/antigravity/daemon/*.json` 高速検出）および Antigravity IDE の両方（Gemini 4 / 3.8 全モデル）に対応し、外部API呼び出しや認証情報の書き換えなしに、ローカル Connect RPC（`RetrieveUserQuotaSummary` / `GetUserStatus`）・SQLite (`state.vscdb`)・アトミックキャッシュの3段階フォールバックで常に **`5h` → `1w` の2本**を安全に取得します。
 
 ## うまく動かないとき
 

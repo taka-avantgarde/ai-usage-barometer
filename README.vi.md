@@ -6,9 +6,9 @@
 
 | Dịch vụ AI | Màu sắc | Nguồn hỗ trợ |
 |:---|:---|:---|
-| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (dòng trạng thái chính thức) |
-| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI & web token |
-| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Hạn ngạch phiên Google Antigravity Desktop & IDE |
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (API sử dụng OAuth & Keychain) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI & web token (`5h` & `1w`) |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE (`5h` & `1w`) |
 
 <img src="assets/hero.svg" alt="AI Usage Barometer trên thanh menu, biểu tượng Dock và thanh nổi" width="725">
 
@@ -29,11 +29,11 @@ Claude, Codex và Gemini dùng chung một mục, ngăn bởi một vạch mản
 └──── Claude ────┘     └───── Codex ─────┘     └──── Gemini ────┘
 ```
 
-Thanh menu được vẽ dạng ảnh vector nên mỗi dịch vụ giữ được màu riêng trong cùng một mục. Nếu không thể, hệ thống tự chuyển sang văn bản thuần.
+Thanh menu được vẽ trực tiếp ở độ phân giải Retina (2x) nên mỗi dịch vụ giữ được màu riêng trong cùng một mục.
 
-Cả hai bảng màu đều có độ bão hòa và tương phản cao: Claude dùng cam, Codex dùng
-lục lam. Khi còn 11–30%, màu cảnh báo pha cam; khi còn 10% trở xuống, màu nguy
-cấp pha đỏ tươi. Codex giữ thành phần xanh lam mạnh trong cả hai màu pha:
+Cả ba bảng màu đều có độ bão hòa và tương phản cao: Claude dùng cam, Codex dùng
+lục lam và Gemini dùng xanh ngọc lục bảo. Khi còn 11–30%, màu cảnh báo pha cam hoặc xanh rêu; khi còn 10% trở xuống, màu nguy
+cấp pha đỏ tươi hoặc hồng ngọc. Codex giữ thành phần xanh lam mạnh trong cả hai màu pha:
 
 | Mức | Đã dùng | Claude | Codex | Gemini |
 |---|---:|---|---|---|
@@ -43,9 +43,9 @@ cấp pha đỏ tươi. Codex giữ thành phần xanh lam mạnh trong cả hai
 
 ## Cài đặt
 
-Nhấp vào thanh và chọn **⚙ Display settings**. Bảng cài đặt vẫn mở để bạn thay đổi nhiều tùy chọn liên tiếp mà không phải mở lại sau mỗi lần nhấp. Thay đổi có hiệu lực ngay.
+Nhấp vào thanh và chọn **⚙ Display settings**. Bảng cài đặt vẫn mở để bạn thay đổi nhiều tùy chọn liên tiếp mà không phải mở lại sau mỗi lần nhấp. Nhấn **Save** áp dụng thay đổi tức thì (0ms) và **Refresh now** bỏ qua bộ nhớ đệm cục bộ (`--force`) để lấy hạn ngạch trực tiếp ngay lập tức.
 
-Giao diện plugin chỉ hiển thị bằng tiếng Anh. Tài liệu GitHub này vẫn được cung cấp bằng 14 ngôn ngữ.
+Giao diện ứng dụng chỉ hiển thị bằng tiếng Anh. Tài liệu GitHub này vẫn được cung cấp bằng 14 ngôn ngữ.
 
 | Tùy chọn | Tác dụng |
 |---|---|
@@ -63,11 +63,11 @@ Giao diện plugin chỉ hiển thị bằng tiếng Anh. Tài liệu GitHub nà
 
 Khi ẩn mọi đồng hồ, mục trung tính `AI …` vẫn còn để mở cài đặt. Màu chỉ do các thanh đang hiển thị quyết định. Cài đặt nằm ở `~/.cache/claude-codex-bar/` và được giữ qua các bản cập nhật.
 
-Khi tắt Claude hoặc Codex, việc cập nhật dữ liệu của dịch vụ đó sẽ dừng lại. Các cài đặt 5h, 7d và phần trăm vẫn hiển thị mờ và bị khóa; các giá trị trước đó sẽ được khôi phục khi bật lại dịch vụ.
+Khi tắt Claude, Codex hoặc Gemini, việc cập nhật dữ liệu của dịch vụ đó sẽ dừng lại. Các cài đặt `5h`, `1w` và phần trăm vẫn hiển thị mờ và bị khóa; các giá trị trước đó sẽ được khôi phục khi bật lại dịch vụ.
 
-Nếu bỏ chọn cả khung 5h và 7d của một dịch vụ, dịch vụ cùng các lỗi của nó sẽ bị ẩn hoàn toàn và nguồn dữ liệu sẽ không được truy vấn.
+Nếu bỏ chọn cả khung `5h` và `1w` của một dịch vụ, dịch vụ cùng các lỗi của nó sẽ bị ẩn hoàn toàn và nguồn dữ liệu sẽ không được truy vấn.
 
-Ứng dụng và plugin tự động kiểm tra GitHub Releases mỗi 15 phút và tự động cập nhật trong nền khi có bản phát hành mới.
+Ứng dụng tự động kiểm tra GitHub Releases mỗi 15 phút và tự động cập nhật trong nền (Universal Binary cho cả Apple Silicon và Intel Mac) khi có bản phát hành mới.
 
 ## Ứng dụng — chọn nơi nó ở
 
@@ -112,17 +112,17 @@ Kết quả được lưu đệm trong khoảng làm mới, nên mỗi khoảng 
 
 **Codex** được đọc từ trình hỗ trợ cục bộ `codex-usage.sh` trong `.ai-usage-barometer/`. Nó theo dõi cả hai khung `5h` và `1w` (`7d`) theo thứ tự `5h → 1w` (ngay cả khi khung 5 giờ chưa được sử dụng).
 
-**Gemini** được đọc từ trình hỗ trợ cục bộ `gemini-usage.sh` đi kèm với ứng dụng. Nó hỗ trợ cả Antigravity Desktop App 2.0 và Antigravity IDE, đọc an toàn cả hai khung `5h` và `1w` cục bộ qua Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) và dự phòng bộ nhớ đệm mà không cần gọi API bên ngoài hay ghi thông tin đăng nhập.
+**Gemini** được đọc từ trình hỗ trợ cục bộ `gemini-usage.sh` đi kèm với ứng dụng. Nó hỗ trợ cả Antigravity Desktop App 2.x (`~/.gemini/antigravity/daemon/*.json`) và Antigravity IDE (bao gồm Gemini 4 và Gemini 3.8), đọc an toàn cả hai khung `5h` và `1w` theo thứ tự `5h → 1w` cục bộ qua Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) và dự phòng bộ nhớ đệm nguyên tử mà không cần gọi API bên ngoài hay ghi thông tin đăng nhập.
 
 ## Khắc phục sự cố
 
-**Hiện cảnh báo Claude.** Mở menu thả xuống để xem lý do. *Sign in to Claude Code again* nghĩa là token OAuth đã hết hạn — hãy đăng nhập lại qua Claude Code CLI hoặc tiện ích IDE. **Đây không phải ứng dụng Claude trên desktop**: đăng nhập vào Claude.app không làm mới token này. *Rate limited* sẽ tự hết; plugin sẽ chờ 15 phút và hiển thị thời gian còn lại.
+**Hiện cảnh báo Claude.** Mở menu thả xuống để xem lý do. *Sign in to Claude Code again* nghĩa là token OAuth đã hết hạn — hãy đăng nhập lại qua Claude Code CLI hoặc tiện ích IDE. **Đây không phải ứng dụng Claude trên desktop**: đăng nhập vào Claude.app không làm mới token này. *Rate limited* sẽ tự hết; ứng dụng sẽ chờ 15 phút và hiển thị thời gian còn lại.
 
 **Hiện cảnh báo Codex.** Thiếu trợ lý hoặc Codex chưa tạo dữ liệu. Chạy lại trình cài đặt rồi dùng Codex CLI một lần.
 
-**Gemini hiển thị cảnh báo.** Antigravity chưa được khởi chạy hoặc trình trợ giúp cục bộ đang chờ dữ liệu. Hãy mở Antigravity Desktop hoặc Antigravity IDE.
+**Gemini hiển thị cảnh báo.** Antigravity chưa được khởi chạy hoặc trình trợ giúp cục bộ đang chờ dữ liệu. Hãy mở Antigravity Desktop hoặc Antigravity IDE rồi nhấp **Refresh now**.
 
-**Màu khác nhau giữa thanh menu và menu thả xuống.** macOS có thể coi thanh menu trong suốt là sáng dù menu tối. Khi có Python, trình vẽ vector hai màu luôn được dùng; văn bản một màu chỉ là phương án dự phòng khi thiếu Python.
+**Độ rõ nét của thanh menu trên hình nền sáng hoặc tối.** Ứng dụng vẽ trực tiếp bề mặt thanh menu ở độ phân giải Retina (2x) trên nền than tối `#20252B`, giữ cho cả ba bảng màu luôn sắc nét trong cả chế độ sáng và tối của macOS.
 
 ## Gỡ cài đặt
 

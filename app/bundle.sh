@@ -24,9 +24,9 @@ trap 'rm -rf "$STAGE_DIR"' EXIT
 APP="$STAGE_DIR/$NAME.app"
 ICONSET="$STAGE_DIR/icon.iconset"
 
-echo "── ビルド (release) ──"
-swift build -c release
-BINPATH="$(swift build -c release --show-bin-path)/$BIN"
+echo "── ビルド (release Universal: arm64 + x86_64) ──"
+swift build -c release --arch arm64 --arch x86_64
+BINPATH="$(swift build -c release --arch arm64 --arch x86_64 --show-bin-path)/$BIN"
 [ -x "$BINPATH" ] || { echo "✘ 実行ファイルが見つかりません: $BINPATH"; exit 1; }
 
 echo "── アイコン ──"
@@ -91,7 +91,7 @@ mkdir -p "$APP/Contents/Resources/.ai-usage-barometer"
 for f in codex-usage.sh gemini-usage.sh settings.html update.sh; do
   if [ -f "../$f" ]; then
     cp "../$f" "$APP/Contents/Resources/.ai-usage-barometer/$f"
-    [ -x "../$f" ] && chmod +x "$APP/Contents/Resources/.ai-usage-barometer/$f"
+    case "$f" in *.sh) chmod +x "$APP/Contents/Resources/.ai-usage-barometer/$f" ;; esac
   fi
 done
 cat > "$APP/Contents/Info.plist" <<PLIST

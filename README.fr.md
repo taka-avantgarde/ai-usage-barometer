@@ -31,10 +31,7 @@ Claude, Codex et Gemini partagent un élément, séparés par un trait fin. Les 
 
 La barre de menus est dessinée en vectoriel afin que chaque service garde sa couleur dans un même élément. Un repli en texte simple est utilisé automatiquement si nécessaire.
 
-Les deux palettes utilisent des couleurs saturées et très contrastées : Claude
-utilise l’orange et Codex le cyan. Entre 11 et 30% restants, l’alerte incorpore
-de l’orange ; à 10% ou moins, l’état critique incorpore un rouge vif. Codex
-conserve du bleu dans les deux mélanges :
+Les trois palettes utilisent des couleurs saturées et très contrastées : Claude utilise l’orange, Codex le cyan et Gemini le vert émeraude. Entre 11 et 30% restants, l’alerte incorpore de l’orange ; à 10% ou moins, l’état critique incorpore un rouge vif. Codex conserve du bleu dans les deux mélanges :
 
 | Étape | Usage | Claude | Codex | Gemini |
 |---|---:|---|---|---|
@@ -44,9 +41,9 @@ conserve du bleu dans les deux mélanges :
 
 ## Réglages
 
-Ouvrez le menu et choisissez **⚙ Display settings**. Le panneau reste ouvert afin de modifier plusieurs options à la suite sans qu’il se ferme après chaque clic. Les changements s’appliquent immédiatement.
+Ouvrez le menu et choisissez **⚙ Display settings**. Le panneau reste ouvert avec des interrupteurs style macOS/iOS et un bouton **Save**, afin de modifier plusieurs options à la suite sans qu’il se ferme après chaque clic.
 
-L’interface du module est uniquement en anglais. Cette documentation GitHub reste disponible en 14 langues.
+L’interface de l’application est uniquement en anglais. Cette documentation GitHub reste disponible en 14 langues.
 
 | Réglage | Effet |
 |---|---|
@@ -62,13 +59,9 @@ L’interface du module est uniquement en anglais. Cette documentation GitHub re
 | **Emplacement** (`Menu bar` / `Dock icon` / `Floating bar`) | Choisir n'importe quelle combinaison des trois emplacements d'affichage |
 | **Intervalle d'actualisation** (`1m` / `3m` / `5m`) | 1 minute, 3 minutes ou 5 minutes |
 
-Si toutes les jauges sont masquées, un élément neutre `AI …` reste disponible pour ouvrir les réglages. La couleur ne dépend que des jauges affichées. Les réglages sont dans `~/.cache/claude-codex-bar/` et survivent aux mises à jour.
+Les fenêtres s’affichent toujours dans l’ordre **`5h` → `1w`**. Désactiver un service parent (`Claude`, `Codex` ou `Gemini`) désactive ses fenêtres `5h` et `1w` et suspend son actualisation ; cliquer sur **Save** ou **Refresh now** contourne immédiatement le cache local (`--force`) pour une lecture en direct. Les réglages sont enregistrés dans `~/.cache/claude-codex-bar/` et survivent aux mises à jour.
 
-Lorsque Claude ou Codex est désactivé, la mise à jour des données de ce service est arrêtée. Les réglages 5h, 7d et pourcentage restent grisés et verrouillés ; leurs valeurs précédentes sont restaurées lors de la réactivation.
-
-Si les fenêtres 5h et 7d d’un service sont toutes deux décochées, le service et ses erreurs sont entièrement masqués et sa source de données n’est pas interrogée.
-
-L'application et le plugin vérifient automatiquement GitHub Releases toutes les 15 minutes et se mettent à jour en arrière-plan lorsqu'une nouvelle version est publiée.
+L'application vérifie automatiquement GitHub Releases toutes les 15 minutes et se met à jour en arrière-plan lorsqu'une nouvelle version est publiée.
 
 ## L'application — choisissez où elle vit
 
@@ -115,17 +108,17 @@ Les résultats sont mis en cache pendant l’intervalle : le point de terminaiso
 
 **Codex** est lu à partir de l'assistant local `codex-usage.sh` placé dans `.ai-usage-barometer/`. Il suit les fenêtres `5h` et `1w` (`7d`) dans l'ordre `5h → 1w` (même lorsque la fenêtre de 5 heures n'a pas encore été consommée).
 
-**Gemini** est lu à partir de l'assistant local `gemini-usage.sh` fourni avec l'application. Il prend en charge Antigravity Desktop App 2.0 et Antigravity IDE, lisant en toute sécurité les fenêtres `5h` et `1w` localement via Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) et cache de secours, sans appel d'API externe ni écriture d'identifiants.
+**Gemini** est lu à partir de l'assistant local `gemini-usage.sh` fourni avec l'application. Il prend en charge Antigravity 2.x Desktop (`~/.gemini/antigravity/daemon/*.json`) et Antigravity IDE (modèles Gemini 4 et 3.8), lisant en toute sécurité les fenêtres `5h` et `1w` dans l'ordre `5h → 1w` via Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) et cache atomique, sans appel d'API externe ni écriture d'identifiants.
 
 ## Dépannage
 
-**Un avertissement Claude s’affiche.** Ouvrez le menu déroulant pour connaître la raison. *Sign in to Claude Code again* signifie que le jeton OAuth a expiré — reconnectez-vous via la CLI Claude Code ou l’extension IDE. **Ce n’est pas l’application de bureau Claude** : se connecter à Claude.app ne renouvelle pas ce jeton. *Rate limited* se résout tout seul ; le plugin patiente 15 minutes et affiche le temps restant.
+**Un avertissement Claude s’affiche.** Ouvrez le menu déroulant pour connaître la raison. *Sign in to Claude Code again* signifie que le jeton OAuth a expiré — reconnectez-vous via la CLI Claude Code ou l’extension IDE. **Ce n’est pas l’application de bureau Claude** : se connecter à Claude.app ne renouvelle pas ce jeton. *Rate limited* se résout tout seul ; l'application patiente 15 minutes et affiche le temps restant.
 
 **Un avertissement Codex s’affiche.** L’assistant manque ou Codex n’a pas encore produit de données. Relancez l’installateur puis utilisez Codex CLI une fois.
 
 **Gemini affiche un avertissement.** Antigravity n'a pas encore été lancé ou l'assistant local attend des données. Lancez Antigravity Desktop ou Antigravity IDE.
 
-**Les couleurs diffèrent entre la barre et le menu.** macOS peut considérer une barre translucide comme claire alors que les menus sont sombres. Le rendu vectoriel en deux couleurs est utilisé lorsque Python est disponible ; le texte en une couleur ne sert que de solution de secours si Python manque.
+**Les couleurs diffèrent entre la barre et le menu.** macOS peut considérer une barre translucide comme claire alors que les menus sont sombres. L'application effectue un rendu Retina 2x natif sur un fond anthracite `#20252B` afin de préserver la fidélité des couleurs sur tous les fonds d'écran.
 
 ## Désinstallation
 

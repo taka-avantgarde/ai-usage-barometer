@@ -29,11 +29,11 @@ Claude, Codex, dan Gemini berbagi satu item, dipisahkan garis tipis. Bilah berga
 └──── Claude ────┘     └───── Codex ─────┘     └──── Gemini ────┘
 ```
 
-Bilah menu digambar sebagai gambar vektor sehingga tiap layanan mempertahankan warnanya dalam satu item. Jika tidak memungkinkan, otomatis beralih ke teks biasa.
+Bilah menu digambar secara native pada resolusi Retina (2x) sehingga tiap layanan mempertahankan warnanya dalam satu item.
 
-Kedua palet memakai warna jenuh dengan kontras tinggi: Claude menggunakan
-oranye dan Codex sian. Saat tersisa 11–30%, warna peringatan mencampurkan
-oranye; saat tersisa 10% atau kurang, warna kritis mencampurkan merah cerah.
+Ketiga palet memakai warna jenuh dengan kontras tinggi: Claude menggunakan
+oranye, Codex sian, dan Gemini hijau zamrud. Saat tersisa 11–30%, warna peringatan mencampurkan
+oranye atau lumut; saat tersisa 10% atau kurang, warna kritis mencampurkan merah cerah atau mirah delima.
 Codex mempertahankan unsur biru kuat pada kedua campuran:
 
 | Tahap | Pemakaian | Claude | Codex | Gemini |
@@ -44,9 +44,9 @@ Codex mempertahankan unsur biru kuat pada kedua campuran:
 
 ## Pengaturan
 
-Klik bilah lalu pilih **⚙ Display settings**. Panel pengaturan tetap terbuka sehingga beberapa opsi dapat diubah berurutan tanpa membukanya lagi setelah setiap klik. Perubahan langsung berlaku.
+Klik bilah lalu pilih **⚙ Display settings**. Panel pengaturan tetap terbuka sehingga beberapa opsi dapat diubah berurutan tanpa membukanya lagi setelah setiap klik. Menekan **Save** menerapkan perubahan secara instan (0ms), dan **Refresh now** langsung melewati cache lokal (`--force`) untuk mengambil kuota terbaru.
 
-Antarmuka plugin hanya tersedia dalam bahasa Inggris. Dokumentasi GitHub ini tetap tersedia dalam 14 bahasa.
+Antarmuka aplikasi hanya tersedia dalam bahasa Inggris. Dokumentasi GitHub ini tetap tersedia dalam 14 bahasa.
 
 | Pengaturan | Efek |
 |---|---|
@@ -64,11 +64,11 @@ Antarmuka plugin hanya tersedia dalam bahasa Inggris. Dokumentasi GitHub ini tet
 
 Saat semua meter disembunyikan, item netral `AI …` tetap tersedia untuk membuka pengaturan. Warna hanya ditentukan oleh bilah yang tampil. Pengaturan tersimpan di `~/.cache/claude-codex-bar/` dan bertahan setelah pembaruan.
 
-Saat Claude atau Codex dinonaktifkan, pembaruan data untuk layanan tersebut dihentikan. Pengaturan 5 jam, 7 hari, dan persentase tetap terlihat redup serta terkunci; nilai sebelumnya dipulihkan saat layanan diaktifkan kembali.
+Saat Claude, Codex, atau Gemini dinonaktifkan, pembaruan data untuk layanan tersebut dihentikan. Pengaturan `5h`, `1w`, dan persentase tetap terlihat redup serta terkunci; nilai sebelumnya dipulihkan saat layanan diaktifkan kembali.
 
-Jika jendela 5 jam dan 7 hari suatu layanan sama-sama tidak dicentang, layanan beserta galatnya disembunyikan sepenuhnya dan sumber datanya tidak diakses.
+Jika jendela `5h` dan `1w` suatu layanan sama-sama tidak dicentang, layanan beserta galatnya disembunyikan sepenuhnya dan sumber datanya tidak diakses.
 
-Aplikasi dan plugin memeriksa GitHub Releases secara otomatis setiap 15 menit dan memperbarui di latar belakang saat rilis baru diterbitkan.
+Aplikasi memeriksa GitHub Releases secara otomatis setiap 15 menit dan memperbarui di latar belakang (Universal Binary untuk Apple Silicon dan Intel Mac) saat rilis baru diterbitkan.
 
 ## Aplikasinya — pilih tempatnya
 
@@ -114,17 +114,17 @@ Hasil disimpan sementara selama interval, jadi endpoint dipanggil paling banyak 
 
 **Codex** dibaca dari pembantu lokal `codex-usage.sh` di `.ai-usage-barometer/`. Ini melacak jendela `5h` dan `1w` (`7d`) dalam urutan `5h → 1w` (bahkan saat jendela 5 jam belum digunakan).
 
-**Gemini** dibaca dari pembantu lokal `gemini-usage.sh` yang dibundel dengan aplikasi. Ini mendukung Antigravity Desktop App 2.0 dan Antigravity IDE, membaca jendela `5h` dan `1w` secara lokal melalui Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`), dan fallback cache tanpa panggilan API eksternal atau penulisan kredensial.
+**Gemini** dibaca dari pembantu lokal `gemini-usage.sh` yang dibundel dengan aplikasi. Ini mendukung Antigravity Desktop App 2.x (`~/.gemini/antigravity/daemon/*.json`) dan Antigravity IDE (termasuk Gemini 4 dan Gemini 3.8), membaca jendela `5h` dan `1w` dalam urutan `5h → 1w` secara lokal melalui Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`), dan fallback cache atomik tanpa panggilan API eksternal atau penulisan kredensial.
 
 ## Pemecahan masalah
 
-**Muncul peringatan Claude.** Buka menu dropdown untuk melihat alasannya. *Sign in to Claude Code again* berarti token OAuth kedaluwarsa — masuk ulang lewat CLI Claude Code atau ekstensi IDE. **Ini bukan aplikasi desktop Claude**: masuk ke Claude.app tidak memperbarui token ini. *Rate limited* akan hilang sendiri; plugin menunggu 15 menit dan menampilkan sisa waktu.
+**Muncul peringatan Claude.** Buka menu dropdown untuk melihat alasannya. *Sign in to Claude Code again* berarti token OAuth kedaluwarsa — masuk ulang lewat CLI Claude Code atau ekstensi IDE. **Ini bukan aplikasi desktop Claude**: masuk ke Claude.app tidak memperbarui token ini. *Rate limited* akan hilang sendiri; aplikasi menunggu 15 menit dan menampilkan sisa waktu.
 
 **Muncul peringatan Codex.** Pembantu tidak ada atau Codex belum menghasilkan data. Jalankan ulang pemasang lalu gunakan Codex CLI sekali.
 
-**Gemini menampilkan peringatan.** Antigravity belum dijalankan atau pembantu lokal sedang menunggu data. Buka Antigravity Desktop atau Antigravity IDE.
+**Gemini menampilkan peringatan.** Antigravity belum dijalankan atau pembantu lokal sedang menunggu data. Buka Antigravity Desktop atau Antigravity IDE, lalu klik **Refresh now**.
 
-**Warna berbeda antara bilah menu dan menu.** macOS bisa memperlakukan bilah menu transparan sebagai terang meski menu gelap. Renderer vektor dua warna digunakan saat Python tersedia; teks satu warna hanya digunakan sebagai fallback saat Python tidak tersedia.
+**Keterbacaan bilah menu pada wallpaper terang atau gelap.** Aplikasi menggambar permukaan bilah menu secara native pada resolusi Retina (2x) di atas latar arang gelap `#20252B`, sehingga ketiga palet tetap tajam di mode terang maupun gelap macOS.
 
 ## Copot pemasangan
 

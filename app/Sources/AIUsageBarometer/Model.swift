@@ -66,7 +66,8 @@ enum Plugin {
             group.leave()
         }
 
-        let timeoutResult = group.wait(timeout: .now() + 15.0)
+        let waitSec: Double = args.contains("--update") ? 60.0 : 15.0
+        let timeoutResult = group.wait(timeout: .now() + waitSec)
         if timeoutResult == .timedOut {
             p.terminate()
             return nil

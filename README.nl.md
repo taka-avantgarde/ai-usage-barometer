@@ -6,9 +6,9 @@
 
 | AI-dienst | Kleur | Ondersteunde bronnen |
 |:---|:---|:---|
-| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (officiële statusregel) |
-| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI en web-tokens |
-| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE sessiequota |
+| **Claude** | ![#C66D28](assets/colors/claude-healthy.svg) `#C66D28` | Claude Code (OAuth-gebruiks-API & Sleutelhanger) |
+| **Codex** | ![#1A8BA6](assets/colors/codex-healthy.svg) `#1A8BA6` | Codex CLI en web-tokens (`5h` & `1w`) |
+| **Gemini** | ![#158F6A](assets/colors/gemini-healthy.svg) `#158F6A` | Google Antigravity Desktop & IDE (`5h` & `1w`) |
 
 <img src="assets/hero.svg" alt="AI Usage Barometer in de menubalk, het Dock-icoon en een zwevende balk" width="725">
 
@@ -31,10 +31,7 @@ Claude, Codex en Gemini delen één item, gescheiden door een dunne streep. De b
 
 De menubalk wordt als vectorafbeelding getekend zodat elke dienst binnen één item zijn eigen kleur houdt. Anders wordt automatisch platte tekst gebruikt.
 
-Beide paletten gebruiken verzadigde kleuren met hoog contrast: Claude gebruikt
-oranje en Codex cyaan. Bij 11–30% resterend mengt de waarschuwing oranje bij;
-bij 10% of minder bevat de kritieke kleur helder rood. Codex houdt in beide
-mengkleuren duidelijk blauw:
+Alle drie de paletten gebruiken verzadigde kleuren met hoog contrast: Claude gebruikt oranje, Codex cyaan en Gemini smaragdgroen. Bij 11–30% resterend mengt de waarschuwing oranje bij; bij 10% of minder bevat de kritieke kleur helder rood. Codex houdt in beide mengkleuren duidelijk blauw:
 
 | Fase | Verbruik | Claude | Codex | Gemini |
 |---|---:|---|---|---|
@@ -44,9 +41,9 @@ mengkleuren duidelijk blauw:
 
 ## Instellingen
 
-Open het menu en kies **⚙ Display settings**. Het instellingenpaneel blijft open, zodat je meerdere opties achter elkaar kunt wijzigen zonder het na elke klik opnieuw te openen. Wijzigingen werken direct.
+Open het menu en kies **⚙ Display settings**. Het instellingenpaneel blijft open met macOS/iOS-schakelaars en een **Save**-knop, zodat je meerdere opties achter elkaar kunt wijzigen zonder het na elke klik opnieuw te openen.
 
-De plugininterface is uitsluitend in het Engels. Deze GitHub-documentatie blijft beschikbaar in 14 talen.
+De app-interface is uitsluitend in het Engels. Deze GitHub-documentatie blijft beschikbaar in 14 talen.
 
 | Instelling | Effect |
 |---|---|
@@ -62,13 +59,9 @@ De plugininterface is uitsluitend in het Engels. Deze GitHub-documentatie blijft
 | **Plaatsing** (`Menu bar` / `Dock icon` / `Floating bar`) | Kies elke gewenste combinatie van de drie weergavelocaties |
 | **Vernieuwingsinterval** (`1m` / `3m` / `5m`) | 1 minuut, 3 minuten of 5 minuten |
 
-Wanneer alle meters verborgen zijn, blijft een neutraal item `AI …` beschikbaar om de instellingen te openen. De kleur volgt alleen zichtbare balken. Instellingen staan in `~/.cache/claude-codex-bar/` en blijven behouden.
+Vensters worden altijd in de volgorde **`5h` → `1w`** getoond. Het uitschakelen van een hoofddienst (`Claude`, `Codex` of `Gemini`) schakelt beide vensters `5h` en `1w` uit; klikken op **Save** of **Refresh now** omzeilt direct de lokale cache (`--force`) voor live metingen. Instellingen staan in `~/.cache/claude-codex-bar/` en blijven behouden.
 
-Wanneer Claude of Codex wordt uitgeschakeld, stopt het vernieuwen van de gegevens voor die dienst. De instellingen voor 5h, 7d en percentages blijven gedimd en vergrendeld; bij opnieuw inschakelen worden de vorige waarden hersteld.
-
-Als voor een dienst zowel 5h als 7d is uitgeschakeld, worden de dienst en de bijbehorende fouten volledig verborgen en wordt de gegevensbron niet geraadpleegd.
-
-De app en plug-in controleren GitHub Releases automatisch elke 15 minuten en werken op de achtergrond bij wanneer er een nieuwe release wordt gepubliceerd.
+De app controleert GitHub Releases automatisch elke 15 minuten en werkt op de achtergrond bij wanneer er een nieuwe release wordt gepubliceerd.
 
 ## De app — kies waar hij woont
 
@@ -114,17 +107,17 @@ Resultaten worden gecachet gedurende het interval, dus het eindpunt wordt hoogst
 
 **Codex** wordt gelezen uit de lokale helper `codex-usage.sh` in `.ai-usage-barometer/`. Het volgt zowel de `5h`- als de `1w`-vensters (`7d`) in de volgorde `5h → 1w` (zelfs wanneer het 5-uursvenster nog niet is verbruikt).
 
-**Gemini** wordt gelezen uit de lokale helper `gemini-usage.sh` die bij de app wordt geleverd. Het ondersteunt zowel Antigravity Desktop App 2.0 als Antigravity IDE en leest zowel `5h`- als `1w`-vensters lokaal via Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) en cache-terugval, zonder externe API-aanroepen of het opslaan van inloggegevens.
+**Gemini** wordt gelezen uit de lokale helper `gemini-usage.sh` die bij de app wordt geleverd. Het ondersteunt Antigravity 2.x Desktop (`~/.gemini/antigravity/daemon/*.json`) en Antigravity IDE (Gemini 4 & 3.8 modellen) en leest zowel `5h`- als `1w`-vensters in de volgorde `5h → 1w` lokaal via Connect RPC (`RetrieveUserQuotaSummary` / `GetUserStatus`), SQLite (`state.vscdb`) en atomaire cache, zonder externe API-aanroepen of het opslaan van inloggegevens.
 
 ## Problemen oplossen
 
-**Er verschijnt een Claude-waarschuwing.** Open het dropdownmenu voor de reden. *Sign in to Claude Code again* betekent dat het OAuth-token is verlopen — meld je opnieuw aan via de Claude Code CLI of de IDE-extensie. **Dit is niet de Claude-desktopapp**: inloggen bij Claude.app vernieuwt dit token niet. *Rate limited* lost zichzelf op; de plugin wacht 15 minuten en toont de resterende tijd.
+**Er verschijnt een Claude-waarschuwing.** Open het dropdownmenu voor de reden. *Sign in to Claude Code again* betekent dat het OAuth-token is verlopen — meld je opnieuw aan via de Claude Code CLI of de IDE-extensie. **Dit is niet de Claude-desktopapp**: inloggen bij Claude.app vernieuwt dit token niet. *Rate limited* lost zichzelf op; de app wacht 15 minuten en toont de resterende tijd.
 
 **Er verschijnt een Codex-waarschuwing.** De helper ontbreekt of Codex heeft nog geen gegevens. Voer het installatieprogramma opnieuw uit en gebruik Codex CLI één keer.
 
 **Gemini toont een waarschuwing.** Antigravity is nog niet gestart of de lokale helper wacht op gegevens. Start Antigravity Desktop of Antigravity IDE.
 
-**Kleuren verschillen tussen menubalk en menu.** macOS kan een doorschijnende menubalk als licht behandelen terwijl menu’s donker zijn. De tweekleurige vectorweergave wordt gebruikt als Python beschikbaar is; tekst in één kleur is alleen de fallback wanneer Python ontbreekt.
+**Kleuren verschillen tussen menubalk en menu.** macOS kan een doorschijnende menubalk als licht behandelen terwijl menu’s donker zijn. De app tekent haarscherpe Retina 2x-meters op een donkere houtskoolachtergrond `#20252B` zodat de kleuren op elke achtergrond consistent blijven.
 
 ## Verwijderen
 
