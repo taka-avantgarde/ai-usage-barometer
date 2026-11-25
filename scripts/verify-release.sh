@@ -5,6 +5,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
+FAST_MODE=0
+[[ "${1:-}" == "--fast" ]] && FAST_MODE=1
 
 echo "=== 1. シェルスクリプト構文検査 (bash -n) ==="
 for sh in "$ROOT"/*.sh "$ROOT"/scripts/*.sh "$ROOT"/app/*.sh "$ROOT"/tests/*.sh; do
@@ -97,13 +99,15 @@ grep -q '#1A8BA6' "$ROOT/assets/hero.svg"
 grep -q '#158F6A' "$ROOT/assets/hero.svg"
 echo "✔ assets/hero.svg 正常"
 
-echo "=== 6. テストスイート実行 (colours.sh & run.sh) ==="
-bash "$ROOT/tests/colours.sh"
-bash "$ROOT/tests/run.sh"
-echo "✔ テストスイート通過"
+if [ "$FAST_MODE" = 0 ]; then
+  echo "=== 6. テストスイート実行 (colours.sh & run.sh) ==="
+  bash "$ROOT/tests/colours.sh"
+  bash "$ROOT/tests/run.sh"
+  echo "✔ テストスイート通過"
 
-echo "=== 7. Swift リリースビルド & 隔離検査 ==="
-(cd "$ROOT/app" && swift build -c release)
+  echo "=== 7. Swift リリースビルド & 隔離検査 ==="
+  (cd "$ROOT/app" && swift build -c release)
+fi
 if [ -d "$ROOT/app/dist/AI Usage Barometer.app" ]; then
   echo "✘ app/dist に .app ディレクトリが残っています" >&2
   exit 1

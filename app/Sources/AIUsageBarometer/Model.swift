@@ -75,8 +75,9 @@ enum Plugin {
         return outputData
     }
 
-    static func fetch() -> Usage? {
-        guard let d = run(["--json"]), !d.isEmpty else { return nil }
+    static func fetch(force: Bool = false) -> Usage? {
+        let args = force ? ["--json", "--force"] : ["--json"]
+        guard let d = run(args), !d.isEmpty else { return nil }
         return try? JSONDecoder().decode(Usage.self, from: d)
     }
 

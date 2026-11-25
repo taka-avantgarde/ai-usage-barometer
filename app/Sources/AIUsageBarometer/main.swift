@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var latestVersion = ""
     var lastUsage: Usage?
     var isRefreshing = false
+    var pendingForceRefresh = false
     var isUpdating = false
 
     func applicationDidFinishLaunching(_ note: Notification) {
@@ -147,14 +148,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         m.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height + 4), in: button)
     }
 
-    func refresh() {
-        guard !isRefreshing else { return }
+    func refresh(force: Bool = false) {
+        if isRefreshing {
+            if force { pendingForceRefresh = true }
+            return
+        }
         isRefreshing = true
+        pendingForceRefresh = false
         DispatchQueue.global(qos: .utility).async {
-            let u = Plugin.fetch()
+            let u = Plugin.fetch(force: force)
             DispatchQueue.main.async {
                 self.isRefreshing = false
                 self.apply(u)
+                if self.pendingForceRefresh {
+                    self.pendingForceRefresh = false
+                    self.refresh(force: true)
+                }
             }
         }
     }
@@ -345,7 +354,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 DispatchQueue.global(qos: .userInitiated).async {
                     Plugin.set("iv", String(iv))
-                    let u = Plugin.fetch()
+                    let u = Plugin.fetch(force: true)
                     DispatchQueue.main.async { self.apply(u) }
                 }
             },
@@ -356,7 +365,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 self?.showDetail()
             },
             onRefresh: { [weak self] in
-                self?.refresh()
+                self?.refresh(force: true)
             },
             onQuit: {
                 NSApp.terminate(nil)

@@ -6,7 +6,7 @@
 # part is capacity left, the dotted tail is what has been spent.
 #
 # <xbar.title>AI Usage Barometer</xbar.title>
-# <xbar.version>v0.10.1</xbar.version>
+# <xbar.version>v0.10.2</xbar.version>
 # <xbar.author>Takayuki Miyano</xbar.author>
 # <xbar.author.github>taka-avantgarde</xbar.author.github>
 # <xbar.desc>One menu-bar item for Claude, Codex and Gemini usage, with per-window toggles.</xbar.desc>
@@ -19,8 +19,13 @@
 #
 # License: MIT
 #
-VERSION="v0.10.1"
+VERSION="v0.10.2"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
+FORCE_REFRESH=0
+if [ "${AIBAR_FORCE_REFRESH:-0}" = 1 ] || [ "${1:-}" = "--force" ] || [ "${2:-}" = "--force" ]; then
+  FORCE_REFRESH=1
+  export AIBAR_FORCE_REFRESH=1
+fi
 ENDPOINT="https://api.anthropic.com/api/oauth/usage"
 BETA="oauth-2025-04-20"
 MBAR_W=5; DROP_W=10; WARN=70; DANGER=90
@@ -188,13 +193,14 @@ semver_is_newer() {
     }'
 }
 latest_release_version() {
-  local file="$CFG/latest_release" now mtime=0 latest="" enabled="${AI_USAGE_UPDATE_CHECK:-}"
-  [ -z "$enabled" ] && [ -n "${SWIFTBAR_PLUGIN_PATH:-}" ] && enabled=1
+  local file="$CFG/latest_release" now mtime=0 latest="" ttl=900 enabled="${AI_USAGE_UPDATE_CHECK:-}"
+  [ -z "$enabled" ] && { [ -n "${SWIFTBAR_PLUGIN_PATH:-}" ] || [ "${AIBAR_NATIVE_APP:-0}" = 1 ]; } && enabled=1
   [ "$enabled" = 1 ] || return 1
+  [ "$FORCE_REFRESH" = 1 ] && ttl=30
   now=$(date +%s)
   if [ -f "$file" ]; then
     mtime=$(stat -f %m "$file" 2>/dev/null || stat -c %Y "$file" 2>/dev/null || echo 0)
-    if [ $((now-mtime)) -lt 900 ]; then read -r latest < "$file" 2>/dev/null; fi
+    if [ $((now-mtime)) -lt "$ttl" ]; then read -r latest < "$file" 2>/dev/null; fi
   fi
   if [ -z "$latest" ]; then
     latest=$(jpick "$(curl -fsSL --connect-timeout 3 --max-time 6 \
@@ -336,10 +342,10 @@ NOW=$(date +%s)
 ATT="$CFG/claude.attempt"; RETRY_AT=0; LAST_ERR=""
 [ -f "$ATT" ] && IFS=$'\t' read -r RETRY_AT LAST_ERR < "$ATT" 2>/dev/null
 case "$RETRY_AT" in ''|*[!0-9]*) RETRY_AT=0 ;; esac
-if [ "$CL_ACTIVE" = 1 ] && [ $(( NOW - aT )) -lt $(( IV * 60 )) ] && [ -n "$cU5$cU7" ]; then
+if [ "$CL_ACTIVE" = 1 ] && [ "$FORCE_REFRESH" != 1 ] && [ $(( NOW - aT )) -lt $(( IV * 60 )) ] && [ -n "$cU5$cU7" ]; then
   U5="$cU5"; U7="$cU7"; R5="$cR5"; R7="$cR7"
   P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
-elif [ "$CL_ACTIVE" = 1 ] && [ "$NOW" -lt "$RETRY_AT" ]; then
+elif [ "$CL_ACTIVE" = 1 ] && [ "$NOW" -lt "$RETRY_AT" ] && { [ "$FORCE_REFRESH" != 1 ] || [ "$LAST_ERR" = "$T_RATELIMIT" ]; }; then
   if [ -n "$cU5$cU7" ] && [ "$LAST_ERR" != "$T_NOCRED" ] && [ "$LAST_ERR" != "$T_REAUTH" ]; then
     U5="$cU5"; U7="$cU7"; R5="$cR5"; R7="$cR7"
     P5=$(to_pct "$U5"); P7=$(to_pct "$U7")
@@ -555,6 +561,22 @@ if [ "${1:-}" = "--json" ]; then
     "$(jbool "$CX_ACTIVE")" "$(jesc "$CX_ERR")" "$(jesc "$CX_OK")" "$(jesc "$CX_CREDITS")" "$CX_WINS"
   printf '{"name":"Gemini","on":%s,"error":"%s","color":"%s","credits":"","windows":[%s]}]}\n' \
     "$(jbool "$GM_ACTIVE")" "$(jesc "$GM_ERR")" "$(jesc "$GM_OK")" "$GM_WINS"
+  exit 0
+fi
+
+if [ "${1:-}" = "--quota-zone" ]; then
+  qzone() {
+    local r1="${1:--1}" r2="${2:--1}" m=100
+    [ "$r1" -ge 0 ] 2>/dev/null && [ "$r1" -lt "$m" ] && m="$r1"
+    [ "$r2" -ge 0 ] 2>/dev/null && [ "$r2" -lt "$m" ] && m="$r2"
+    if [ "$m" -le 10 ]; then printf 'RED'
+    elif [ "$m" -le 30 ]; then printf 'AMBER'
+    else printf 'GREEN'; fi
+  }
+  printf '{"claude":{"left5h":%d,"left1w":%d,"zone":"%s"},"codex":{"left5h":%d,"left1w":%d,"zone":"%s"},"gemini":{"left5h":%d,"left1w":%d,"zone":"%s"}}\n' \
+    "${REM5:--1}" "${REM7:--1}" "$(qzone "$REM5" "$REM7")" \
+    "${CX_R1:--1}" "${CX_R2:--1}" "$(qzone "$CX_R1" "$CX_R2")" \
+    "${GM_R1:--1}" "${GM_R2:--1}" "$(qzone "$GM_R1" "$GM_R2")"
   exit 0
 fi
 

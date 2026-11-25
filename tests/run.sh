@@ -132,7 +132,7 @@ assert_spec_line "$SPEC" "#666666" "  │  "
 assert_spec_line "$SPEC" "#4F7FA8" "7d ███░░"
 grep -q '^5h  .*1% used.*color=#B54F02' <<< "$OUT"
 grep -q '^7d  .*97% used.*color=#FF7045' <<< "$OUT"
-grep -q '^Version v0.10.1' <<< "$OUT"
+grep -q '^Version v0.10.2' <<< "$OUT"
 
 # No official Claude data: omit Claude from the macOS header while keeping its
 # setup guidance inside the dropdown. Do not show a misleading warning gauge.
@@ -219,8 +219,9 @@ grep -q 'https://chatgpt.com/backend-api/wham/usage' "$ROOT/codex-usage.sh"
 ! grep -q ';;&' "$ROOT/gemini-usage.sh"
 ! grep -q ';&' "$ROOT/gemini-usage.sh"
 
-# Gemini mock JSON test
+# Gemini mock JSON test (userStatus single-window fallback)
 GEMINI_RESET_FUTURE="$(date -u -v+2H '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || date -u -d '+2 hours' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || echo "2099-01-01T00:00:00Z")"
+GEMINI_RESET_WEEK="$(date -u -v+5d '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || date -u -d '+5 days' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || echo "2099-01-06T00:00:00Z")"
 cat > "$TMP/gemini-mock.json" <<JSON
 {
   "userStatus": {
@@ -228,8 +229,8 @@ cat > "$TMP/gemini-mock.json" <<JSON
     "cascadeModelConfigData": {
       "clientModelConfigs": [
         {
-          "modelId": "gemini-2.5-flash",
-          "label": "Gemini 2.5 Flash",
+          "modelId": "gemini-4-carbon-high",
+          "label": "Gemini 4 Carbon (High)",
           "quotaInfo": {
             "remainingFraction": 0.85,
             "resetTime": "$GEMINI_RESET_FUTURE"
@@ -244,6 +245,78 @@ GEMINI_MOCK_OUT="$(HOME="$TMP/home" GEMINI_USAGE_TEST_JSON="$TMP/gemini-mock.jso
 grep -q '^Gemini 5h' <<< "$GEMINI_MOCK_OUT"
 grep -q '15% used' <<< "$GEMINI_MOCK_OUT"
 grep -q '85% left' <<< "$GEMINI_MOCK_OUT"
+
+# Gemini Antigravity 2.x RetrieveUserQuotaSummary 2-window (5h -> 1w) test
+cat > "$TMP/gemini-quota-summary.json" <<JSON
+{
+  "response": {
+    "groups": [
+      {
+        "displayName": "Gemini Models",
+        "buckets": [
+          {
+            "bucketId": "gemini-weekly",
+            "window": "weekly",
+            "remainingFraction": 0.84,
+            "resetTime": "$GEMINI_RESET_WEEK"
+          },
+          {
+            "bucketId": "gemini-5h",
+            "window": "5h",
+            "remainingFraction": 0.96,
+            "resetTime": "$GEMINI_RESET_FUTURE"
+          }
+        ]
+      }
+    ]
+  }
+}
+JSON
+GEMINI_Q_OUT="$(HOME="$TMP/home" GEMINI_USAGE_TEST_JSON="$TMP/gemini-quota-summary.json" "$ROOT/gemini-usage.sh")"
+grep -q '^Gemini 5h █████  1w ████░' <<< "$GEMINI_Q_OUT"
+grep -q '^5h   ██████████   4% used' <<< "$GEMINI_Q_OUT"
+grep -q '^1w   ████████░░   16% used' <<< "$GEMINI_Q_OUT"
+
+# Gemini Antigravity 2.x daemon/hub_*.json live endpoint discovery + --force cache bypass test
+DAEMON_PORT="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1",0)); print(s.getsockname()[1]); s.close()')"
+python3 - "$DAEMON_PORT" "$TMP/gemini-quota-summary.json" <<'PYSERVER' &
+import http.server, json, sys
+port = int(sys.argv[1])
+qpath = sys.argv[2]
+with open(qpath) as f:
+    qbody = f.read().encode("utf-8")
+ubody = json.dumps({"userStatus": {"userTier": {"name": "Google AI Ultra"}}}).encode("utf-8")
+
+class Handler(http.server.BaseHTTPRequestHandler):
+    def log_message(self, *args): pass
+    def do_POST(self):
+        if self.headers.get("x-codeium-csrf-token") != "test-csrf-token":
+            self.send_response(403); self.end_headers(); return
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        if "RetrieveUserQuotaSummary" in self.path:
+            self.wfile.write(qbody)
+        else:
+            self.wfile.write(ubody)
+
+srv = http.server.HTTPServer(("127.0.0.1", port), Handler)
+srv.handle_request()
+srv.handle_request()
+PYSERVER
+SRV_PID=$!
+sleep 0.2
+mkdir -p "$TMP/daemon" "$TMP/home/.cache/gemini-usage-barometer"
+cat > "$TMP/daemon/hub_${DAEMON_PORT}.json" <<JSON
+{"pid": $$, "httpPort": $DAEMON_PORT, "lsVersion": "2.34.0", "csrfToken": "test-csrf-token"}
+JSON
+# Seed stale cache (<180s old) and verify --force bypasses it to read live Antigravity 2.x daemon
+cat > "$TMP/home/.cache/gemini-usage-barometer/usage.json" <<JSON
+{"source":"state.vscdb","fetched_at":$(date +%s),"plan":"Google AI","primary":{"label":"5h","used_percent":0,"resets_at":0},"secondary":null}
+JSON
+DAEMON_JSON="$(HOME="$TMP/home" ANTIGRAVITY_DAEMON_DIR="$TMP/daemon" ANTIGRAVITY_DAEMON_ONLY=1 "$ROOT/gemini-usage.sh" --json --force)"
+wait "$SRV_PID" 2>/dev/null || true
+jq -e '.source == "live" and .plan == "Google AI Ultra" and .primary.label == "5h" and .primary.used_percent == 4 and .secondary.label == "1w" and .secondary.used_percent == 16' <<< "$DAEMON_JSON" >/dev/null
 
 # Verify claude-codex.60s.sh --json includes Claude, Codex, Gemini
 JSON_OUT="$(HOME="$TMP/home" CODEX_HELPER="$ROOT/tests/fixtures/codex-helper.sh" GEMINI_HELPER="$ROOT/tests/fixtures/gemini-helper.sh" "$ROOT/claude-codex.60s.sh" --json)"
